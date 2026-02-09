@@ -1,0 +1,95 @@
+name: Fetch Dev Docs
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "packages.yaml"
+      - "fetch-docs.sh"
+      - ".github/workflows/fetch-docs.yml"
+
+concurrency:
+  group: fetch-docs
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Fetch documentation
+        run: |
+          chmod +x ./fetch-docs.sh
+          ./fetch-docs.sh
+
+      - name: Check for uncommitted doc updates (PR only)
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ -z "$(git status --porcelain -- '**/llms.txt')" ]; then
+            echo "Documentation is up to date."
+          else
+            echo "ERROR: Documentation changed after fetch."
+            echo "Run './fetch-docs.sh' locally and commit the changes."
+            git status --short -- '**/llms.txt'
+            git diff --stat -- '**/llms.txt' || true
+            exit 1
+          fi
+
+      - name: Check for changes
+        if: github.event_name != 'pull_request'
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected"
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure git user
+        if: github.event_name != 'pull_request' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create branch and commit
+        if: github.event_name != 'pull_request' && steps.changes.outputs.has_changes == 'true'
+        id: commit
+        run: |
+          BRANCH_NAME="docs-update-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH_NAME"
+          git add .
+          git commit -m "docs: auto-update llms.txt from context7 sources"
+          git push -u origin "$BRANCH_NAME"
+          echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        if: github.event_name != 'pull_request' && steps.changes.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "docs: auto-update llms.txt from context7 sources" \
+            --body "Automated weekly documentation update from context7.com.
+
+          ## Changes
+          - Updated llms.txt files from upstream context7 sources
+
+          ## Verification
+          - [ ] Review diff for any unexpected changes" \
+            --head "${{ steps.commit.outputs.branch }}" \
+            --base main

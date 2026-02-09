@@ -20,6 +20,7 @@ Auto-fetched LLM-optimized documentation from context7.com for cmux development.
 | bun | Runtime & package manager |
 | beads | Graph-based issue tracker for AI agents |
 | vercel-workflow | Durable async functions |
+| opencode | AI coding agent for terminal |
 
 ## Usage
 

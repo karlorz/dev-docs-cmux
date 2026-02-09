@@ -18,6 +18,7 @@ LLM-optimized documentation for cmux's tech stack from context7.com.
 - `bun/llms.txt` - Runtime
 - `beads/llms.txt` - AI agent issue tracker
 - `vercel-workflow/llms.txt` - Durable functions
+- `opencode/llms.txt` - Terminal AI coding agent
 
 ## Update Docs
 
