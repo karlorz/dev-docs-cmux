@@ -79,10 +79,11 @@ jobs:
 
       - name: Create Pull Request
         if: github.event_name != 'pull_request' && steps.changes.outputs.has_changes == 'true'
+        id: create_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create \
+          PR_URL=$(gh pr create \
             --title "docs: auto-update llms.txt from context7 sources" \
             --body "Automated weekly documentation update from context7.com.
 
@@ -92,4 +93,12 @@ jobs:
           ## Verification
           - [ ] Review diff for any unexpected changes" \
             --head "${{ steps.commit.outputs.branch }}" \
-            --base main
+            --base main)
+          echo "url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Enable auto-merge
+        if: github.event_name != 'pull_request' && steps.changes.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge "${{ steps.create_pr.outputs.url }}" --auto --squash --delete-branch
