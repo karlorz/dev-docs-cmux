@@ -96,9 +96,15 @@ jobs:
             --base main)
           echo "url=$PR_URL" >> "$GITHUB_OUTPUT"
 
-      - name: Enable auto-merge
+      - name: Merge pull request
         if: github.event_name != 'pull_request' && steps.changes.outputs.has_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge "${{ steps.create_pr.outputs.url }}" --auto --squash --delete-branch
+          PR_URL="${{ steps.create_pr.outputs.url }}"
+          if gh pr merge "$PR_URL" --auto --squash --delete-branch; then
+            echo "Auto-merge enabled."
+          else
+            echo "Auto-merge unavailable; using direct squash merge."
+            gh pr merge "$PR_URL" --squash --delete-branch
+          fi
