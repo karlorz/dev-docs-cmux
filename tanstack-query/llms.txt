@@ -1,807 +1,1935 @@
-# TanStack Query (React Query) v5
+### Setup and Run React Native Example
 
-TanStack Query is an async state management library for web applications, purpose-built to simplify fetching, caching, synchronizing, and updating server state. Unlike traditional client-side state managers, it treats server data as a first-class citizen with a dedicated lifecycle: queries are uniquely keyed, automatically cached, background-refetched when stale, and garbage-collected when unused. It is protocol-agnostic — it works with REST, GraphQL, WebSockets, or any Promise-returning function — and supports React, Vue, Solid, Svelte, Angular, Lit, and Preact through separate adapter packages (`@tanstack/react-query`, `@tanstack/vue-query`, etc.), all sharing the same `@tanstack/query-core` engine.
+Source: https://github.com/tanstack/query/blob/main/examples/react/react-native/README.md
 
-The core functionality revolves around three building blocks: **queries** (declarative data reads via `useQuery`), **mutations** (imperative data writes via `useMutation`), and the **QueryClient** (the cache controller). Queries are identified by serializable query keys and automatically re-execute when those keys change. Mutations can trigger cache invalidations, optimistic updates, and offline persistence. The library ships with React Suspense support (`useSuspenseQuery`), infinite/paginated query helpers (`useInfiniteQuery`), parallel/dynamic query execution (`useQueries`), server-side rendering hydration utilities (`dehydrate`/`hydrate`), and an ESLint plugin for enforcing correct patterns. Current stable version is **v5** (`@tanstack/react-query@5.x`).
+These commands install the Expo CLI globally, then install project dependencies, and finally start the React Native development server.
 
----
+```shell
+npm install --global expo-cli
+```
 
-## Installation and Setup
+```shell
+pnpm install
+```
 
-Install the library and wrap the application in `QueryClientProvider` with a `QueryClient` instance.
+```shell
+pnpm start
+```
+
+--------------------------------
+
+### Start Svelte Development Server
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/auto-refetching/README.md
+
+Launch a local development server after installing project dependencies. The second command automatically opens the application in a new browser tab for immediate preview and testing.
+
+```bash
+npm run dev
+```
+
+```bash
+npm run dev -- --open
+```
+
+--------------------------------
+
+### Run a specific example in development mode
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+This command executes the development script for a selected example within its directory using pnpm. It starts the example application, allowing developers to test and interact with it locally.
+
+```bash
+pnpm run dev
+```
+
+--------------------------------
+
+### Use Vue Query with Composition API and script setup
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Example of using useQuery composable with Vue 3's <script setup> syntax. Demonstrates destructuring query state properties including isPending, isFetching, isError, data, and error from the useQuery hook.
+
+```vue
+<script setup>
+import { useQuery } from '@tanstack/vue-query'
+
+const { isPending, isFetching, isError, data, error } = useQuery({
+  queryKey: ['todos'],
+  queryFn: getTodos,
+})
+</script>
+
+<template>...</template>
+```
+
+--------------------------------
+
+### React Query Setup with Queries, Mutations, and Invalidation
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/quick-start.md
+
+Complete React Query implementation demonstrating client initialization, data fetching with useQuery, data mutation with useMutation, and cache invalidation. This example shows how to fetch todos, display them in a list, and add new todos with automatic cache refresh. Requires @tanstack/react-query package and API functions (getTodos, postTodo).
 
 ```tsx
-npm install @tanstack/react-query
-# Optional devtools
-npm install @tanstack/react-query-devtools
-
 import {
+  useQuery,
+  useMutation,
+  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { getTodos, postTodo } from '../my-api'
 
-// Create once per app lifecycle (or once per request in SSR — see SSR section)
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,      // data is fresh for 1 min
-      gcTime: 5 * 60 * 1000,     // unused cache kept for 5 min
-      retry: 3,                  // retry failed queries 3 times
-      refetchOnWindowFocus: true,
+// Create a client
+const queryClient = new QueryClient()
+
+function App() {
+  return (
+    // Provide the client to your App
+    <QueryClientProvider client={queryClient}>
+      <Todos />
+    </QueryClientProvider>
+  )
+}
+
+function Todos() {
+  // Access the client
+  const queryClient = useQueryClient()
+
+  // Queries
+  const query = useQuery({ queryKey: ['todos'], queryFn: getTodos })
+
+  // Mutations
+  const mutation = useMutation({
+    mutationFn: postTodo,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['todos'] })
     },
-  },
+  })
+
+  return (
+    <div>
+      <ul>
+        {query.data?.map((todo) => (
+          <li key={todo.id}>{todo.title}</li>
+        ))}
+      </ul>
+
+      <button
+        onClick={() => {
+          mutation.mutate({
+            id: Date.now(),
+            title: 'Do Laundry',
+          })
+        }}
+      >
+        Add Todo
+      </button>
+    </div>
+  )
+}
+
+render(<App />, document.getElementById('root'))
+```
+
+--------------------------------
+
+### Basic Lit-Query Usage with createQueryController
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+A quick start example demonstrating how to set up `QueryClientProvider` and use `createQueryController` within a LitElement to fetch and display data.
+
+```ts
+import { LitElement, html } from 'lit'
+import {
+  QueryClient,
+  QueryClientProvider,
+  createQueryController,
+} from '@tanstack/lit-query'
+
+const client = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
 })
+
+class AppProvider extends QueryClientProvider {
+  constructor() {
+    super()
+    this.client = client
+  }
+}
+customElements.define('app-provider', AppProvider)
+
+class UsersView extends LitElement {
+  private readonly users = createQueryController(this, {
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await fetch('/api/users')
+      return response.json() as Promise<Array<{ id: string; name: string }>>
+    },
+  })
+
+  render() {
+    const query = this.users()
+    if (query.isPending) return html`Loading...`
+    if (query.isError) return html`Error`
+    return html`<ul>
+      ${query.data?.map((u) => html`<li>${u.name}</li>`)}
+    </ul>`
+  }
+}
+customElements.define('users-view', UsersView)
+```
+
+--------------------------------
+
+### Set up and run TanStack website for local docs preview
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+These commands navigate into the `tanstack.com` directory, install its dependencies using pnpm, and then start the development server. This allows previewing local changes made to the `TanStack/query` documentation on `http://localhost:3000`.
+
+```sh
+cd tanstack.com
+pnpm i
+pnpm dev
+```
+
+--------------------------------
+
+### Start SolidStart Development Server
+
+Source: https://github.com/tanstack/query/blob/main/examples/solid/solid-start-streaming/README.md
+
+After installing dependencies, use this command to start the development server for a SolidStart project. The `npm run dev` command initiates the server, and an optional `--open` flag can be used to automatically open the application in a new browser tab. This is crucial for local development and testing.
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+--------------------------------
+
+### Start development server
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/playground/README.md
+
+Run this command to start the local development environment.
+
+```bash
+npm run dev
+```
+
+--------------------------------
+
+### Basic TanStack Query Setup with useQuery Hook
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/overview.md
+
+Demonstrates the fundamental setup of TanStack Query including QueryClient initialization, QueryClientProvider wrapper, and useQuery hook for fetching GitHub repository data. The example shows handling loading states, errors, and displaying fetched data with proper TypeScript support.
+
+```typescript
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <YourApp />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <Example />
     </QueryClientProvider>
   )
 }
-```
 
----
-
-## `useQuery` — Fetch and Cache Data
-
-Subscribes a component to an async data source. Returns live-updating `data`, `status`, `error`, and fetch state flags. Automatically refetches when the query key changes.
-
-```tsx
-import { useQuery } from '@tanstack/react-query'
-
-// Basic fetch with full status handling
-function UserProfile({ userId }: { userId: number }) {
-  const { data, isPending, isError, error, isFetching, refetch } = useQuery({
-    queryKey: ['user', userId],          // unique cache key — reruns on userId change
-    queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}`)
-      if (!res.ok) throw new Error('Network response was not ok')
-      return res.json() as Promise<{ id: number; name: string; email: string }>
-    },
-    staleTime: 30_000,                   // treat data as fresh for 30s
-    gcTime: 5 * 60_000,                  // keep unused data in cache for 5 min
-    refetchOnWindowFocus: true,
-    retry: (failureCount, error) => failureCount < 2,
-    select: (data) => ({ ...data, name: data.name.toUpperCase() }), // transform data
+function Example() {
+  const { isPending, error, data } = useQuery({
+    queryKey: ['repoData'],
+    queryFn: () =>
+      fetch('https://api.github.com/repos/TanStack/query').then((res) =>
+        res.json(),
+      ),
   })
 
-  if (isPending) return <p>Loading...</p>
-  if (isError)   return <p>Error: {error.message}</p>
+  if (isPending) return 'Loading...'
+
+  if (error) return 'An error has occurred: ' + error.message
 
   return (
     <div>
       <h1>{data.name}</h1>
-      <p>{data.email}</p>
-      {isFetching && <span>(refreshing…)</span>}
-      <button onClick={() => refetch()}>Refresh</button>
+      <p>{data.description}</p>
+      <strong>👀 {data.subscribers_count}</strong>{' '}
+      <strong>✨ {data.stargazers_count}</strong>{' '}
+      <strong>🍴 {data.forks_count}</strong>
     </div>
   )
 }
 ```
 
----
+--------------------------------
 
-## Query Keys — Unique Cache Identifiers
+### Install dependencies
 
-Query keys are serializable arrays that uniquely identify cached data. All variables used inside `queryFn` must appear in the key so the cache invalidates correctly when they change.
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/playground/README.md
 
-```tsx
-import { useQuery } from '@tanstack/react-query'
+Run this command to install all project dependencies.
 
-// Static key — shared across the whole app
-useQuery({ queryKey: ['todos'], queryFn: fetchTodos })
-
-// Key with ID — each ID gets its own cache entry
-useQuery({ queryKey: ['todo', 5], queryFn: () => fetchTodoById(5) })
-
-// Key with filter object — object key order does NOT matter (hashed deterministically)
-function TodoList({ status, page }: { status: string; page: number }) {
-  return useQuery({
-    queryKey: ['todos', { status, page }],   // re-fetches whenever status or page changes
-    queryFn: ({ queryKey }) => {
-      const [, { status, page }] = queryKey  // key is passed into queryFn context
-      return fetchTodos({ status, page })
-    },
-  })
-}
-
-// Keys are also used with the QueryClient for targeted invalidation:
-// queryClient.invalidateQueries({ queryKey: ['todos'] })  ← invalidates all todos/*
-// queryClient.invalidateQueries({ queryKey: ['todo', 5], exact: true }) ← exact match
+```bash
+npm install
 ```
 
----
+--------------------------------
 
-## `queryOptions` — Reusable Query Definitions
+### Implement basic data fetching with SolidJS and TanStack Query
 
-Co-locate `queryKey`, `queryFn`, and options in one place for full type-safety and reuse across `useQuery`, `prefetchQuery`, `setQueryData`, and more.
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/quick-start.md
 
-```tsx
-import { queryOptions, useQuery, useSuspenseQuery, useQueries } from '@tanstack/react-query'
-
-// Define once
-function groupOptions(id: number) {
-  return queryOptions({
-    queryKey: ['groups', id],
-    queryFn: (): Promise<{ id: number; name: string; members: string[] }> =>
-      fetch(`/api/groups/${id}`).then((r) => r.json()),
-    staleTime: 5_000,
-  })
-}
-
-// Use anywhere with full TypeScript inference
-function GroupDetail({ id }: { id: number }) {
-  const { data } = useQuery(groupOptions(id))
-  // data is typed as { id: number; name: string; members: string[] }
-  return <h2>{data?.name}</h2>
-}
-
-// Reuse in parallel queries
-function MultiGroup({ ids }: { ids: number[] }) {
-  const results = useQueries({ queries: ids.map(groupOptions) })
-  return <ul>{results.map((r) => <li key={r.data?.id}>{r.data?.name}</li>)}</ul>
-}
-
-// Reuse in prefetch (e.g., in a route loader)
-await queryClient.prefetchQuery(groupOptions(42))
-
-// Reuse in setQueryData with correct key type
-queryClient.setQueryData(groupOptions(42).queryKey, { id: 42, name: 'Admins', members: [] })
-
-// Override options per component
-const { data: nameOnly } = useQuery({ ...groupOptions(1), select: (d) => d.name })
-```
-
----
-
-## Parallel Queries with `useQueries`
-
-Execute a dynamic number of queries in parallel. Returns an array of query result objects.
-
-```tsx
-import { useQuery, useQueries } from '@tanstack/react-query'
-
-// Static parallel — just call multiple useQuery hooks
-function Dashboard() {
-  const usersQuery    = useQuery({ queryKey: ['users'],    queryFn: fetchUsers })
-  const teamsQuery    = useQuery({ queryKey: ['teams'],    queryFn: fetchTeams })
-  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: fetchProjects })
-  // All three fetch simultaneously
-  return <div>{/* render results */}</div>
-}
-
-// Dynamic parallel — number of queries is unknown at render time
-function UserMessages({ userIds }: { userIds: number[] }) {
-  const messageQueries = useQueries({
-    queries: userIds.map((id) => ({
-      queryKey: ['messages', id] as const,
-      queryFn: () => fetchMessagesByUser(id),
-      staleTime: 10_000,
-    })),
-    combine: (results) => ({        // optional: combine all results into one value
-      data: results.map((r) => r.data),
-      isPending: results.some((r) => r.isPending),
-    }),
-  })
-
-  if (messageQueries.isPending) return <p>Loading…</p>
-  return (
-    <ul>
-      {messageQueries.data.map((msgs, i) => (
-        <li key={userIds[i]}>{msgs?.length} messages</li>
-      ))}
-    </ul>
-  )
-}
-```
-
----
-
-## Dependent (Serial) Queries
-
-Chain queries that depend on the result of a prior fetch by using the `enabled` flag.
-
-```tsx
-import { useQuery, useQueries } from '@tanstack/react-query'
-
-function UserProjects({ email }: { email: string }) {
-  // Step 1: fetch user
-  const { data: user } = useQuery({
-    queryKey: ['user', email],
-    queryFn: () => fetchUserByEmail(email),
-  })
-
-  // Step 2: fetch projects only when userId is known
-  const { data: projects, status, fetchStatus } = useQuery({
-    queryKey: ['projects', user?.id],
-    queryFn: () => fetchProjectsByUser(user!.id),
-    enabled: !!user?.id,   // query is paused until user.id exists
-  })
-
-  // status === 'pending' + fetchStatus === 'idle'  → waiting for user
-  // status === 'pending' + fetchStatus === 'fetching' → actively loading
-  // status === 'success' → data ready
-
-  return (
-    <div>
-      {user && <h2>Projects for {user.name}</h2>}
-      {fetchStatus === 'fetching' && <p>Loading projects…</p>}
-      <ul>{projects?.map((p) => <li key={p.id}>{p.name}</li>)}</ul>
-    </div>
-  )
-}
-```
-
----
-
-## `useMutation` — Create, Update, Delete
-
-Imperatively triggers async operations with full lifecycle callbacks. Supports optimistic updates, retries, and serialized mutation scopes.
-
-```tsx
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-interface Todo { id: number; title: string; done: boolean }
-
-function AddTodo() {
-  const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: (newTodo: { title: string }) =>
-      fetch('/api/todos', {
-        method: 'POST',
-        body: JSON.stringify(newTodo),
-        headers: { 'Content-Type': 'application/json' },
-      }).then((r) => r.json() as Promise<Todo>),
-
-    onMutate: async (newTodo, context) => {
-      await context.client.cancelQueries({ queryKey: ['todos'] })       // cancel in-flight refetches
-      const previous = context.client.getQueryData<Todo[]>(['todos'])   // snapshot
-      context.client.setQueryData<Todo[]>(['todos'], (old = []) => [    // optimistic update
-        ...old,
-        { id: Date.now(), title: newTodo.title, done: false },
-      ])
-      return { previous }                                                // returned as onMutateResult
-    },
-
-    onError: (_err, _vars, onMutateResult, context) => {
-      // roll back on failure
-      context.client.setQueryData(['todos'], onMutateResult?.previous)
-    },
-
-    onSettled: (_data, _error, _vars, _onMutateResult, context) => {
-      context.client.invalidateQueries({ queryKey: ['todos'] })         // sync with server
-    },
-  })
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const form = e.currentTarget
-    const title = (form.elements.namedItem('title') as HTMLInputElement).value
-    mutation.mutate({ title })
-    form.reset()
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      {mutation.isError  && <p style={{ color: 'red' }}>{mutation.error.message}</p>}
-      {mutation.isSuccess && <p>Todo added! ID: {mutation.data.id}</p>}
-      <input name="title" required />
-      <button type="submit" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Adding…' : 'Add Todo'}
-      </button>
-    </form>
-  )
-}
-```
-
----
-
-## `useInfiniteQuery` — Paginated & Infinite Scroll
-
-Fetches paginated data with built-in support for cursor-based, offset-based, and bi-directional pagination.
-
-```tsx
-import { useInfiniteQuery } from '@tanstack/react-query'
-
-interface Page { data: Array<{ id: number; name: string }>; nextCursor?: number }
-
-function ProjectList() {
-  const {
-    data,
-    fetchNextPage,
-    fetchPreviousPage,
-    hasNextPage,
-    hasPreviousPage,
-    isFetchingNextPage,
-    isFetching,
-    status,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ['projects'],
-    queryFn: async ({ pageParam }): Promise<Page> => {
-      const res = await fetch(`/api/projects?cursor=${pageParam}&limit=10`)
-      if (!res.ok) throw new Error('Failed to fetch')
-      return res.json()
-    },
-    initialPageParam: 0,                                        // required in v5
-    getNextPageParam: (lastPage) => lastPage.nextCursor,        // undefined = no more pages
-    getPreviousPageParam: (firstPage) => firstPage.prevCursor,  // for bi-directional lists
-    maxPages: 5,                                                // cap memory: keep only 5 pages
-  })
-
-  if (status === 'pending') return <p>Loading…</p>
-  if (status === 'error')   return <p>Error: {(error as Error).message}</p>
-
-  return (
-    <>
-      {data.pages.map((page, i) => (
-        <React.Fragment key={i}>
-          {page.data.map((project) => (
-            <div key={project.id}>{project.name}</div>
-          ))}
-        </React.Fragment>
-      ))}
-
-      <button
-        onClick={() => fetchNextPage()}
-        disabled={!hasNextPage || isFetchingNextPage}
-      >
-        {isFetchingNextPage ? 'Loading more…' : hasNextPage ? 'Load More' : 'End of list'}
-      </button>
-
-      {isFetching && !isFetchingNextPage && <span>Background refresh…</span>}
-    </>
-  )
-}
-```
-
----
-
-## `useSuspenseQuery` — React Suspense Integration
-
-Uses React's Suspense boundary for loading states and error boundaries for errors. `data` is always defined (never `undefined`) within the component body.
-
-```tsx
-import {
-  useSuspenseQuery,
-  useSuspenseQueries,
-  usePrefetchQuery,
-  QueryErrorResetBoundary,
-} from '@tanstack/react-query'
-import { Suspense } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
-
-// Parent: start prefetching before Suspense renders
-function ArticleLayout({ id }: { id: number }) {
-  usePrefetchQuery({
-    queryKey: ['comments', id],
-    queryFn: () => fetchComments(id),
-  })
-
-  return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary onReset={reset} fallbackRender={({ resetErrorBoundary }) =>
-          <button onClick={resetErrorBoundary}>Retry</button>
-        }>
-          <Suspense fallback={<p>Loading article…</p>}>
-            <Article id={id} />
-          </Suspense>
-        </ErrorBoundary>
-      )}
-    </QueryErrorResetBoundary>
-  )
-}
-
-// Child: data is guaranteed non-undefined; no isPending/isError needed
-function Article({ id }: { id: number }) {
-  // Both queries run in PARALLEL with useSuspenseQueries
-  const [{ data: article }, { data: comments }] = useSuspenseQueries({
-    queries: [
-      { queryKey: ['article', id],  queryFn: () => fetchArticle(id) },
-      { queryKey: ['comments', id], queryFn: () => fetchComments(id) },
-    ],
-  })
-
-  return (
-    <div>
-      <h1>{article.title}</h1>
-      <p>{article.body}</p>
-      <h2>Comments ({comments.length})</h2>
-      {comments.map((c) => <p key={c.id}>{c.text}</p>)}
-    </div>
-  )
-}
-```
-
----
-
-## `QueryClient` — Cache Controller
-
-The central object for interacting with the cache imperatively: prefetching, manual data writes, invalidation, and cancellation.
-
-```tsx
-import { QueryClient } from '@tanstack/react-query'
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: Infinity } },
-})
-
-// --- Prefetch before render ---
-await queryClient.prefetchQuery({ queryKey: ['posts'], queryFn: fetchPosts })
-
-// --- Fetch and get data (throws on error) ---
-const posts = await queryClient.fetchQuery({
-  queryKey: ['posts'],
-  queryFn: fetchPosts,
-  staleTime: 10_000,   // only re-fetch if older than 10s
-})
-
-// --- Read from cache synchronously ---
-const cached = queryClient.getQueryData<Post[]>(['posts'])
-
-// --- Write to cache synchronously (triggers re-renders) ---
-queryClient.setQueryData<Post[]>(['posts'], (old = []) => [
-  ...old,
-  { id: 99, title: 'New Post' },
-])
-
-// --- Invalidate (mark stale + refetch active queries) ---
-await queryClient.invalidateQueries({ queryKey: ['posts'] })
-// Only mark stale, do not refetch:
-await queryClient.invalidateQueries({ queryKey: ['posts'], refetchType: 'none' })
-// Refetch active AND inactive:
-await queryClient.invalidateQueries({ queryKey: ['posts'], refetchType: 'all' })
-
-// --- Cancel in-flight queries (used before optimistic updates) ---
-await queryClient.cancelQueries({ queryKey: ['todos'], exact: true })
-
-// --- Remove queries entirely from cache ---
-queryClient.removeQueries({ queryKey: ['stale-data'], exact: true })
-
-// --- Reset to initial data state ---
-await queryClient.resetQueries({ queryKey: ['posts'] })
-
-// --- Set per-key defaults (useful for code-splitting) ---
-queryClient.setQueryDefaults(['posts'], { queryFn: fetchPosts, staleTime: 30_000 })
-queryClient.setMutationDefaults(['addPost'], { mutationFn: addPost })
-
-// --- Global loading indicator ---
-console.log(queryClient.isFetching())   // number of in-flight queries
-console.log(queryClient.isMutating())   // number of in-flight mutations
-
-// --- Clear entire cache ---
-queryClient.clear()
-```
-
----
-
-## Optimistic Updates
-
-Update the UI before the server confirms, with automatic rollback on failure.
-
-```tsx
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-interface Todo { id: number; title: string; done: boolean }
-
-// --- Pattern 1: Via the cache (supports multiple components showing the update) ---
-function useUpdateTodo() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (todo: Todo) =>
-      fetch(`/api/todos/${todo.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(todo),
-        headers: { 'Content-Type': 'application/json' },
-      }).then((r) => r.json()),
-
-    onMutate: async (newTodo, context) => {
-      await context.client.cancelQueries({ queryKey: ['todos', newTodo.id] })
-      const previousTodo = context.client.getQueryData<Todo>(['todos', newTodo.id])
-      context.client.setQueryData<Todo>(['todos', newTodo.id], newTodo)
-      return { previousTodo }
-    },
-    onError: (_err, newTodo, onMutateResult, context) => {
-      context.client.setQueryData(
-        ['todos', newTodo.id],
-        onMutateResult?.previousTodo,
-      )
-    },
-    onSettled: (_data, _err, newTodo, _ctx, context) => {
-      context.client.invalidateQueries({ queryKey: ['todos', newTodo.id] })
-    },
-  })
-}
-
-// --- Pattern 2: Via mutation variables (simpler, single-component) ---
-function TodoItem({ todo }: { todo: Todo }) {
-  const { mutate, isPending, variables, isError } = useMutation({
-    mutationFn: (updated: Todo) => patchTodo(updated),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
-  })
-
-  // Show optimistic title immediately while mutation is pending
-  const displayTitle = isPending ? variables?.title : todo.title
-
-  return (
-    <li style={{ opacity: isPending ? 0.5 : 1 }}>
-      {displayTitle}
-      {isError && <button onClick={() => mutate({ ...todo, title: variables!.title })}>Retry</button>}
-      <button onClick={() => mutate({ ...todo, title: 'Updated!' })}>Update</button>
-    </li>
-  )
-}
-```
-
----
-
-## Prefetching Strategies
-
-Warm the cache before data is needed to eliminate loading states.
-
-```tsx
-import { useQueryClient, usePrefetchQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
-
-const todoOptions = (id: number) => ({
-  queryKey: ['todo', id] as const,
-  queryFn: () => fetchTodoById(id),
-  staleTime: 60_000,
-})
-
-// 1. On user interaction (hover / focus)
-function TodoLink({ id }: { id: number }) {
-  const queryClient = useQueryClient()
-  return (
-    <a
-      href={`/todos/${id}`}
-      onMouseEnter={() => queryClient.prefetchQuery(todoOptions(id))}
-      onFocus={() => queryClient.prefetchQuery(todoOptions(id))}
-    >
-      View Todo
-    </a>
-  )
-}
-
-// 2. In a parent component (parallel to primary query, avoids waterfall)
-function Article({ id }: { id: number }) {
-  usePrefetchQuery({ queryKey: ['article-comments', id], queryFn: () => fetchComments(id) })
-
-  const { data } = useQuery({ queryKey: ['article', id], queryFn: () => fetchArticle(id) })
-  return <div>{data?.title}</div>
-}
-
-// 3. Inside queryFn (when secondary data is always needed alongside primary)
-function Feed() {
-  const queryClient = useQueryClient()
-  const { data } = useQuery({
-    queryKey: ['feed'],
-    queryFn: async (...args) => {
-      const feed = await getFeed(...args)
-      feed
-        .filter((item) => item.type === 'GRAPH')
-        .forEach((item) =>
-          queryClient.prefetchQuery({ queryKey: ['graph', item.id], queryFn: () => getGraphData(item.id) })
-        )
-      return feed
-    },
-  })
-  return <div>{/* render feed */}</div>
-}
-
-// 4. Manually prime the cache with synchronously available data
-queryClient.setQueryData(['todos'], existingTodosFromProps)
-```
-
----
-
-## Server-Side Rendering (SSR) and Hydration
-
-Prefetch data on the server, dehydrate it into the HTML payload, and rehydrate on the client to avoid a second network round-trip.
-
-```tsx
-// ─── Next.js Pages Router ────────────────────────────────────────────────────
-// pages/_app.tsx
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
-
-export default function MyApp({ Component, pageProps }) {
-  // MUST be in state so each request gets its own cache (no cross-user data leaks)
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: { queries: { staleTime: 60_000 } },
-  }))
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
-    </QueryClientProvider>
-  )
-}
-
-// pages/posts.tsx
-import { dehydrate, HydrationBoundary, QueryClient, useQuery } from '@tanstack/react-query'
-
-export async function getServerSideProps() {
-  const queryClient = new QueryClient()
-  await queryClient.prefetchQuery({ queryKey: ['posts'], queryFn: fetchPosts })
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),   // serialized cache → HTML
-    },
-  }
-}
-
-export default function PostsPage({ dehydratedState }) {
-  return (
-    <HydrationBoundary state={dehydratedState}>  {/* rehydrate on client */}
-      <Posts />
-    </HydrationBoundary>
-  )
-}
-
-function Posts() {
-  // Instantly returns server-prefetched data; no loading state on first render
-  const { data } = useQuery({ queryKey: ['posts'], queryFn: fetchPosts })
-  return <ul>{data?.map((p) => <li key={p.id}>{p.title}</li>)}</ul>
-}
-```
-
----
-
-## `useIsFetching` and `useIsMutating` — Global Loading Indicators
-
-Subscribe to the count of in-flight queries or mutations across the entire application.
-
-```tsx
-import {
-  useIsFetching,
-  useIsMutating,
-  useMutationState,
-} from '@tanstack/react-query'
-
-// Global spinner — shown whenever any query is fetching
-function GlobalSpinner() {
-  const isFetching = useIsFetching()
-  return isFetching ? <div className="spinner" /> : null
-}
-
-// Scoped to a specific query key prefix
-function TodosLoadingBar() {
-  const fetchingTodos = useIsFetching({ queryKey: ['todos'] })
-  return fetchingTodos > 0 ? <progress /> : null
-}
-
-// Disable save button while any mutation is running
-function SaveButton() {
-  const isMutating = useIsMutating()
-  return <button disabled={isMutating > 0}>Save</button>
-}
-
-// Access pending mutation variables from anywhere (cross-component optimistic updates)
-function OptimisticTodoList() {
-  const pendingNewTodos = useMutationState<string>({
-    filters: { mutationKey: ['addTodo'], status: 'pending' },
-    select: (mutation) => mutation.state.variables as string,
-  })
-
-  return (
-    <ul>
-      {/* real todos from useQuery … */}
-      {pendingNewTodos.map((title, i) => (
-        <li key={i} style={{ opacity: 0.5 }}>{title} (saving…)</li>
-      ))}
-    </ul>
-  )
-}
-```
-
----
-
-## ESLint Plugin `@tanstack/eslint-plugin-query`
-
-Enforce best practices at lint time: exhaustive deps in query keys, stable query client references, and proper mutation patterns.
-
-```js
-// eslint.config.js (flat config)
-import pluginQuery from '@tanstack/eslint-plugin-query'
-
-export default [
-  ...pluginQuery.configs['flat/recommended'],
-  // Recommended enables:
-  // - @tanstack/query/exhaustive-deps           (queryKey must include all deps used in queryFn)
-  // - @tanstack/query/no-unstable-deps          (no inline objects/functions as deps)
-  // - @tanstack/query/stable-query-client       (QueryClient must not be created inside render)
-  // - @tanstack/query/no-rest-destructuring     (no ...rest from useQuery — use specific fields)
-  // - @tanstack/query/infinite-query-property-order
-  // - @tanstack/query/mutation-property-order
-]
-
-// Example violation caught by exhaustive-deps:
-function Bad({ userId }) {
-  useQuery({
-    queryKey: ['user'],        // ❌ userId is used in queryFn but missing from key
-    queryFn: () => fetchUser(userId),
-  })
-}
-
-// Fixed:
-function Good({ userId }) {
-  useQuery({
-    queryKey: ['user', userId], // ✅
-    queryFn: () => fetchUser(userId),
-  })
-}
-```
-
----
-
-## Mutation Persistence and Offline Support
-
-Persist pending mutations across page reloads and resume them when the device reconnects.
+This example demonstrates how to integrate TanStack Query with SolidJS to fetch and display a list of todos. It showcases the use of `QueryClientProvider` to set up the query client, and `useQuery` to manage the asynchronous data fetching state, including pending, error, and success states.
 
 ```tsx
 import {
   QueryClient,
-  useMutation,
-} from '@tanstack/react-query'
-import {
-  PersistQueryClientProvider,
-  createSyncStoragePersister,
-} from '@tanstack/react-query-persist-client'
-import { dehydrate, hydrate } from '@tanstack/react-query'
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/solid-query'
+import { Switch, Match, For } from 'solid-js'
 
-const persister = createSyncStoragePersister({ storage: window.localStorage })
+const queryClient = new QueryClient()
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { gcTime: 1000 * 60 * 60 * 24 } }, // 24h
-})
+function Example() {
+  const query = useQuery(() => ({
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  }))
 
-// Register default mutation fn so paused mutations can resume after reload
-queryClient.setMutationDefaults(['todos'], {
-  mutationFn: ({ id, data }: { id: number; data: Partial<Todo> }) =>
-    fetch(`/api/todos/${id}`, { method: 'PATCH', body: JSON.stringify(data) }).then((r) => r.json()),
-})
-
-export default function App() {
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister }}
-      onSuccess={() => {
-        // After cache is restored from localStorage, resume paused (offline) mutations
-        queryClient.resumePausedMutations()
-          .then(() => queryClient.invalidateQueries())
-      }}
-    >
-      <TodoApp />
-    </PersistQueryClientProvider>
+    <div>
+      <Switch>
+        <Match when={query.isPending}>
+          <p>Loading...</p>
+        </Match>
+        <Match when={query.isError}>
+          <p>Error: {query.error.message}</p>
+        </Match>
+        <Match when={query.isSuccess}>
+          <For each={query.data}>{(todo) => <p>{todo.title}</p>}</For>
+        </Match>
+      </Switch>
+    </div>
   )
 }
 
-function TodoApp() {
-  const mutation = useMutation({
-    mutationKey: ['todos'],    // links to the default set above
-    scope: { id: 'todo' },     // serialize mutations with same scope.id (no parallel writes)
-    retry: 3,
-  })
-
+function App() {
   return (
-    <button onClick={() => mutation.mutate({ id: 1, data: { done: true } })}>
-      {mutation.isPending ? 'Saving…' : 'Mark Done'}
-    </button>
+    <QueryClientProvider client={queryClient}>
+      <Example />
+    </QueryClientProvider>
   )
 }
 ```
 
----
+--------------------------------
 
-TanStack Query excels in two primary use cases: **data-heavy client applications** where server state needs to stay fresh and in sync (dashboards, admin panels, social feeds, e-commerce), and **full-stack SSR/SSG applications** where eliminating client-side loading waterfalls is critical for performance (Next.js, Remix, SolidStart). Its stale-while-revalidate cache strategy means users always see data immediately while fresh data loads in the background. The query key system enables surgical cache invalidation — after a mutation you can invalidate exactly the affected queries, or even optimistically update the cache before the server responds. Combined with the `queryOptions` factory pattern, teams can centralize all server interaction in domain-specific modules that are consumed uniformly by hooks, prefetch calls, and imperative `QueryClient` operations.
+### Install project dependencies
 
-Integration patterns converge on a few standard recipes: (1) **router-level prefetching** — populate the cache in route loaders before the component tree renders, (2) **SSR hydration** — dehydrate the QueryClient on the server and rehydrate inside `<HydrationBoundary>` on the client, (3) **mutation-driven invalidation** — call `invalidateQueries` in `onSettled` to keep the cache consistent after any write, and (4) **optimistic UI** — use `onMutate`/`onError` with `setQueryData`/rollback for instant feedback. The library is framework-adaptor-based, so the same patterns apply to Vue (`useQuery` from `@tanstack/vue-query`), Svelte, Angular (`injectQuery` from `@tanstack/angular-query-experimental`), and others, each using framework-idiomatic reactivity primitives while sharing the same `@tanstack/query-core` cache engine.
+Source: https://github.com/tanstack/query/blob/main/examples/vue/2.6-basic/README.md
+
+Use one of these commands to install the necessary packages for the project.
+
+```bash
+npm install
+```
+
+```bash
+yarn
+```
+
+```bash
+pnpm i
+```
+
+```bash
+bun i
+```
+
+--------------------------------
+
+### Run Lit Examples with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+Commands to run various Lit examples (basic, pagination, SSR) from the repository root using pnpm.
+
+```bash
+pnpm --dir examples/lit/basic run dev
+pnpm --dir examples/lit/pagination run dev
+pnpm --dir examples/lit/ssr run dev
+```
+
+--------------------------------
+
+### Start development server
+
+Source: https://github.com/tanstack/query/blob/main/examples/vue/2.6-basic/README.md
+
+Execute the development script using your preferred package manager.
+
+```bash
+npm run dev
+```
+
+```bash
+yarn dev
+```
+
+```bash
+pnpm dev
+```
+
+```bash
+bun dev
+```
+
+--------------------------------
+
+### Install dependencies with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
+
+Install all project dependencies required for the Nuxt 3 starter. Run this command after cloning or creating a new project.
+
+```bash
+pnpm install
+```
+
+--------------------------------
+
+### Run the development server
+
+Source: https://github.com/tanstack/query/blob/main/examples/react/nextjs-app-prefetching/README.md
+
+Start the local development environment using npm, yarn, or pnpm.
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+```
+
+--------------------------------
+
+### Install Vue Query via bun
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Install @tanstack/vue-query package using bun package manager, a modern JavaScript runtime and package manager.
+
+```bash
+bun add @tanstack/vue-query
+```
+
+--------------------------------
+
+### Basic Data Fetching and Mutation with TanStack Vue Query
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/quick-start.md
+
+This example demonstrates how to use useQuery for fetching data and useMutation for updating data in a Vue component. It includes error and loading state handling, as well as cache invalidation using useQueryClient after a successful mutation.
+
+```vue
+<script setup>
+import { useQueryClient, useQuery, useMutation } from '@tanstack/vue-query'
+
+// Access QueryClient instance
+const queryClient = useQueryClient()
+
+// Query
+const { isPending, isError, data, error } = useQuery({
+  queryKey: ['todos'],
+  queryFn: getTodos,
+})
+
+// Mutation
+const mutation = useMutation({
+  mutationFn: postTodo,
+  onSuccess: () => {
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ queryKey: ['todos'] })
+  },
+})
+
+function onButtonClick() {
+  mutation.mutate({
+    id: Date.now(),
+    title: 'Do Laundry',
+  })
+}
+</script>
+
+<template>
+  <span v-if="isPending">Loading...</span>
+  <span v-else-if="isError">Error: {{ error.message }}</span>
+  <!-- We can assume by this point that `isSuccess === true` -->
+  <ul v-else>
+    <li v-for="todo in data" :key="todo.id">{{ todo.title }}</li>
+  </ul>
+  <button @click="onButtonClick">Add Todo</button>
+</template>
+```
+
+--------------------------------
+
+### Start Svelte Development Server with npm
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/load-more-infinite-scroll/README.md
+
+Starts a local development server for the Svelte application. It can also automatically open the application in a new browser tab. Requires dependencies to be installed first.
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+--------------------------------
+
+### Install Vue Query via yarn
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Install @tanstack/vue-query package using yarn package manager, another popular alternative to npm.
+
+```bash
+yarn add @tanstack/vue-query
+```
+
+--------------------------------
+
+### Run Lit Examples with Custom Ports
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+Commands to run Lit examples, specifying custom ports using environment variables.
+
+```bash
+DEMO_PORT=4180 pnpm --dir examples/lit/basic run dev
+PAGINATION_DEMO_PORT=4181 PAGINATION_API_PORT=4182 pnpm --dir examples/lit/pagination run dev
+SSR_PORT=4180 pnpm --dir examples/lit/ssr run dev
+SSR_HOST=0.0.0.0 pnpm --dir examples/lit/ssr run dev
+```
+
+--------------------------------
+
+### Install Svelte Query with bun
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
+
+Install @tanstack/svelte-query package using bun, a fast all-in-one JavaScript runtime and package manager.
+
+```bash
+bun add @tanstack/svelte-query
+```
+
+--------------------------------
+
+### Install TanStack Solid Query using npm, pnpm, yarn, or bun
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/installation.md
+
+This snippet demonstrates how to install the `@tanstack/solid-query` package, which provides data fetching and state management capabilities for Solid applications. It covers installation using popular JavaScript package managers: npm, pnpm, yarn, and bun. This method is typically used in projects with module bundlers.
+
+```bash
+npm i @tanstack/solid-query
+```
+
+```bash
+pnpm add @tanstack/solid-query
+```
+
+```bash
+yarn add @tanstack/solid-query
+```
+
+```bash
+bun add @tanstack/solid-query
+```
+
+--------------------------------
+
+### Install Lit-Query with npm
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+Use npm to install the Lit-Query adapter along with its core dependencies.
+
+```bash
+npm install @tanstack/lit-query @tanstack/query-core lit
+```
+
+--------------------------------
+
+### Install Solid Query Devtools with bun
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/devtools.md
+
+Use bun to install the Solid Query Devtools package as a separate dependency.
+
+```bash
+bun add @tanstack/solid-query-devtools
+```
+
+--------------------------------
+
+### Start Nuxt 3 development server
+
+Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
+
+Launch the development server on http://localhost:3000 for local development and testing.
+
+```bash
+pnpm dev
+```
+
+--------------------------------
+
+### Start Angular Development Server
+
+Source: https://github.com/tanstack/query/blob/main/integrations/angular-cli-20/README.md
+
+Launches a local development server on http://localhost:4200/ with hot-reload functionality. The application automatically reloads when source files are modified.
+
+```bash
+ng serve
+```
+
+--------------------------------
+
+### Install React Query Devtools via bun
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/devtools.md
+
+Install the @tanstack/react-query-devtools package using bun package manager.
+
+```bash
+bun add @tanstack/react-query-devtools
+```
+
+--------------------------------
+
+### Basic useMutation Hook with Solid.js
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/mutations.md
+
+Demonstrates a simple mutation setup using useMutation with a POST request to create a todo. Shows handling of pending, error, and success states using Solid.js Switch and Show components. The mutation is triggered via button click with mutate method.
+
+```tsx
+import { Switch, Match, Show } from 'solid-js'
+
+function App() {
+  const mutation = useMutation(() => ({
+    mutationFn: (newTodo) => {
+      return axios.post('/todos', newTodo)
+    },
+  }))
+
+  return (
+    <div>
+      <Switch>
+        <Match when={mutation.isPending}>Adding todo...</Match>
+        <Match when={true}>
+          <Show when={mutation.isError}>
+            <div>An error occurred: {mutation.error.message}</div>
+          </Show>
+
+          <Show when={mutation.isSuccess}>
+            <div>Todo added!</div>
+          </Show>
+
+          <button
+            onClick={() => {
+              mutation.mutate({ id: new Date(), title: 'Do Laundry' })
+            }}
+          >
+            Create Todo
+          </button>
+        </Match>
+      </Switch>
+    </div>
+  )
+}
+```
+
+--------------------------------
+
+### Install @tanstack/eslint-plugin-query
+
+Source: https://github.com/tanstack/query/blob/main/docs/eslint/eslint-plugin-query.md
+
+Install the plugin as a development dependency using npm, pnpm, yarn, or bun.
+
+```bash
+npm i -D @tanstack/eslint-plugin-query
+```
+
+```bash
+pnpm add -D @tanstack/eslint-plugin-query
+```
+
+```bash
+yarn add -D @tanstack/eslint-plugin-query
+```
+
+```bash
+bun add -D @tanstack/eslint-plugin-query
+```
+
+--------------------------------
+
+### Install Preact Query Devtools
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/preact/devtools.md
+
+Install the Preact Query Devtools package using your preferred package manager.
+
+```bash
+npm i @tanstack/preact-query-devtools
+```
+
+```bash
+pnpm add @tanstack/preact-query-devtools
+```
+
+```bash
+yarn add @tanstack/preact-query-devtools
+```
+
+```bash
+bun add @tanstack/preact-query-devtools
+```
+
+--------------------------------
+
+### Create New Svelte Project with npm
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/auto-refetching/README.md
+
+Initialize a new Svelte project in the current directory or a specified directory using npm. This command scaffolds a complete project structure with all necessary configuration files and dependencies.
+
+```bash
+npm create svelte@latest
+```
+
+```bash
+npm create svelte@latest my-app
+```
+
+--------------------------------
+
+### Install Svelte Query with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
+
+Install @tanstack/svelte-query package using pnpm, a fast and disk space efficient package manager.
+
+```bash
+pnpm add @tanstack/svelte-query
+```
+
+--------------------------------
+
+### Install Svelte Query Devtools
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/devtools.md
+
+Install the Svelte Query Devtools package using your preferred package manager.
+
+```bash
+npm i @tanstack/svelte-query-devtools
+```
+
+```bash
+pnpm add @tanstack/svelte-query-devtools
+```
+
+```bash
+yarn add @tanstack/svelte-query-devtools
+```
+
+```bash
+bun add @tanstack/svelte-query-devtools
+```
+
+--------------------------------
+
+### Install Solid Query Devtools with npm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/devtools.md
+
+Use npm to install the Solid Query Devtools package as a separate dependency.
+
+```bash
+npm i @tanstack/solid-query-devtools
+```
+
+--------------------------------
+
+### Install Lit Query packages
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/installation.md
+
+Install Lit Query, TanStack Query Core, and Lit using your preferred package manager. TanStack Query Core is a peer dependency and must be installed explicitly.
+
+```bash
+npm i @tanstack/lit-query @tanstack/query-core lit
+```
+
+```bash
+pnpm add @tanstack/lit-query @tanstack/query-core lit
+```
+
+```bash
+yarn add @tanstack/lit-query @tanstack/query-core lit
+```
+
+```bash
+bun add @tanstack/lit-query @tanstack/query-core lit
+```
+
+--------------------------------
+
+### Basic useQuery Hook Setup in React
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/queries.md
+
+Demonstrates the minimal setup required to subscribe to a query using the useQuery hook. Requires a unique query key and a promise-returning function. This is the foundation for all query operations in TanStack Query.
+
+```typescript
+import { useQuery } from '@tanstack/react-query'
+
+function App() {
+  const info = useQuery({ queryKey: ['todos'], queryFn: fetchTodoList })
+}
+```
+
+--------------------------------
+
+### Example Usage of createQueryController in LitElement (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueryController.md
+
+This example demonstrates integrating `createQueryController` into a LitElement to manage asynchronous data fetching. It shows how to define a query, access its state, and conditionally render UI based on loading, error, or success states.
+
+```typescript
+import { LitElement, html } from 'lit'
+import { createQueryController } from '@tanstack/lit-query'
+
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: async () => fetch('/api/todos').then((r) => r.json()),
+  })
+
+  render() {
+    const query = this.todos()
+
+    if (query.isPending) return html`Loading...`
+    if (query.isError) return html`Error`
+
+    return html`<ul>${query.data.map((todo) => html`<li>${todo.title}</li>`)}</ul>`
+  }
+}
+```
+
+--------------------------------
+
+### Install React Query Devtools via pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/devtools.md
+
+Install the @tanstack/react-query-devtools package using pnpm package manager.
+
+```bash
+pnpm add @tanstack/react-query-devtools
+```
+
+--------------------------------
+
+### Install Svelte Query with NPM
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
+
+Install @tanstack/svelte-query package using NPM package manager. This is the standard installation method for Node.js projects.
+
+```bash
+npm i @tanstack/svelte-query
+```
+
+--------------------------------
+
+### Install Svelte Query with yarn
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
+
+Install @tanstack/svelte-query package using yarn package manager, an alternative to NPM with improved dependency resolution.
+
+```bash
+yarn add @tanstack/svelte-query
+```
+
+--------------------------------
+
+### Install TanStack Query Persist Client Core Package
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/plugins/createPersister.md
+
+These commands demonstrate how to install the `@tanstack/query-persist-client-core` package using various package managers. This package provides the `experimental_createQueryPersister` utility for persisting TanStack Query data. It is a prerequisite for using the query persistence features.
+
+```bash
+npm install @tanstack/query-persist-client-core
+```
+
+```bash
+pnpm add @tanstack/query-persist-client-core
+```
+
+```bash
+yarn add @tanstack/query-persist-client-core
+```
+
+```bash
+bun add @tanstack/query-persist-client-core
+```
+
+--------------------------------
+
+### Install Solid Query Devtools with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/devtools.md
+
+Use pnpm to install the Solid Query Devtools package as a separate dependency.
+
+```bash
+pnpm add @tanstack/solid-query-devtools
+```
+
+--------------------------------
+
+### Start Svelte Development Server with npm
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/ssr/README.md
+
+This snippet shows the npm commands to start a development server for a Svelte project. It includes an option to automatically open the application in a new browser tab for convenience.
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+--------------------------------
+
+### Install React Query Devtools via yarn
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/devtools.md
+
+Install the @tanstack/react-query-devtools package using yarn package manager.
+
+```bash
+yarn add @tanstack/react-query-devtools
+```
+
+--------------------------------
+
+### Install Vue Query Devtools Package
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/devtools.md
+
+Install the `@tanstack/vue-query-devtools` package using your preferred package manager to enable component-based devtools.
+
+```bash
+npm i @tanstack/vue-query-devtools
+```
+
+```bash
+pnpm add @tanstack/vue-query-devtools
+```
+
+```bash
+yarn add @tanstack/vue-query-devtools
+```
+
+```bash
+bun add @tanstack/vue-query-devtools
+```
+
+--------------------------------
+
+### Install Solid Query Devtools with yarn
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/devtools.md
+
+Use yarn to install the Solid Query Devtools package as a separate dependency.
+
+```bash
+yarn add @tanstack/solid-query-devtools
+```
+
+--------------------------------
+
+### Install createAsyncStoragePersister packages
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/plugins/createAsyncStoragePersister.md
+
+Install the required packages for async storage persistence in TanStack Query. Supports multiple package managers including npm, pnpm, yarn, and bun.
+
+```bash
+npm install @tanstack/query-async-storage-persister @tanstack/react-query-persist-client
+```
+
+```bash
+pnpm add @tanstack/query-async-storage-persister @tanstack/react-query-persist-client
+```
+
+```bash
+yarn add @tanstack/query-async-storage-persister @tanstack/react-query-persist-client
+```
+
+```bash
+bun add @tanstack/query-async-storage-persister @tanstack/react-query-persist-client
+```
+
+--------------------------------
+
+### Install React Query Devtools via npm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/devtools.md
+
+Install the @tanstack/react-query-devtools package using npm package manager.
+
+```bash
+npm i @tanstack/react-query-devtools
+```
+
+--------------------------------
+
+### Install TanStack Angular Query Experimental via Package Managers
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/installation.md
+
+This snippet provides commands to install the `@tanstack/angular-query-experimental` library using various package managers. The library is currently in an experimental stage, so users are advised to lock their version to a patch-level to avoid unexpected breaking changes. It is compatible with Angular v16 and higher.
+
+```bash
+npm i @tanstack/angular-query-experimental
+```
+
+```bash
+pnpm add @tanstack/angular-query-experimental
+```
+
+```bash
+yarn add @tanstack/angular-query-experimental
+```
+
+```bash
+bun add @tanstack/angular-query-experimental
+```
+
+--------------------------------
+
+### Build Lit-Query for Local Development
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+Commands to install dependencies and build the Lit-Query package within the repository for local development.
+
+```bash
+pnpm install
+pnpm --dir packages/lit-query run build
+```
+
+--------------------------------
+
+### Install createSyncStoragePersister packages
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/plugins/createSyncStoragePersister.md
+
+Install the required packages for sync storage persistence in TanStack Query. Multiple package managers are supported including npm, pnpm, yarn, and bun.
+
+```bash
+npm install @tanstack/query-sync-storage-persister @tanstack/react-query-persist-client
+```
+
+```bash
+pnpm add @tanstack/query-sync-storage-persister @tanstack/react-query-persist-client
+```
+
+```bash
+yarn add @tanstack/query-sync-storage-persister @tanstack/react-query-persist-client
+```
+
+```bash
+bun add @tanstack/query-sync-storage-persister @tanstack/react-query-persist-client
+```
+
+--------------------------------
+
+### Install Vue Query via NPM
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Install @tanstack/vue-query package using npm package manager. This is the standard installation method for Node.js projects.
+
+```bash
+npm i @tanstack/vue-query
+```
+
+--------------------------------
+
+### Install project dependencies using pnpm
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+This command installs all necessary project dependencies using the pnpm package manager. It should be run after cloning the repository to set up the development environment.
+
+```bash
+pnpm install
+```
+
+--------------------------------
+
+### Install Vue Query via pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Install @tanstack/vue-query package using pnpm package manager, an alternative to npm with improved performance.
+
+```bash
+pnpm add @tanstack/vue-query
+```
+
+--------------------------------
+
+### Install React Query via NPM
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
+
+Install @tanstack/react-query package using various Node package managers (npm, pnpm, yarn, or bun). Choose the package manager that matches your project setup.
+
+```bash
+npm i @tanstack/react-query
+```
+
+```bash
+pnpm add @tanstack/react-query
+```
+
+```bash
+yarn add @tanstack/react-query
+```
+
+```bash
+bun add @tanstack/react-query
+```
+
+--------------------------------
+
+### Using useIsFetching hook in TanStack React Query
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useIsFetching.md
+
+This example demonstrates how to use the `useIsFetching` hook to get the total number of currently fetching queries, and how to filter by `queryKey` to get the number of fetching queries for a specific group, such as 'posts'.
+
+```tsx
+import { useIsFetching } from '@tanstack/react-query'
+// How many queries are fetching?
+const isFetching = useIsFetching()
+// How many queries matching the posts prefix are fetching?
+const isFetchingPosts = useIsFetching({ queryKey: ['posts'] })
+```
+
+--------------------------------
+
+### Query Key Matching Examples
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
+
+Demonstrates which query keys match a prefix-based invalidation. Both nested and flat keys starting with the prefix are matched.
+
+```typescript
+const projectsListKey = ['projects']
+const projectsPageKey = ['projects', 1, 250, false]
+```
+
+--------------------------------
+
+### Get Query State
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+This example shows how to use `queryClient.getQueryState` to synchronously retrieve the current state of an existing query. If the query does not exist, `undefined` will be returned.
+
+```tsx
+const state = queryClient.getQueryState(queryKey)
+console.log(state.dataUpdatedAt)
+```
+
+--------------------------------
+
+### Create SolidStart Project with npm init
+
+Source: https://github.com/tanstack/query/blob/main/examples/solid/solid-start-streaming/README.md
+
+Initialize a new SolidStart project using the `npm init solid@latest` command. This command allows creating a project in the current directory or a specified new directory. Ensure `npm` is installed to use this command effectively.
+
+```bash
+# create a new project in the current directory
+npm init solid@latest
+
+# create a new project in my-app
+npm init solid@latest my-app
+```
+
+--------------------------------
+
+### Initialize Vue Query with VueQueryPlugin
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Initialize Vue Query in your Vue application by importing VueQueryPlugin and registering it with the Vue app instance. This must be done before using any Vue Query composables.
+
+```typescript
+import { VueQueryPlugin } from '@tanstack/vue-query'
+
+app.use(VueQueryPlugin)
+```
+
+--------------------------------
+
+### Example: Tracking Todos Fetch Status with useIsFetching
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/useIsFetching.md
+
+Demonstrates how to use `useIsFetching` within a LitElement to display the number of active fetches for a specific query key, such as 'todos'.
+
+```ts
+import { LitElement, html } from 'lit'
+import { useIsFetching } from '@tanstack/lit-query'
+
+class TodosStatus extends LitElement {
+  private readonly todosFetching = useIsFetching(this, {
+    queryKey: ['todos'],
+  })
+
+  render() {
+    return html`<span>${this.todosFetching()} active todo fetches</span>`
+  }
+}
+```
+
+--------------------------------
+
+### Build Production Svelte Application
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/auto-refetching/README.md
+
+Create an optimized production build of the Svelte application. After building, use npm run preview to test the production version locally before deployment.
+
+```bash
+npm run build
+```
+
+```bash
+npm run preview
+```
+
+--------------------------------
+
+### Get all variables of running mutations with useMutationState
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useMutationState.md
+
+Demonstrates how to use useMutationState to retrieve variables from all mutations with a 'pending' status. This example filters mutations by their status and uses the select function to extract only the variables property from each mutation's state.
+
+```typescript
+import { useMutationState } from '@tanstack/react-query'
+
+const variables = useMutationState({
+  filters: { status: 'pending' },
+  select: (mutation) => mutation.state.variables,
+})
+```
+
+--------------------------------
+
+### createQueriesController(host, options, queryClient?)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueriesController.md
+
+Creates a Lit reactive controller that subscribes the host to multiple queries. The returned accessor is callable and also exposes "current" and "destroy". When "options" or "options.queries" is a function, it is re-read during host updates so the query list can follow reactive host state. If "queryClient" is omitted, the controller resolves the client from the nearest connected "QueryClientProvider".
+
+```APIDOC
+## Function: createQueriesController()
+
+### Description
+Creates a Lit reactive controller that subscribes the host to multiple queries.
+
+### Signature
+```ts
+function createQueriesController<TQueryOptions, TCombinedResult>(
+   host,
+   options,
+queryClient?): QueriesResultAccessor<TCombinedResult>;
+```
+
+### Type Parameters
+- **TQueryOptions** *extends* `any`[]
+- **TCombinedResult** = `CreateQueriesResults`\<`TQueryOptions`\>
+
+### Parameters
+- **host** (`ReactiveControllerHost`) - The Lit reactive controller host that owns the queries subscription.
+- **options** ([`Accessor`](../type-aliases/Accessor.md)\<[`CreateQueriesControllerOptions`](../type-aliases/CreateQueriesControllerOptions.md)\<`TQueryOptions`, `TCombinedResult`\>\>) - Queries controller options, or a getter that returns options.
+- **queryClient?** (`QueryClient`) - Optional explicit query client. Provide this for controllers that should not resolve a client from Lit context.
+
+### Returns
+[`QueriesResultAccessor`](../type-aliases/QueriesResultAccessor.md)\<`TCombinedResult`\> - An accessor for the latest query results, or the value returned by `combine`.
+
+### Example
+```ts
+import { LitElement, html } from 'lit'
+import { createQueriesController } from '@tanstack/lit-query'
+
+class DashboardView extends LitElement {
+  private readonly dashboard = createQueriesController(this, {
+    queries: [
+      { queryKey: ['stats'], queryFn: fetchStats },
+      { queryKey: ['projects'], queryFn: fetchProjects },
+    ],
+    combine: ([stats, projects]) => ({
+      stats: stats.data,
+      projects: projects.data ?? [],
+      isPending: stats.isPending || projects.isPending,
+    }),
+  })
+
+  render() {
+    const dashboard = this.dashboard()
+    return html`<p>Projects: ${dashboard.projects.length}</p>`
+  }
+}
+```
+```
+
+--------------------------------
+
+### Get mutation data by mutationKey using useMutationState
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useMutationState.md
+
+Shows how to retrieve data from specific mutations using the mutationKey filter. The example defines a mutation with a specific key and then uses useMutationState to access the state data of that mutation by matching the mutationKey.
+
+```typescript
+import { useMutation, useMutationState } from '@tanstack/react-query'
+
+const mutationKey = ['posts']
+
+// Some mutation that we want to get the state for
+const mutation = useMutation({
+  mutationKey,
+  mutationFn: (newPost) => {
+    return axios.post('/posts', newPost)
+  },
+})
+
+const data = useMutationState({
+  // this mutation key needs to match the mutation key of the given mutation (see above)
+  filters: { mutationKey },
+  select: (mutation) => mutation.state.data,
+})
+```
+
+--------------------------------
+
+### Basic Usage of createQueriesController with LitElement (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueriesController.md
+
+This example demonstrates how to integrate `createQueriesController` into a LitElement. It shows how to define multiple queries and combine their results for display within a Lit component.
+
+```ts
+import { LitElement, html } from 'lit'
+import { createQueriesController } from '@tanstack/lit-query'
+
+class DashboardView extends LitElement {
+  private readonly dashboard = createQueriesController(this, {
+    queries: [
+      { queryKey: ['stats'], queryFn: fetchStats },
+      { queryKey: ['projects'], queryFn: fetchProjects },
+    ],
+    combine: ([stats, projects]) => ({
+      stats: stats.data,
+      projects: projects.data ?? [],
+      isPending: stats.isPending || projects.isPending,
+    }),
+  })
+
+  render() {
+    const dashboard = this.dashboard()
+    return html`<p>Projects: ${dashboard.projects.length}</p>`
+  }
+}
+```
+
+--------------------------------
+
+### Get Current Online State with TanStack Query's OnlineManager (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
+
+This example demonstrates how to retrieve the current online status as determined by the `OnlineManager`. The `isOnline()` method returns a boolean value, indicating whether the application is currently considered to have an active network connection.
+
+```tsx
+const isOnline = onlineManager.isOnline()
+```
+
+--------------------------------
+
+### Configure and Use Default Query Function in React
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/default-query-function.md
+
+This example demonstrates how to create a global fetcher using Axios that maps query keys to URL paths. It shows the setup within the QueryClientProvider and how to invoke queries by providing only the query key.
+
+```tsx
+// Define a default query function that will receive the query key
+const defaultQueryFn = async ({ queryKey }) => {
+  const { data } = await axios.get(
+    `https://jsonplaceholder.typicode.com${queryKey[0]}`,
+  )
+  return data
+}
+
+// provide the default query function to your app with defaultOptions
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: defaultQueryFn,
+    },
+  },
+})
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  )
+}
+
+// All you have to do now is pass a key!
+function Posts() {
+  const postsQuery = useQuery(() => ({ queryKey: ['/posts'] }))
+
+  // ...
+}
+
+// You can even leave out the queryFn and just go straight into options
+function Post(props) {
+  const postQuery = useQuery(() => ({
+    queryKey: [`/posts/${props.postId}`],
+    enabled: !!props.postId,
+  }))
+
+  // ...
+}
+```
+
+--------------------------------
+
+### createMutationController(host, options, queryClient?)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createMutationController.md
+
+Creates a Lit reactive controller that subscribes the host to a mutation. The returned accessor is callable and also exposes `current`, `mutate`, `mutateAsync`, `reset`, and `destroy`. When `options` is a function, it is re-read during host updates so mutation options can follow reactive host state. If `queryClient` is omitted, the controller resolves the client from the nearest connected `QueryClientProvider`.
+
+```APIDOC
+## Function: createMutationController()
+
+### Description
+Creates a Lit reactive controller that subscribes the host to a mutation. The returned accessor is callable and also exposes `current`, `mutate`, `mutateAsync`, `reset`, and `destroy`. When `options` is a function, it is re-read during host updates so mutation options can follow reactive host state. If `queryClient` is omitted, the controller resolves the client from the nearest connected `QueryClientProvider`.
+
+### Signature
+```ts
+function createMutationController<TData, TError, TVariables, TOnMutateResult>(
+   host,
+   options,
+queryClient?): MutationResultAccessor<TData, TError, TVariables, TOnMutateResult>;
+```
+
+### Type Parameters
+- **TData** (`unknown`)
+- **TError** (`Error`)
+- **TVariables** (`void`)
+- **TOnMutateResult** (`unknown`)
+
+### Parameters
+- **host** (`ReactiveControllerHost`) - The Lit reactive controller host that owns the mutation subscription.
+- **options** (`Accessor<CreateMutationOptions<TData, TError, TVariables, TOnMutateResult>>`) - Mutation observer options, or a getter that returns options.
+- **queryClient?** (`QueryClient`) - Optional explicit query client. Provide this for controllers that should not resolve a client from Lit context.
+
+### Returns
+- (`MutationResultAccessor<TData, TError, TVariables, TOnMutateResult>`) - An accessor for the latest mutation result with mutation helper methods.
+
+### Example
+```ts
+import { LitElement, html } from 'lit'
+import { createMutationController } from '@tanstack/lit-query'
+
+class AddTodoForm extends LitElement {
+  private readonly addTodo = createMutationController(this, {
+    mutationFn: (title: string) =>
+      fetch('/api/todos', { method: 'POST', body: JSON.stringify({ title }) }),
+  })
+
+  render() {
+    const mutation = this.addTodo()
+
+    return html`
+      <button ?disabled=${mutation.isPending} @click=${() => this.addTodo.mutate('Ship docs')}>
+        Add todo
+      </button>
+    `
+  }
+}
+```
+```
+
+--------------------------------
+
+### Access latest mutation data via mutationKey with useMutationState
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useMutationState.md
+
+Demonstrates how to retrieve the most recent mutation data by accessing the last item in the array returned by useMutationState. Each invocation of mutate adds a new entry to the mutation cache for gcTime milliseconds, and this example shows how to get the latest one.
+
+```typescript
+import { useMutation, useMutationState } from '@tanstack/react-query'
+
+const mutationKey = ['posts']
+
+// Some mutation that we want to get the state for
+const mutation = useMutation({
+  mutationKey,
+  mutationFn: (newPost) => {
+    return axios.post('/posts', newPost)
+  },
+})
+
+const data = useMutationState({
+  // this mutation key needs to match the mutation key of the given mutation (see above)
+  filters: { mutationKey },
+  select: (mutation) => mutation.state.data,
+})
+
+// Latest mutation data
+const latest = data[data.length - 1]
+```
+
+--------------------------------
+
+### Set up Lit Query with QueryClient and controllers
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/quick-start.md
+
+Initialize a QueryClient, define a QueryClientProvider custom element, and create a component with query and mutation controllers. The controllers subscribe to data changes and trigger updates via the Lit reactive controller lifecycle.
+
+```typescript
+import { LitElement, html } from 'lit'
+import {
+  QueryClient,
+  QueryClientProvider,
+  createMutationController,
+  createQueryController,
+} from '@tanstack/lit-query'
+import { addTodo, getTodos } from './api'
+
+const queryClient = new QueryClient()
+
+class AppQueryProvider extends QueryClientProvider {
+  constructor() {
+    super()
+    this.client = queryClient
+  }
+}
+
+customElements.define('app-query-provider', AppQueryProvider)
+
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: getTodos,
+  })
+
+  private readonly createTodo = createMutationController(this, {
+    mutationFn: addTodo,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['todos'] })
+    },
+  })
+
+  render() {
+    const query = this.todos()
+    const mutation = this.createTodo()
+
+    if (query.isPending) return html`Loading...`
+    if (query.isError) return html`Error: ${query.error.message}`
+
+    return html`
+      <ul>
+        ${query.data.map((todo) => html`<li>${todo.title}</li>`)}
+      </ul>
+
+      <button
+        ?disabled=${mutation.isPending}
+        @click=${() => this.createTodo.mutate({ title: 'Write Lit docs' })}
+      >
+        Add Todo
+      </button>
+    `
+  }
+}
+
+customElements.define('todos-view', TodosView)
+```
+
+--------------------------------
+
+### Start development server for TanStack Query documentation
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+Launches the development server for the TanStack Query documentation site. This command should be executed in the /docs directory to enable hot-reloading and live preview of documentation changes.
+
+```bash
+npm run dev
+```
+
+--------------------------------
+
+### createInfiniteQueryController()
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createInfiniteQueryController.md
+
+Creates a Lit reactive controller that subscribes the host to an infinite query. The returned accessor is callable and also exposes `current`, `refetch`, `fetchNextPage`, `fetchPreviousPage`, and `destroy`. When `options` is a function, it is re-read during host updates so query keys and options can follow reactive host state. If `queryClient` is omitted, the controller resolves the client from the nearest connected `QueryClientProvider`.
+
+```APIDOC
+## createInfiniteQueryController()
+
+### Description
+Creates a Lit reactive controller that subscribes the host to an infinite query. The returned accessor is callable and also exposes `current`, `refetch`, `fetchNextPage`, `fetchPreviousPage`, and `destroy`. When `options` is a function, it is re-read during host updates so query keys and options can follow reactive host state. If `queryClient` is omitted, the controller resolves the client from the nearest connected `QueryClientProvider`.
+
+### Signature
+```ts
+function createInfiniteQueryController<TQueryFnData, TError, TData, TQueryKey, TPageParam>(
+   host,
+   options,
+queryClient?): InfiniteQueryResultAccessor<TData, TError>;
+```
+
+### Type Parameters
+- **TQueryFnData**: `unknown`
+- **TError**: `Error`
+- **TData**: `InfiniteData<TQueryFnData, unknown>`
+- **TQueryKey**: `readonly unknown[]`
+- **TPageParam**: `unknown`
+
+### Parameters
+- **host** (`ReactiveControllerHost`) - Required - The Lit reactive controller host that owns the infinite query subscription.
+- **options** (`Accessor<CreateInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryKey, TPageParam>>`) - Required - Infinite query observer options, or a getter that returns options.
+- **queryClient?** (`QueryClient`) - Optional - Optional explicit query client. Provide this for controllers that should not resolve a client from Lit context.
+
+### Returns
+`InfiniteQueryResultAccessor<TData, TError>` - An accessor for the latest infinite query result with page helper methods.
+
+### Example
+```ts
+import { LitElement, html } from 'lit'
+import { createInfiniteQueryController } from '@tanstack/lit-query'
+
+class ProjectsView extends LitElement {
+  private readonly projects = createInfiniteQueryController(this, {
+    queryKey: ['projects'],
+    queryFn: ({ pageParam }) => fetchProjects(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  })
+
+  render() {
+    const query = this.projects()
+
+    return html`
+      <button ?disabled=${!query.hasNextPage} @click=${() => this.projects.fetchNextPage()}>
+        Load more
+      </button>
+    `
+  }
+}
+```
+```
+
+--------------------------------
+
+### Registering QueryClientProvider directly
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
+
+This example demonstrates registering `QueryClientProvider` directly as a custom element and binding the `QueryClient` using property binding in a Lit template.
+
+```ts
+import { html } from 'lit'
+import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
+
+const queryClient = new QueryClient()
+
+customElements.define('query-client-provider', QueryClientProvider)
+
+const view = html`
+  <query-client-provider .client=${queryClient}>
+    <todos-view></todos-view>
+  </query-client-provider>
+`
+```
+
+--------------------------------
+
+### Initialize a Lit Query Controller
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/queries.md
+
+Demonstrates how to create and use `createQueryController` within a LitElement to fetch and display data, handling pending and error states.
+
+```ts
+import { LitElement, html } from 'lit'
+import { createQueryController } from '@tanstack/lit-query'
+
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  })
+
+  render() {
+    const query = this.todos()
+
+    if (query.isPending) return html`Loading...`
+    if (query.isError) return html`Error: ${query.error.message}`
+
+    return html`
+      <ul>
+        ${query.data.map((todo) => html`<li>${todo.title}</li>`)}
+      </ul>
+    `
+  }
+}
+```
+
+--------------------------------
+
+### Incorrect Property Order in TanStack `useInfiniteQuery` (TSX)
+
+Source: https://github.com/tanstack/query/blob/main/docs/eslint/infinite-query-property-order.md
+
+This example illustrates an incorrect property order when defining an infinite query using `useInfiniteQuery` in TanStack Query. Specifically, `getNextPageParam` and `getPreviousPageParam` are placed before and after `queryFn` respectively, which can hinder proper type inference. This setup fetches paginated project data but violates the recommended property order for inference-sensitive properties.
+
+```tsx
+/* eslint "@tanstack/query/infinite-query-property-order": "warn" */
+import { useInfiniteQuery } from '@tanstack/react-query'
+
+const query = useInfiniteQuery({
+  queryKey: ['projects'],
+  getNextPageParam: (lastPage) => lastPage.nextId ?? undefined,
+  queryFn: async ({ pageParam }) => {
+    const response = await fetch(`/api/projects?cursor=${pageParam}`)
+    return await response.json()
+  },
+  initialPageParam: 0,
+  getPreviousPageParam: (firstPage) => firstPage.previousId ?? undefined,
+  maxPages: 3,
+})
+```
+
+--------------------------------
+
+### Install ESLint Plugin Query via NPM
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
+
+Install @tanstack/eslint-plugin-query as a development dependency using various package managers. This plugin helps catch bugs and inconsistencies in React Query code during development.
+
+```bash
+npm i -D @tanstack/eslint-plugin-query
+```
+
+```bash
+pnpm add -D @tanstack/eslint-plugin-query
+```
+
+```bash
+yarn add -D @tanstack/eslint-plugin-query
+```
+
+```bash
+bun add -D @tanstack/eslint-plugin-query
+```
+
+--------------------------------
+
+### Prefetching Article Comments using useQuery in Solid.js
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/prefetching.md
+
+This example demonstrates how to prefetch related data (article comments) within a component using `useQuery` itself, but ignoring its result. This is an optimization to ensure data is available when the `Comments` component eventually renders, improving perceived performance. It also shows `notifyOnChangeProps: []` for further optimization.
+
+```tsx
+import { Switch, Match } from 'solid-js'
+
+function Article(props) {
+  const articleQuery = useQuery(() => ({
+    queryKey: ['article', props.id],
+    queryFn: getArticleById,
+  }))
+
+  // Prefetch
+  useQuery(() => ({
+    queryKey: ['article-comments', props.id],
+    queryFn: getArticleCommentsById,
+    // Optional optimization to avoid rerenders when this query changes:
+    notifyOnChangeProps: [],
+  }))
+
+  return (
+    <Switch>
+      <Match when={articleQuery.isPending}>
+        Loading article...
+      </Match>
+      <Match when={articleQuery.isSuccess}>
+        <ArticleHeader articleData={articleQuery.data} />
+        <ArticleBody articleData={articleQuery.data} />
+        <Comments id={props.id} />
+      </Match>
+    </Switch>
+  )
+}
+
+function Comments(props) {
+  const commentsQuery = useQuery(() => ({
+    queryKey: ['article-comments', props.id],
+    queryFn: getArticleCommentsById,
+  }))
+
+  ...
+}
+```
+
+--------------------------------
+
+### Reactive useQuery Options with Solid Signals
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/reference/useQuery.md
+
+Shows how to use reactive options with `useQuery` by making the `queryKey` and `queryFn` dependent on a SolidJS signal.
+
+```tsx
+import { useQuery } from '@tanstack/solid-query'
+
+function App() {
+  const [filter, setFilter] = createSignal('all')
+
+  const todos = useQuery(() => ({
+    queryKey: ['todos', filter()],
+    queryFn: async () => {
+      const response = await fetch(`/api/todos?filter=${filter()}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch todos')
+      }
+      return response.json()
+    },
+  }))
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => setFilter('all')}>All</button>
+        <button onClick={() => setFilter('active')}>Active</button>
+        <button onClick={() => setFilter('completed')}>Completed</button>
+      </div>
+      <Show when={todos.isError}>
+        <div>Error: {todos.error.message}</div>
+      </Show>
+      <Show when={todos.isLoading}>
+        <div>Loading...</div>
+      </Show>
+      <Show when={todos.isSuccess}>
+        <div>
+          <div>Todos:</div>
+          <ul>
+            <For each={todos.data}>{(todo) => <li>{todo.title}</li>}</For>
+          </ul>
+        </div>
+      </Show>
+    </div>
+  )
+}
+```
+
+--------------------------------
+
+### Build Nuxt 3 application for production
+
+Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
+
+Create an optimized production build of the Nuxt 3 application. See deployment documentation for hosting options.
+
+```bash
+pnpm build
+```
+
+--------------------------------
+
+### Load initial data using loader and initialData in Remix
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/ssr.md
+
+This example illustrates how to use Remix's `loader` function to fetch data on the server and then pass it as `initialData` to `useQuery` in a client-side component. This method offers a straightforward way to quickly populate the TanStack Query cache with server-rendered data, bypassing the more complex hydration process for simpler use cases.
+
+```tsx
+export async function loader() {
+  const posts = await getPosts()
+  return json({ posts })
+}
+
+function Posts() {
+  const { posts } = useLoaderData<typeof loader>()
+
+  const { data } = useQuery({
+    queryKey: ['posts'],
+    queryFn: getPosts,
+    initialData: posts,
+  })
+
+  // ...
+}
+```
