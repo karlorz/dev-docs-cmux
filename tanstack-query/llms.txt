@@ -278,18 +278,6 @@ function Example() {
 
 --------------------------------
 
-### Install dependencies
-
-Source: https://github.com/tanstack/query/blob/main/examples/svelte/playground/README.md
-
-Run this command to install all project dependencies.
-
-```bash
-npm install
-```
-
---------------------------------
-
 ### Implement basic data fetching with SolidJS and TanStack Query
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/quick-start.md
@@ -336,6 +324,18 @@ function App() {
     </QueryClientProvider>
   )
 }
+```
+
+--------------------------------
+
+### Install dependencies
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/playground/README.md
+
+Run this command to install all project dependencies.
+
+```bash
+npm install
 ```
 
 --------------------------------
@@ -1189,6 +1189,20 @@ console.log(state.dataUpdatedAt)
 
 --------------------------------
 
+### Initialize Vue Query with VueQueryPlugin
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Initialize Vue Query in your Vue application by importing VueQueryPlugin and registering it with the Vue app instance. This must be done before using any Vue Query composables.
+
+```typescript
+import { VueQueryPlugin } from '@tanstack/vue-query'
+
+app.use(VueQueryPlugin)
+```
+
+--------------------------------
+
 ### Create SolidStart Project with npm init
 
 Source: https://github.com/tanstack/query/blob/main/examples/solid/solid-start-streaming/README.md
@@ -1201,20 +1215,6 @@ npm init solid@latest
 
 # create a new project in my-app
 npm init solid@latest my-app
-```
-
---------------------------------
-
-### Initialize Vue Query with VueQueryPlugin
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
-
-Initialize Vue Query in your Vue application by importing VueQueryPlugin and registering it with the Vue app instance. This must be done before using any Vue Query composables.
-
-```typescript
-import { VueQueryPlugin } from '@tanstack/vue-query'
-
-app.use(VueQueryPlugin)
 ```
 
 --------------------------------
@@ -1270,6 +1270,34 @@ import { useMutationState } from '@tanstack/react-query'
 const variables = useMutationState({
   filters: { status: 'pending' },
   select: (mutation) => mutation.state.variables,
+})
+```
+
+--------------------------------
+
+### Get mutation data by mutationKey using useMutationState
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useMutationState.md
+
+Shows how to retrieve data from specific mutations using the mutationKey filter. The example defines a mutation with a specific key and then uses useMutationState to access the state data of that mutation by matching the mutationKey.
+
+```typescript
+import { useMutation, useMutationState } from '@tanstack/react-query'
+
+const mutationKey = ['posts']
+
+// Some mutation that we want to get the state for
+const mutation = useMutation({
+  mutationKey,
+  mutationFn: (newPost) => {
+    return axios.post('/posts', newPost)
+  },
+})
+
+const data = useMutationState({
+  // this mutation key needs to match the mutation key of the given mutation (see above)
+  filters: { mutationKey },
+  select: (mutation) => mutation.state.data,
 })
 ```
 
@@ -1335,30 +1363,14 @@ class DashboardView extends LitElement {
 
 --------------------------------
 
-### Get mutation data by mutationKey using useMutationState
+### Get Current Online State with TanStack Query's OnlineManager (TypeScript)
 
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useMutationState.md
+Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
 
-Shows how to retrieve data from specific mutations using the mutationKey filter. The example defines a mutation with a specific key and then uses useMutationState to access the state data of that mutation by matching the mutationKey.
+This example demonstrates how to retrieve the current online status as determined by the `OnlineManager`. The `isOnline()` method returns a boolean value, indicating whether the application is currently considered to have an active network connection.
 
-```typescript
-import { useMutation, useMutationState } from '@tanstack/react-query'
-
-const mutationKey = ['posts']
-
-// Some mutation that we want to get the state for
-const mutation = useMutation({
-  mutationKey,
-  mutationFn: (newPost) => {
-    return axios.post('/posts', newPost)
-  },
-})
-
-const data = useMutationState({
-  // this mutation key needs to match the mutation key of the given mutation (see above)
-  filters: { mutationKey },
-  select: (mutation) => mutation.state.data,
-})
+```tsx
+const isOnline = onlineManager.isOnline()
 ```
 
 --------------------------------
@@ -1391,18 +1403,6 @@ class DashboardView extends LitElement {
     return html`<p>Projects: ${dashboard.projects.length}</p>`
   }
 }
-```
-
---------------------------------
-
-### Get Current Online State with TanStack Query's OnlineManager (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
-
-This example demonstrates how to retrieve the current online status as determined by the `OnlineManager`. The `isOnline()` method returns a boolean value, indicating whether the application is currently considered to have an active network connection.
-
-```tsx
-const isOnline = onlineManager.isOnline()
 ```
 
 --------------------------------
@@ -1773,30 +1773,6 @@ const query = useInfiniteQuery({
 
 --------------------------------
 
-### Install ESLint Plugin Query via NPM
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
-
-Install @tanstack/eslint-plugin-query as a development dependency using various package managers. This plugin helps catch bugs and inconsistencies in React Query code during development.
-
-```bash
-npm i -D @tanstack/eslint-plugin-query
-```
-
-```bash
-pnpm add -D @tanstack/eslint-plugin-query
-```
-
-```bash
-yarn add -D @tanstack/eslint-plugin-query
-```
-
-```bash
-bun add -D @tanstack/eslint-plugin-query
-```
-
---------------------------------
-
 ### Prefetching Article Comments using useQuery in Solid.js
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/prefetching.md
@@ -1842,6 +1818,30 @@ function Comments(props) {
 
   ...
 }
+```
+
+--------------------------------
+
+### Install ESLint Plugin Query via NPM
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
+
+Install @tanstack/eslint-plugin-query as a development dependency using various package managers. This plugin helps catch bugs and inconsistencies in React Query code during development.
+
+```bash
+npm i -D @tanstack/eslint-plugin-query
+```
+
+```bash
+pnpm add -D @tanstack/eslint-plugin-query
+```
+
+```bash
+yarn add -D @tanstack/eslint-plugin-query
+```
+
+```bash
+bun add -D @tanstack/eslint-plugin-query
 ```
 
 --------------------------------
