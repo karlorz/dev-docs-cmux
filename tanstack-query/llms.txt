@@ -1190,22 +1190,6 @@ app.use(VueQueryPlugin)
 
 --------------------------------
 
-### Create SolidStart Project with npm init
-
-Source: https://github.com/tanstack/query/blob/main/examples/solid/solid-start-streaming/README.md
-
-Initialize a new SolidStart project using the `npm init solid@latest` command. This command allows creating a project in the current directory or a specified new directory. Ensure `npm` is installed to use this command effectively.
-
-```bash
-# create a new project in the current directory
-npm init solid@latest
-
-# create a new project in my-app
-npm init solid@latest my-app
-```
-
---------------------------------
-
 ### Build Production Svelte Application
 
 Source: https://github.com/tanstack/query/blob/main/examples/svelte/auto-refetching/README.md
@@ -1218,6 +1202,22 @@ npm run build
 
 ```bash
 npm run preview
+```
+
+--------------------------------
+
+### Create SolidStart Project with npm init
+
+Source: https://github.com/tanstack/query/blob/main/examples/solid/solid-start-streaming/README.md
+
+Initialize a new SolidStart project using the `npm init solid@latest` command. This command allows creating a project in the current directory or a specified new directory. Ensure `npm` is installed to use this command effectively.
+
+```bash
+# create a new project in the current directory
+npm init solid@latest
+
+# create a new project in my-app
+npm init solid@latest my-app
 ```
 
 --------------------------------
@@ -1290,6 +1290,18 @@ const data = useMutationState({
 
 --------------------------------
 
+### Get Current Online State with TanStack Query's OnlineManager (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
+
+This example demonstrates how to retrieve the current online status as determined by the `OnlineManager`. The `isOnline()` method returns a boolean value, indicating whether the application is currently considered to have an active network connection.
+
+```tsx
+const isOnline = onlineManager.isOnline()
+```
+
+--------------------------------
+
 ### createQueriesController(host, options, queryClient?)
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueriesController.md
@@ -1350,14 +1362,34 @@ class DashboardView extends LitElement {
 
 --------------------------------
 
-### Get Current Online State with TanStack Query's OnlineManager (TypeScript)
+### Basic Usage of createQueriesController with LitElement (TypeScript)
 
-Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueriesController.md
 
-This example demonstrates how to retrieve the current online status as determined by the `OnlineManager`. The `isOnline()` method returns a boolean value, indicating whether the application is currently considered to have an active network connection.
+This example demonstrates how to integrate `createQueriesController` into a LitElement. It shows how to define multiple queries and combine their results for display within a Lit component.
 
-```tsx
-const isOnline = onlineManager.isOnline()
+```ts
+import { LitElement, html } from 'lit'
+import { createQueriesController } from '@tanstack/lit-query'
+
+class DashboardView extends LitElement {
+  private readonly dashboard = createQueriesController(this, {
+    queries: [
+      { queryKey: ['stats'], queryFn: fetchStats },
+      { queryKey: ['projects'], queryFn: fetchProjects },
+    ],
+    combine: ([stats, projects]) => ({
+      stats: stats.data,
+      projects: projects.data ?? [],
+      isPending: stats.isPending || projects.isPending,
+    }),
+  })
+
+  render() {
+    const dashboard = this.dashboard()
+    return html`<p>Projects: ${dashboard.projects.length}</p>`
+  }
+}
 ```
 
 --------------------------------
@@ -1409,38 +1441,6 @@ function Post(props) {
   }))
 
   // ...
-}
-```
-
---------------------------------
-
-### Basic Usage of createQueriesController with LitElement (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueriesController.md
-
-This example demonstrates how to integrate `createQueriesController` into a LitElement. It shows how to define multiple queries and combine their results for display within a Lit component.
-
-```ts
-import { LitElement, html } from 'lit'
-import { createQueriesController } from '@tanstack/lit-query'
-
-class DashboardView extends LitElement {
-  private readonly dashboard = createQueriesController(this, {
-    queries: [
-      { queryKey: ['stats'], queryFn: fetchStats },
-      { queryKey: ['projects'], queryFn: fetchProjects },
-    ],
-    combine: ([stats, projects]) => ({
-      stats: stats.data,
-      projects: projects.data ?? [],
-      isPending: stats.isPending || projects.isPending,
-    }),
-  })
-
-  render() {
-    const dashboard = this.dashboard()
-    return html`<p>Projects: ${dashboard.projects.length}</p>`
-  }
 }
 ```
 

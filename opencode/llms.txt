@@ -56,49 +56,6 @@ mint dev
 
 --------------------------------
 
-### Example: Start Backend and Attach TUI
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
-
-First, start the OpenCode backend server for web/mobile access. Then, in a separate terminal, attach the TUI to the running backend using its URL.
-
-```bash
-opencode web --port 4096 --hostname 0.0.0.0
-```
-
-```bash
-opencode attach http://10.20.30.40:4096
-```
-
---------------------------------
-
-### Quickstart: Record and Replay HTTP Requests with Effect
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/http-recorder/README.md
-
-This example demonstrates how to use `HttpRecorder.cassetteLayer` to provide a recorded HTTP client. It records if a cassette is missing, replays if it exists, and can be forced to re-record.
-
-```ts
-import { Effect } from "effect"
-import { HttpClient, HttpClientRequest } from "effect/unstable/http"
-import { HttpRecorder } from "@opencode-ai/http-recorder"
-
-const program = Effect.gen(function* () {
-  const http = yield* HttpClient.HttpClient
-  const response = yield* http.execute(HttpClientRequest.get("https://api.example.com/users/1"))
-  return yield* response.json
-})
-
-// Records if the cassette is missing, replays if it exists.
-// In CI (CI=true) always replays — fails loudly on missing fixtures.
-Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one"))))
-
-// Force a refresh — always hits upstream and overwrites.
-Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one", { mode: "record" })))))
-```
-
---------------------------------
-
 ### Mintlify Tabbed Content Example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -128,6 +85,33 @@ Shows how to present alternative content using tabs, allowing users to select th
   ```
 </Tab>
 </Tabs>
+```
+
+--------------------------------
+
+### Quickstart: Record and Replay HTTP Requests with Effect
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/http-recorder/README.md
+
+This example demonstrates how to use `HttpRecorder.cassetteLayer` to provide a recorded HTTP client. It records if a cassette is missing, replays if it exists, and can be forced to re-record.
+
+```ts
+import { Effect } from "effect"
+import { HttpClient, HttpClientRequest } from "effect/unstable/http"
+import { HttpRecorder } from "@opencode-ai/http-recorder"
+
+const program = Effect.gen(function* () {
+  const http = yield* HttpClient.HttpClient
+  const response = yield* http.execute(HttpClientRequest.get("https://api.example.com/users/1"))
+  return yield* response.json
+})
+
+// Records if the cassette is missing, replays if it exists.
+// In CI (CI=true) always replays — fails loudly on missing fixtures.
+Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one"))))
+
+// Force a refresh — always hits upstream and overwrites.
+Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one", { mode: "record" })))))
 ```
 
 --------------------------------
@@ -188,21 +172,6 @@ npm run dev -- --open
 
 --------------------------------
 
-### Start development server for SolidStart project
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/enterprise/README.md
-
-These commands are used to start the development server for a SolidStart project. After installing dependencies, `npm run dev` will launch the server. An additional option `--open` is provided to automatically open the application in a new browser tab upon server startup.
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
---------------------------------
-
 ### Accordion Examples
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -230,6 +199,21 @@ Example of accordion groups:
   ```
 </Accordion>
 </AccordionGroup>
+```
+
+--------------------------------
+
+### Start development server for SolidStart project
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/enterprise/README.md
+
+These commands are used to start the development server for a SolidStart project. After installing dependencies, `npm run dev` will launch the server. An additional option `--open` is provided to automatically open the application in a new browser tab upon server startup.
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
 --------------------------------
@@ -288,19 +272,6 @@ const { client } = await createOpencode()
 
 --------------------------------
 
-### Provide feedback and context to OpenCode's plan
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-After OpenCode presents a plan, you can refine it by providing additional feedback or context. This example shows how to reference an external design (e.g., an image) to guide OpenCode's implementation of a new screen.
-
-```txt
-We'd like to design this new screen using a design I've used before.
-[Image #1] Take a look at this image and use it as a reference.
-```
-
---------------------------------
-
 ### Update Component Example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -318,6 +289,19 @@ Demonstrates the Update component for displaying changelogs, including version l
 - Fixed pagination issue with large datasets
 - Resolved authentication timeout problems
   </Update>
+```
+
+--------------------------------
+
+### Provide feedback and context to OpenCode's plan
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+After OpenCode presents a plan, you can refine it by providing additional feedback or context. This example shows how to reference an external design (e.g., an image) to guide OpenCode's implementation of a new screen.
+
+```txt
+We'd like to design this new screen using a design I've used before.
+[Image #1] Take a look at this image and use it as a reference.
 ```
 
 --------------------------------
@@ -389,14 +373,30 @@ bun dev
 
 --------------------------------
 
-### Start Mintlify Development Server (bash)
+### Example: Attach TUI to a running backend
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Demonstrates starting a web backend and then attaching the TUI to it from another terminal.
+
+```bash
+# Start the backend server for web/mobile access
+opencode web --port 4096 --hostname 0.0.0.0
+
+# In another terminal, attach the TUI to the running backend
+opencode attach http://10.20.30.40:4096
+```
+
+--------------------------------
+
+### Install Mintlify CLI (npm)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
 
-Starts the Mintlify development server to preview documentation changes locally. This command should be run at the root of the documentation project where 'docs.json' is located.
+Installs the Mintlify Command Line Interface globally using npm. This CLI is used to preview documentation changes locally.
 
 ```bash
-mint dev
+npm i -g mint
 ```
 
 --------------------------------
@@ -427,18 +427,6 @@ Maximum number of results to return. Range: 1-100.
 <ParamField header="Authorization" type="string" required>
 Bearer token for API authentication. Format: `Bearer YOUR_API_KEY`
 </ParamField>
-```
-
---------------------------------
-
-### Install Mintlify CLI (npm)
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
-
-Installs the Mintlify Command Line Interface globally using npm. This CLI is used to preview documentation changes locally.
-
-```bash
-npm i -g mint
 ```
 
 --------------------------------
@@ -527,6 +515,18 @@ api.plugins.install("plugin-package", { force: true });
 
 --------------------------------
 
+### Start OpenCode web interface
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Command to start a headless OpenCode server with a web interface.
+
+```bash
+opencode web
+```
+
+--------------------------------
+
 ### Common Astro Project Commands
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/README.md
@@ -568,6 +568,54 @@ Complete walkthrough from installation to your first API call in under 10 minute
 
 --------------------------------
 
+### Run with direct prompt example
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Example of running OpenCode with a specific prompt.
+
+```bash
+opencode run Explain the use of context in Go
+```
+
+--------------------------------
+
+### Start OpenCode server
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Command to start a headless OpenCode server for API access.
+
+```bash
+opencode serve
+```
+
+--------------------------------
+
+### Start TUI with project
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Command to start the OpenCode TUI, optionally specifying a project.
+
+```bash
+opencode [project]
+```
+
+--------------------------------
+
+### Install OpenCode Desktop App on Windows with Scoop
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Install the OpenCode desktop application on Windows using Scoop. First, add the 'extras' bucket, then install the application.
+
+```bash
+scoop bucket add extras; scoop install extras/opencode-desktop
+```
+
+--------------------------------
+
 ### api.plugins.install(spec, options)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/specs/tui-plugins.md
@@ -602,18 +650,6 @@ Object with one of two formats:
 
 --------------------------------
 
-### Install OpenCode Desktop App on Windows with Scoop
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-Install the OpenCode desktop application on Windows using Scoop. First, add the 'extras' bucket, then install the application.
-
-```bash
-scoop bucket add extras; scoop install extras/opencode-desktop
-```
-
---------------------------------
-
 ### Install Project Dependencies
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
@@ -626,26 +662,14 @@ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### Start OpenCode Web Interface Server
+### Install Claude Code CLI Globally
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/claude-code.mdx
 
-Starts an HTTP server with a web interface and opens a browser. Set `OPENCODE_SERVER_PASSWORD` to enable HTTP basic auth.
-
-```bash
-opencode web
-```
-
---------------------------------
-
-### Install opencode for GitHub via CLI
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/pt-br/github.mdx
-
-Run this command in a GitHub repository to automate the installation of the GitHub app and workflow configuration.
+Installs the Claude Code CLI tool globally using npm. This command requires Node.js and npm to be installed on your system. Once installed, the `claude` command will be available in your terminal.
 
 ```bash
-opencode github install
+npm install -g @anthropic-ai/claude-code
 ```
 
 --------------------------------
@@ -662,14 +686,14 @@ provideTmpdirInstance((dir) => effect, options)
 
 --------------------------------
 
-### Install Claude Code CLI Globally
+### Install opencode for GitHub via CLI
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/claude-code.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/pt-br/github.mdx
 
-Installs the Claude Code CLI tool globally using npm. This command requires Node.js and npm to be installed on your system. Once installed, the `claude` command will be available in your terminal.
+Run this command in a GitHub repository to automate the installation of the GitHub app and workflow configuration.
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+opencode github install
 ```
 
 --------------------------------
@@ -694,18 +718,14 @@ opencode
 
 --------------------------------
 
-### Install OpenCode Plugin (CLI)
+### Start Mintlify Development Server (bash)
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
 
-Use these commands to install a plugin for OpenCode, either with the full command or its alias. Plugins extend OpenCode's functionality.
-
-```bash
-opencode plugin <module>
-```
+Starts the Mintlify development server to preview documentation changes locally. This command should be run at the root of the documentation project where 'docs.json' is located.
 
 ```bash
-opencode plug <module>
+mint dev
 ```
 
 --------------------------------
@@ -718,6 +738,18 @@ Use this command for a quick installation of OpenCode via a direct cURL script. 
 
 ```bash
 curl -fsSL https://opencode.ai/install | bash
+```
+
+--------------------------------
+
+### OpenCode Zen: Run Connect Command
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
+
+Initiate the provider connection process in the OpenCode TUI to set up OpenCode Zen.
+
+```txt
+/connect
 ```
 
 --------------------------------
@@ -751,18 +783,6 @@ api.theme.install(jsonPath: string): void
 - Local plugins persist installed themes under `.opencode/themes` near the plugin config source.
 - Global plugins persist installed themes under the global `themes` directory.
 - Invalid or unreadable theme files are ignored.
-```
-
---------------------------------
-
-### OpenCode Zen: Run Connect Command
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
-
-Initiate the provider connection process in the OpenCode TUI to set up OpenCode Zen.
-
-```txt
-/connect
 ```
 
 --------------------------------
@@ -843,6 +863,18 @@ Complete user object with all associated data.
 
 --------------------------------
 
+### Install OpenCode using Mise version manager
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+If you are using Mise as your version manager, you can integrate OpenCode into your environment by adding the `anomalyco/opencode` plugin. This ensures OpenCode is managed alongside your other tools.
+
+```bash
+mise use -g github:anomalyco/opencode
+```
+
+--------------------------------
+
 ### Video Embedding
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -864,18 +896,6 @@ src="link-to-your-video.com">
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowFullScreen
 ></iframe>
-```
-
---------------------------------
-
-### Install OpenCode using Mise version manager
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-If you are using Mise as your version manager, you can integrate OpenCode into your environment by adding the `anomalyco/opencode` plugin. This ensures OpenCode is managed alongside your other tools.
-
-```bash
-mise use -g github:anomalyco/opencode
 ```
 
 --------------------------------
@@ -910,18 +930,6 @@ scoop bucket add extras; scoop install extras/opencode-desktop
 
 --------------------------------
 
-### Create New Agent Interactively (Bash)
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/agents.mdx
-
-Initiate an interactive command-line process to create a new agent, guiding through setup steps like saving location, description, prompt generation, and permission selection.
-
-```bash
-opencode agent create
-```
-
---------------------------------
-
 ### Ask OpenCode questions about codebase files
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -930,6 +938,18 @@ After initializing OpenCode for your project, you can interact with it directly 
 
 ```text
 How is authentication handled in @packages/functions/src/api/index.ts
+```
+
+--------------------------------
+
+### Create New Agent Interactively (Bash)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/agents.mdx
+
+Initiate an interactive command-line process to create a new agent, guiding through setup steps like saving location, description, prompt generation, and permission selection.
+
+```bash
+opencode agent create
 ```
 
 --------------------------------
@@ -950,26 +970,6 @@ paru -S opencode-bin
 
 --------------------------------
 
-### Add Test MCP Server Package
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
-
-Example configuration for adding the @modelcontextprotocol/server-everything test package as a local MCP server. This demonstrates how to use npx to run an npm package directly without prior installation.
-
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "mcp_everything": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-everything"]
-    }
-  }
-}
-```
-
---------------------------------
-
 ### Create a new SolidStart project using npm
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/enterprise/README.md
@@ -986,27 +986,19 @@ npm init solid@latest my-app
 
 --------------------------------
 
-### Configure Atomic Chat provider in opencode.json
+### Add Test MCP Server Package
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
 
-Set up a local LLM provider using Atomic Chat with OpenAI-compatible API. Replace baseURL host/port to match your Atomic Chat setup and model IDs with those returned by GET /v1/models.
+Example configuration for adding the @modelcontextprotocol/server-everything test package as a local MCP server. This demonstrates how to use npx to run an npm package directly without prior installation.
 
-```json
+```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "atomic-chat": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Atomic Chat (local)",
-      "options": {
-        "baseURL": "http://127.0.0.1:1337/v1"
-      },
-      "models": {
-        "<your-model-id>": {
-          "name": "<your-model-name>"
-        }
-      }
+  "mcp": {
+    "mcp_everything": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-everything"]
     }
   }
 }
@@ -1041,6 +1033,34 @@ POST
   "id": "project-1",
   "name": "New Project",
   "createdAt": "2024-01-01T00:00:00Z"
+}
+```
+
+--------------------------------
+
+### Configure Atomic Chat provider in opencode.json
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
+
+Set up a local LLM provider using Atomic Chat with OpenAI-compatible API. Replace baseURL host/port to match your Atomic Chat setup and model IDs with those returned by GET /v1/models.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "atomic-chat": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Atomic Chat (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:1337/v1"
+      },
+      "models": {
+        "<your-model-id>": {
+          "name": "<your-model-name>"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -1227,6 +1247,31 @@ apt install -y xsel
 
 --------------------------------
 
+### GET /api/auth/:accountID
+
+Source: https://github.com/anomalyco/opencode/blob/dev/specs/v2/api.html
+
+Get one auth account.
+
+```APIDOC
+## GET /api/auth/:accountID
+
+### Description
+Get one auth account.
+
+### Method
+GET
+
+### Endpoint
+/api/auth/:accountID
+
+### Parameters
+#### Path Parameters
+- **accountID** (AccountID) - Required - The ID of the account to retrieve.
+```
+
+--------------------------------
+
 ### POST /project/:projectID/session/:sessionID/init
 
 Source: https://github.com/anomalyco/opencode/blob/dev/specs/project.md
@@ -1260,31 +1305,6 @@ POST
   "projectID": "project-1",
   "status": "initialized"
 }
-```
-
---------------------------------
-
-### GET /api/auth/:accountID
-
-Source: https://github.com/anomalyco/opencode/blob/dev/specs/v2/api.html
-
-Get one auth account.
-
-```APIDOC
-## GET /api/auth/:accountID
-
-### Description
-Get one auth account.
-
-### Method
-GET
-
-### Endpoint
-/api/auth/:accountID
-
-### Parameters
-#### Path Parameters
-- **accountID** (AccountID) - Required - The ID of the account to retrieve.
 ```
 
 --------------------------------
@@ -1327,18 +1347,6 @@ GET
 
 --------------------------------
 
-### Bootstrap or fire-and-forget startup code
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/specs/effect/facades.md
-
-For initialization-only facade calls, use the existing runtime for that file and call the service through `Service.use(...)`. Do not reintroduce a dedicated runtime in the service.
-
-```typescript
-void BootstrapRuntime.runPromise(Vcs.Service.use((svc) => svc.init()))
-```
-
---------------------------------
-
 ### Install OpenCode Desktop App on macOS with Homebrew
 
 Source: https://github.com/anomalyco/opencode/blob/dev/README.md
@@ -1347,6 +1355,30 @@ Install the OpenCode desktop application on macOS using Homebrew Cask. This prov
 
 ```bash
 brew install --cask opencode-desktop
+```
+
+--------------------------------
+
+### GitHub install command usage
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Install the GitHub agent in your repository.
+
+```bash
+opencode github install
+```
+
+--------------------------------
+
+### Bootstrap or fire-and-forget startup code
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/specs/effect/facades.md
+
+For initialization-only facade calls, use the existing runtime for that file and call the service through `Service.use(...)`. Do not reintroduce a dedicated runtime in the service.
+
+```typescript
+void BootstrapRuntime.runPromise(Vcs.Service.use((svc) => svc.init()))
 ```
 
 --------------------------------
@@ -1373,6 +1405,18 @@ const plugins = api.plugins.list();
 
 ### Returns
 - **plugins** (array) - Array of installed plugin information objects
+```
+
+--------------------------------
+
+### Start TUI
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Run OpenCode CLI without arguments to start the TUI.
+
+```bash
+opencode
 ```
 
 --------------------------------
@@ -1425,38 +1469,14 @@ opencode web
 
 --------------------------------
 
-### Start a new session
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tui.mdx
-
-Clears the current conversation and starts a fresh session. Also accessible via '/clear'.
-
-```bash
-/new
-```
-
---------------------------------
-
-### Start Development Server in Tmux
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/AGENTS.md
-
-Starts the `opencode` development server in a detached `tmux` session named `opencode-dev`.
-
-```bash
-tmux new-session -d -s opencode-dev 'bun dev'
-```
-
---------------------------------
-
-### Start OpenCode TUI with optional project
+### Start ACP server
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
 
-Initiates the OpenCode Terminal User Interface, optionally specifying a project to load.
+Command to start an ACP (Agent Client Protocol) server.
 
 ```bash
-opencode [project]
+opencode acp
 ```
 
 --------------------------------
@@ -1485,30 +1505,6 @@ opencode <directory>     # Start TUI in specific directory
 
 --------------------------------
 
-### Install Clipboard Tools for Wayland on Linux
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tr/troubleshooting.mdx
-
-Install the clipboard utility required for copy/paste functionality on Wayland-based Linux systems.
-
-```bash
-apt install -y wl-clipboard
-```
-
---------------------------------
-
-### Install Helicone Session Plugin
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
-
-Install the opencode-helicone-session plugin globally to automatically log OpenCode conversations as sessions in Helicone.
-
-```bash
-npm install -g opencode-helicone-session
-```
-
---------------------------------
-
 ### Create Astro Project with Starlight Template
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/README.md
@@ -1517,6 +1513,22 @@ This command initializes a new Astro project using the official Starlight templa
 
 ```bash
 npm create astro@latest -- --template starlight
+```
+
+--------------------------------
+
+### Plugin Installation Command
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Install a plugin and update your config using the plugin command or its alias.
+
+```bash
+opencode plugin <module>
+```
+
+```bash
+opencode plug <module>
 ```
 
 --------------------------------
@@ -1541,79 +1553,4 @@ const opencode = await createOpencode({
 console.log(`Server running at ${opencode.server.url}`)
 
 opencode.server.close()
-```
-
---------------------------------
-
-### Example PR Titles
-
-Source: https://github.com/anomalyco/opencode/blob/dev/CONTRIBUTING.md
-
-These examples demonstrate how to construct PR titles following conventional commit standards, with and without scope.
-
-```text
-docs: update contributing guidelines
-```
-
-```text
-fix: resolve crash on startup
-```
-
-```text
-feat: add dark mode support
-```
-
-```text
-feat(app): add dark mode support
-```
-
-```text
-fix(desktop): resolve crash on startup
-```
-
-```text
-chore: bump dependency versions
-```
-
---------------------------------
-
-### GET /provider/auth
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
-
-Gets the available authentication methods for each provider, mapped by provider ID.
-
-```APIDOC
-## GET /provider/auth
-
-### Description
-Get provider authentication methods
-
-### Method
-GET
-
-### Endpoint
-/provider/auth
-
-### Parameters
-#### Path Parameters
-(None)
-
-#### Query Parameters
-(None)
-
-#### Request Body
-(None)
-
-### Request Example
-{}
-
-### Response
-#### Success Response (200)
-- **[providerID: string]** (array of ProviderAuthMethod) - Mapping of provider IDs to their authentication methods.
-
-#### Response Example
-{
-  "provider123": []
-}
 ```
