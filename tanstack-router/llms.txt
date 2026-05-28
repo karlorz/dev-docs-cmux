@@ -148,19 +148,6 @@ npx gitpick TanStack/router/tree/main/examples/react/with-trpc-react-query with-
 
 --------------------------------
 
-### Install TanStack Solid Start Dependencies
-
-Source: https://github.com/tanstack/router/blob/main/packages/solid-start/skills/solid-start/SKILL.md
-
-Install required npm packages for TanStack Solid Start development including the framework, router, Solid.js, and build tools. Includes both production and development dependencies needed for a complete setup.
-
-```bash
-npm i @tanstack/solid-start @tanstack/solid-router solid-js
-npm i -D vite vite-plugin-solid typescript
-```
-
---------------------------------
-
 ### Install and run development server
 
 Source: https://github.com/tanstack/router/blob/main/examples/react/start-rscs/README.md
@@ -170,6 +157,19 @@ Installs project dependencies and starts the development environment with file w
 ```sh
 pnpm install
 pnpm dev
+```
+
+--------------------------------
+
+### Install TanStack Solid Start Dependencies
+
+Source: https://github.com/tanstack/router/blob/main/packages/solid-start/skills/solid-start/SKILL.md
+
+Install required npm packages for TanStack Solid Start development including the framework, router, Solid.js, and build tools. Includes both production and development dependencies needed for a complete setup.
+
+```bash
+npm i @tanstack/solid-start @tanstack/solid-router solid-js
+npm i -D vite vite-plugin-solid typescript
 ```
 
 --------------------------------
@@ -247,18 +247,6 @@ pnpm dev
 
 --------------------------------
 
-### Install TanStack Start and Router
-
-Source: https://github.com/tanstack/router/blob/main/docs/start/framework/react/build-from-scratch.md
-
-Install core TanStack Start and Router dependencies.
-
-```shell
-npm i @tanstack/react-start @tanstack/react-router
-```
-
---------------------------------
-
 ### Initialize TanStack Start Project with gitpick (Shell)
 
 Source: https://github.com/tanstack/router/blob/main/examples/react/start-bare/README.md
@@ -267,6 +255,18 @@ This command utilizes `npx gitpick` to clone and initialize a new project based 
 
 ```shell
 npx gitpick TanStack/router/tree/main/examples/react/start-bare start-bare
+```
+
+--------------------------------
+
+### Install TanStack Start and Router
+
+Source: https://github.com/tanstack/router/blob/main/docs/start/framework/react/build-from-scratch.md
+
+Install core TanStack Start and Router dependencies.
+
+```shell
+npm i @tanstack/react-start @tanstack/react-router
 ```
 
 --------------------------------
@@ -283,18 +283,6 @@ npx gitpick TanStack/router/tree/main/examples/react/start-tailwind-v4 start-tai
 
 --------------------------------
 
-### Initialize TanStack Start Project with Auth.js Example
-
-Source: https://github.com/tanstack/router/blob/main/examples/react/start-basic-authjs/README.md
-
-This command initializes a new TanStack Start project based on the provided Auth.js example. It uses `gitpick` to clone a specific branch from the TanStack Router repository, setting up the project structure and initial files.
-
-```sh
-npx gitpick TanStack/router/tree/main/examples/react/start-basic-authjs start-basic-authjs
-```
-
---------------------------------
-
 ### Initialize TanStack Start Project using Gitpick
 
 Source: https://github.com/tanstack/router/blob/main/examples/react/start-basic-cloudflare/README.md
@@ -307,14 +295,14 @@ npx gitpick TanStack/router/tree/main/examples/react/start-basic-cloudflare star
 
 --------------------------------
 
-### Initialize TanStack Start project from example using npx gitpick
+### Initialize TanStack Start Project with Auth.js Example
 
-Source: https://github.com/tanstack/router/blob/main/examples/react/start-large/README.md
+Source: https://github.com/tanstack/router/blob/main/examples/react/start-basic-authjs/README.md
 
-This command initializes a new project directory named 'start-large' by cloning the specified TanStack Router example from the TanStack/router repository. It's used to quickly set up a development environment based on a pre-existing example.
+This command initializes a new TanStack Start project based on the provided Auth.js example. It uses `gitpick` to clone a specific branch from the TanStack Router repository, setting up the project structure and initial files.
 
 ```sh
-npx gitpick TanStack/router/tree/main/examples/react/start-large start-large
+npx gitpick TanStack/router/tree/main/examples/react/start-basic-authjs start-basic-authjs
 ```
 
 --------------------------------
@@ -327,6 +315,18 @@ Use this command to initialize a new project based on the deferred data example.
 
 ```bash
 npx gitpick TanStack/router/tree/main/examples/react/deferred-data deferred-data
+```
+
+--------------------------------
+
+### Initialize TanStack Start project from example using npx gitpick
+
+Source: https://github.com/tanstack/router/blob/main/examples/react/start-large/README.md
+
+This command initializes a new project directory named 'start-large' by cloning the specified TanStack Router example from the TanStack/router repository. It's used to quickly set up a development environment based on a pre-existing example.
+
+```sh
+npx gitpick TanStack/router/tree/main/examples/react/start-large start-large
 ```
 
 --------------------------------
@@ -427,6 +427,52 @@ Installs all necessary project dependencies using pnpm and subsequently starts t
 ```bash
 pnpm i
 pnpm dev
+```
+
+--------------------------------
+
+### Global Start Configuration - Middleware Setup
+
+Source: https://github.com/tanstack/router/blob/main/packages/react-start/skills/react-start/SKILL.md
+
+Configure global Start settings including request middleware for logging, authentication, and other cross-cutting concerns. Middleware runs on the server before route handlers execute.
+
+```APIDOC
+## Global Start Configuration (src/start.ts)
+
+### Description
+Configure the Start instance with middleware and other global settings. Middleware functions execute on the server and can intercept requests before they reach route handlers.
+
+### Setup
+
+#### Import
+```tsx
+import { createStart, createMiddleware } from '@tanstack/react-start'
+```
+
+#### Middleware Definition
+```tsx
+const requestLogger = createMiddleware().server(async ({ next, request }) => {
+  console.log(`${request.method} ${request.url}`)
+  return next()
+})
+```
+
+#### Start Instance Creation
+```tsx
+export const startInstance = createStart(() => ({
+  requestMiddleware: [requestLogger],
+}))
+```
+
+### Middleware Parameters
+- **next** (Function) - Required - Calls the next middleware or route handler
+- **request** (Request) - Required - The incoming HTTP request object
+  - **method** (string) - HTTP method (GET, POST, etc.)
+  - **url** (string) - Request URL
+
+### Middleware Return
+- **Response** - The response from the next middleware or handler
 ```
 
 --------------------------------
@@ -634,18 +680,6 @@ npx gitpick TanStack/router/tree/main/examples/react/start-basic start-basic
 
 --------------------------------
 
-### Initialize project with gitpick
-
-Source: https://github.com/tanstack/router/blob/main/examples/react/location-masking/README.md
-
-Run this command to clone the specific location-masking example from the TanStack Router repository.
-
-```sh
-npx gitpick TanStack/router/tree/main/examples/react/location-masking location-masking
-```
-
---------------------------------
-
 ### Install TanStack Start Dependencies
 
 Source: https://github.com/tanstack/router/blob/main/docs/start/framework/react/migrate-from-next-js.md
@@ -658,6 +692,18 @@ npm i @tanstack/react-router @tanstack/react-start nitro vite @vitejs/plugin-rea
 
 ```shell
 npm i -D @tailwindcss/vite tailwindcss
+```
+
+--------------------------------
+
+### Initialize project with gitpick
+
+Source: https://github.com/tanstack/router/blob/main/examples/react/location-masking/README.md
+
+Run this command to clone the specific location-masking example from the TanStack Router repository.
+
+```sh
+npx gitpick TanStack/router/tree/main/examples/react/location-masking location-masking
 ```
 
 --------------------------------
@@ -784,14 +830,33 @@ npx gitpick TanStack/router/tree/main/examples/react/scroll-restoration scroll-r
 
 --------------------------------
 
-### Initialize New Project from Example
+### Configuring Global Middleware in Start Instance
 
-Source: https://github.com/tanstack/router/blob/main/examples/react/start-convex-trellaux/README.md
+Source: https://github.com/tanstack/router/blob/main/packages/start-client-core/skills/start-core/middleware/SKILL.md
 
-Command to bootstrap a new TanStack Router project based on the Convex Trellaux example. Uses gitpick to clone the example repository structure into a new project directory.
+This example illustrates how to define and apply global middleware for requests and server functions within the `createStart` configuration. This ensures middleware runs for all relevant operations across the application.
 
-```shell
-npx gitpick TanStack/router/tree/main/examples/react/start-convex-trellaux start-convex-trellaux
+```tsx
+// src/start.ts
+// Use @tanstack/<framework>-start for your framework (react, solid, vue)
+import { createStart, createMiddleware } from '@tanstack/react-start'
+
+const requestLogger = createMiddleware().server(async ({ next, request }) => {
+  console.log(`${request.method} ${request.url}`)
+  return next()
+})
+
+const functionAuth = createMiddleware({ type: 'function' }).server(
+  async ({ next }) => {
+    // runs for every server function
+    return next()
+  },
+)
+
+export const startInstance = createStart(() => ({
+  requestMiddleware: [requestLogger],
+  functionMiddleware: [functionAuth],
+}))
 ```
 
 --------------------------------
@@ -816,6 +881,18 @@ Install the necessary packages for deploying TanStack Start to Cloudflare Worker
 
 ```bash
 pnpm add -D @cloudflare/vite-plugin wrangler
+```
+
+--------------------------------
+
+### Initialize New Project from Example
+
+Source: https://github.com/tanstack/router/blob/main/examples/react/start-convex-trellaux/README.md
+
+Command to bootstrap a new TanStack Router project based on the Convex Trellaux example. Uses gitpick to clone the example repository structure into a new project directory.
+
+```shell
+npx gitpick TanStack/router/tree/main/examples/react/start-convex-trellaux start-convex-trellaux
 ```
 
 --------------------------------
@@ -858,30 +935,6 @@ pnpm preview
 
 --------------------------------
 
-### Initialize project using gitpick
-
-Source: https://github.com/tanstack/router/blob/main/examples/react/start-counter/README.md
-
-Clones the specific counter example from the TanStack Router repository into a new local directory.
-
-```sh
-npx gitpick TanStack/router/tree/main/examples/react/start-counter start-counter
-```
-
---------------------------------
-
-### Initialize New Project from Example
-
-Source: https://github.com/tanstack/router/blob/main/examples/react/basic-react-query/README.md
-
-Command to bootstrap a new project based on the TanStack Router React Query example. Uses gitpick to clone the example repository and create a new project directory with the specified name.
-
-```shell
-npx gitpick TanStack/router/tree/main/examples/react/basic-react-query basic-react-query
-```
-
---------------------------------
-
 ### Configure Static Prerendering with TanStack Start and Vite
 
 Source: https://github.com/tanstack/router/blob/main/docs/start/framework/react/guide/isr.md
@@ -903,6 +956,30 @@ export default defineConfig({
     })
   ]
 })
+```
+
+--------------------------------
+
+### Initialize project using gitpick
+
+Source: https://github.com/tanstack/router/blob/main/examples/react/start-counter/README.md
+
+Clones the specific counter example from the TanStack Router repository into a new local directory.
+
+```sh
+npx gitpick TanStack/router/tree/main/examples/react/start-counter start-counter
+```
+
+--------------------------------
+
+### Initialize New Project from Example
+
+Source: https://github.com/tanstack/router/blob/main/examples/react/basic-react-query/README.md
+
+Command to bootstrap a new project based on the TanStack Router React Query example. Uses gitpick to clone the example repository and create a new project directory with the specified name.
+
+```shell
+npx gitpick TanStack/router/tree/main/examples/react/basic-react-query basic-react-query
 ```
 
 --------------------------------
@@ -936,32 +1013,6 @@ Clones the specific example directory from the TanStack Router repository using 
 
 ```sh
 npx gitpick TanStack/router/tree/main/examples/react/basic-devtools-panel basic-devtools-panel
-```
-
---------------------------------
-
-### Initialize Project Directory
-
-Source: https://github.com/tanstack/router/blob/main/docs/start/framework/react/build-from-scratch.md
-
-Create and initialize a new project directory with npm.
-
-```shell
-mkdir myApp
-cd myApp
-npm init -y
-```
-
---------------------------------
-
-### Initialize project using gitpick
-
-Source: https://github.com/tanstack/router/blob/main/examples/react/start-material-ui/README.md
-
-Use npx gitpick to clone the Material UI example directly from the TanStack Router repository.
-
-```sh
-npx gitpick TanStack/router/tree/main/examples/react/start-material-ui start-material-ui
 ```
 
 --------------------------------
