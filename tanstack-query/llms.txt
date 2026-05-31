@@ -1000,18 +1000,6 @@ npm init solid@latest my-app
 
 --------------------------------
 
-### Get Mutation Cache from QueryClient
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use this method to access the mutation cache instance associated with the QueryClient.
-
-```tsx
-const mutationCache = queryClient.getMutationCache()
-```
-
---------------------------------
-
 ### Invalidate Queries by Prefix in TanStack Query
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/query-invalidation.md
@@ -1039,57 +1027,6 @@ const todoListQuery = useQuery({
 
 --------------------------------
 
-### Get Query Cache from QueryClient
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use this method to access the query cache instance associated with the QueryClient.
-
-```tsx
-const queryCache = queryClient.getQueryCache()
-```
-
---------------------------------
-
-### useQuery Integration with SolidJS Suspense and ErrorBoundary
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/reference/useQuery.md
-
-This example demonstrates how `useQuery` can be used with SolidJS `Suspense` for loading states and `ErrorBoundary` for error handling by setting `throwOnError: true`.
-
-```tsx
-import { useQuery } from '@tanstack/solid-query'
-
-function App() {
-  const todos = useQuery(() => ({
-    queryKey: 'todos',
-    queryFn: async () => {
-      const response = await fetch('/api/todos')
-      if (!response.ok) {
-        throw new Error('Failed to fetch todos')
-      }
-      return response.json()
-    },
-    throwOnError: true,
-  }))
-
-  return (
-    <ErrorBoundary fallback={<div>Error: {todos.error.message}</div>}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <div>
-          <div>Todos:</div>
-          <ul>
-            <For each={todos.data}>{(todo) => <li>{todo.title}</li>}</For>
-          </ul>
-        </div>
-      </Suspense>
-    </ErrorBoundary>
-  )
-}
-```
-
---------------------------------
-
 ### Install Svelte Query with NPM, pnpm, yarn, or bun
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
@@ -1110,18 +1047,6 @@ yarn add @tanstack/svelte-query
 
 ```bash
 bun add @tanstack/svelte-query
-```
-
---------------------------------
-
-### Get Mutation Defaults with QueryClient
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use this method to retrieve default options previously set for a specific mutation key.
-
-```tsx
-const defaultOptions = queryClient.getMutationDefaults(['addPost'])
 ```
 
 --------------------------------
@@ -1250,38 +1175,6 @@ function Post(props) {
 
 --------------------------------
 
-### Refetch Queries with Various Filters (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use these examples to refetch queries based on different criteria, such as all queries, stale queries, or queries matching specific keys and activity types.
-
-```tsx
-// refetch all queries:
-await queryClient.refetchQueries()
-```
-
-```tsx
-// refetch all stale queries:
-await queryClient.refetchQueries({ stale: true })
-```
-
-```tsx
-// refetch all active queries partially matching a query key:
-await queryClient.refetchQueries({ queryKey: ['posts'], type: 'active' })
-```
-
-```tsx
-// refetch all active queries exactly matching a query key:
-await queryClient.refetchQueries({
-  queryKey: ['posts', 1],
-  type: 'active',
-  exact: true,
-})
-```
-
---------------------------------
-
 ### createQueriesController(host, options, queryClient?)
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueriesController.md
@@ -1368,35 +1261,6 @@ const localStoragePersister = createSyncStoragePersister({
 persistQueryClient({
   queryClient,
   persister: localStoragePersister,
-})
-```
-
---------------------------------
-
-### Ensuring Query Data with queryClient.ensureQueryData (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use `ensureQueryData` to get cached data or fetch it if not present. If the query does not exist, `fetchQuery` is called to retrieve the data.
-
-```tsx
-const data = await queryClient.ensureQueryData({ queryKey, queryFn })
-```
-
---------------------------------
-
-### Ensuring Infinite Query Data with queryClient.ensureInfiniteQueryData (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use `ensureInfiniteQueryData` to get cached infinite query data or fetch it if not present. If the query does not exist, `fetchInfiniteQuery` is called.
-
-```tsx
-const data = await queryClient.ensureInfiniteQueryData({
-  queryKey,
-  queryFn,
-  initialPageParam,
-  getNextPageParam,
 })
 ```
 
@@ -1678,24 +1542,6 @@ customElements.define('todos-view', TodosView)
 
 --------------------------------
 
-### Create a new Svelte project using npm
-
-Source: https://github.com/tanstack/query/blob/main/examples/svelte/basic/README.md
-
-Use `npm create svelte@latest` to initialize a new Svelte project. Specify a directory name to create it in a new folder, or omit it to use the current directory.
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-```
-
-```bash
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
---------------------------------
-
 ### Define Vue Props in Script Setup
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/reactivity.md
@@ -1712,18 +1558,20 @@ const props = defineProps<{
 
 --------------------------------
 
-### Get Number of Fetching Queries with useIsFetching (React)
+### Create a new Svelte project using npm
 
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useIsFetching.md
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/basic/README.md
 
-Use `useIsFetching` to get the total number of active queries or filter by `queryKey` to count specific queries, useful for global loading indicators.
+Use `npm create svelte@latest` to initialize a new Svelte project. Specify a directory name to create it in a new folder, or omit it to use the current directory.
 
-```tsx
-import { useIsFetching } from '@tanstack/react-query'
-// How many queries are fetching?
-const isFetching = useIsFetching()
-// How many queries matching the posts prefix are fetching?
-const isFetchingPosts = useIsFetching({ queryKey: ['posts'] })
+```bash
+# create a new project in the current directory
+npm create svelte@latest
+```
+
+```bash
+# create a new project in my-app
+npm create svelte@latest my-app
 ```
 
 --------------------------------
@@ -1791,6 +1639,22 @@ class TodosView extends LitElement {
 }
 
 customElements.define('todos-view', TodosView)
+```
+
+--------------------------------
+
+### Get Number of Fetching Queries with useIsFetching (React)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useIsFetching.md
+
+Use `useIsFetching` to get the total number of active queries or filter by `queryKey` to count specific queries, useful for global loading indicators.
+
+```tsx
+import { useIsFetching } from '@tanstack/react-query'
+// How many queries are fetching?
+const isFetching = useIsFetching()
+// How many queries matching the posts prefix are fetching?
+const isFetchingPosts = useIsFetching({ queryKey: ['posts'] })
 ```
 
 --------------------------------
@@ -1883,6 +1747,30 @@ Execute this command to build the Nuxt 3 application for production deployment.
 
 ```bash
 pnpm build
+```
+
+--------------------------------
+
+### Get Mutation Cache from QueryClient
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Use this method to access the mutation cache instance associated with the QueryClient.
+
+```tsx
+const mutationCache = queryClient.getMutationCache()
+```
+
+--------------------------------
+
+### Get Query Cache from QueryClient
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Use this method to access the query cache instance associated with the QueryClient.
+
+```tsx
+const queryCache = queryClient.getQueryCache()
 ```
 
 --------------------------------
@@ -2000,6 +1888,30 @@ npm run build
 
 --------------------------------
 
+### Correct queryKey reference in invalidateQueries (TypeScript/TSX)
+
+Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
+
+This example demonstrates correctly referencing `queryKey` from the `queryOptions` result when using `queryClient.invalidateQueries`.
+
+```tsx
+/* eslint "@tanstack/query/prefer-query-options": "error" */
+
+function todoOptions(id) {
+  return queryOptions({
+    queryKey: ['todo', id],
+    queryFn: () => api.getTodo(id),
+  })
+}
+
+function Component({ id }) {
+  const queryClient = useQueryClient()
+  return queryClient.invalidateQueries({ queryKey: todoOptions(id).queryKey })
+}
+```
+
+--------------------------------
+
 ### Fetch Multiple Dependent Queries with useQueries
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/dependent-queries.md
@@ -2025,30 +1937,6 @@ const usersMessages = useQueries(() => ({
       })
     : [], // if usersQuery.data is undefined, an empty array will be returned
 }))
-```
-
---------------------------------
-
-### Correct queryKey reference in invalidateQueries (TypeScript/TSX)
-
-Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
-
-This example demonstrates correctly referencing `queryKey` from the `queryOptions` result when using `queryClient.invalidateQueries`.
-
-```tsx
-/* eslint "@tanstack/query/prefer-query-options": "error" */
-
-function todoOptions(id) {
-  return queryOptions({
-    queryKey: ['todo', id],
-    queryFn: () => api.getTodo(id),
-  })
-}
-
-function Component({ id }) {
-  const queryClient = useQueryClient()
-  return queryClient.invalidateQueries({ queryKey: todoOptions(id).queryKey })
-}
 ```
 
 --------------------------------
@@ -2175,4 +2063,81 @@ Restores the `queryClient` state, including previously dehydrated paused mutatio
 
 ```typescript
 hydrate(queryClient, state)
+```
+
+--------------------------------
+
+### Get Mutation Defaults with QueryClient
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Use this method to retrieve default options previously set for a specific mutation key.
+
+```tsx
+const defaultOptions = queryClient.getMutationDefaults(['addPost'])
+```
+
+--------------------------------
+
+### Create a Query Controller in LitElement
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/reactive-controllers-vs-hooks.md
+
+Demonstrates how to create a createQueryController instance within a LitElement class, binding it to the host (this) to manage query state for a list of todos.
+
+```ts
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  })
+}
+```
+
+--------------------------------
+
+### Get Current Online State
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
+
+Retrieve the current online status managed by `onlineManager` to check if the application is considered online.
+
+```tsx
+const isOnline = onlineManager.isOnline()
+```
+
+--------------------------------
+
+### Create tanstack Directory for Local Docs
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+Creates a new directory named 'tanstack' to house the local clones of TanStack Query and tanstack.com for documentation development.
+
+```sh
+mkdir tanstack
+```
+
+--------------------------------
+
+### Install Vue Query using a package manager
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/installation.md
+
+Use one of these commands to add Vue Query to your project's dependencies.
+
+```bash
+npm i @tanstack/vue-query
+```
+
+```bash
+pnpm add @tanstack/vue-query
+```
+
+```bash
+yarn add @tanstack/vue-query
+```
+
+```bash
+bun add @tanstack/vue-query
 ```
