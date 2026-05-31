@@ -511,355 +511,6 @@ HTML tags that should be included in production for the entry point `views/foo.j
 
 --------------------------------
 
-### Install Babel Plugin for Decorators
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Commands to install the Babel plugin and decorator proposal plugin for lowering native decorators.
-
-```bash
-$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
-```
-
---------------------------------
-
-### configurePreviewServer
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Hook to configure the preview server, similar to `configureServer`. It allows injecting custom middleware before or after internal middlewares are installed.
-
-```APIDOC
-## configurePreviewServer
-
-### Description
-Hook to configure the preview server, similar to `configureServer`. It allows injecting custom middleware before or after internal middlewares are installed. This hook is called before other middlewares are installed. If a function is returned, it will be called after internal middlewares are installed.
-
-### Method
-N/A (Plugin Hook)
-
-### Endpoint
-N/A
-
-### Parameters
-- **server** (PreviewServer) - The preview server instance.
-
-### Returns
-- `(() => void) | void | Promise<(() => void) | void>` - A function to be called after internal middlewares, or void.
-
-### Request Example
-```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
-```
-```
-
---------------------------------
-
-### Classic Worker Instantiation
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a classic worker, for the .classic-worker test case.
-
-```javascript
-new Worker(new URL('./classic-worker.js', import.meta.url))
-```
-
---------------------------------
-
-### Importing an Inline Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing an inline worker module for the .pong-inline test case.
-
-```javascript
-import InlineWorker from '../my-worker?worker&inline'
-```
-
---------------------------------
-
-### Classic Shared Worker Instantiation
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a classic shared worker, for the .classic-shared-worker test case.
-
-```javascript
-new SharedWorker(new URL('./classic-shared-worker.js', import.meta.url), { type: 'classic' })
-```
-
---------------------------------
-
-### Importing and Instantiating a Named Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing and instantiating a worker module with a specific name, for the .pong-named test case.
-
-```javascript
-import myWorker from '../my-worker?worker' new myWorker({ name: "named-worker" })
-```
-
---------------------------------
-
-### Importing an Inline Shared Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing an inline shared worker module for the .pong-shared-inline test case.
-
-```javascript
-import InlineSharedWorker from '../my-shared-worker?sharedworker&inline'
-```
-
---------------------------------
-
-### Dynamic Asset Loading with import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
-
-Examples demonstrating various ways to dynamically load assets using `new URL(path, import.meta.url)`, including paths with queries, ternary operators, and different file types. It also includes a helper function for displaying results.
-
-```javascript
-function testDynamicImportMetaUrl(name, i) {
-  const metaUrl = new URL(`./nested/${name}.png`, import.meta.url)
-  text(`.dynamic-import-meta-url-${i}`, metaUrl)
-  document.querySelector(`.dynamic-import-meta-url-img-${i}`).src = metaUrl
-}
-testDynamicImportMetaUrl('icon', 1)
-testDynamicImportMetaUrl('asset', 2)
-
-function testDynamicImportMetaUrlWithComma(name, i) {
-  // prettier-ignore
-  const metaUrl = new URL(`./nested/${name}.png`, import.meta.url,)
-  text(`.dynamic-import-meta-url-${i}-comma`, metaUrl)
-  document.querySelector(`.dynamic-import-meta-url-img-${i}-comma`).src = metaUrl
-}
-testDynamicImportMetaUrlWithComma('icon', 1)
-testDynamicImportMetaUrlWithComma('asset', 2)
-
-function testDynamicImportMetaUrlWithQuery(name, i) {
-  // prettier-ignore
-  const metaUrl = new URL(`./nested/${name}.png?abc`, import.meta.url,)
-  text(`.dynamic-import-meta-url-${i}-query`, metaUrl)
-  document.querySelector(`.dynamic-import-meta-url-img-${i}-query`).src = metaUrl
-}
-testDynamicImportMetaUrlWithQuery('icon', 1)
-testDynamicImportMetaUrlWithQuery('asset', 2)
-
-function testDynamicImportMetaUrlWithTernaryOperator(name, i) {
-  // prettier-ignore
-  const metaUrl = new URL(`./nested/${1 === 0 ? 'failed' : name}.png?abc`, import.meta.url,)
-  text(`.dynamic-import-meta-url-${i}-ternary`, metaUrl)
-  document.querySelector(`.dynamic-import-meta-url-img-${i}-ternary`).src = metaUrl
-}
-testDynamicImportMetaUrlWithTernaryOperator('icon', 1)
-testDynamicImportMetaUrlWithTernaryOperator('asset', 2)
-
-{
-  const name = 'test'
-  const js = new URL(`./nested/${name}.js`, import.meta.url).href
-  text('.dynamic-import-meta-url-js', js)
-}
-
-{
-  const name = './nested/icon'
-  const metaUrl = new URL(`${name}.png`, import.meta.url)
-  text(`.dynamic-import-meta-url-all`, metaUrl)
-}
-
-text('.import-meta-url-multiline', multilineUrl)
-
-function text(el, text) {
-  document.querySelector(el).textContent = text
-}
-```
-
---------------------------------
-
-### Nested Worker with import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing a nested worker and testing import.meta.url behavior, for the .nested-worker test case.
-
-```javascript
-import NestedWorker from './worker-nested-worker?worker'
-```
-
---------------------------------
-
-### Injecting Post-Middleware for Vite Preview Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Use this snippet to inject custom middleware that runs after Vite's internal middlewares are installed in the preview server. The `configurePreviewServer` hook returns a function that executes post-installation.
-
-```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  }
-})
-```
-
---------------------------------
-
-### Importing and Instantiating a Named Inline Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing and instantiating an inline worker module with a specific name, for the .pong-inline-named test case.
-
-```javascript
-import InlineWorker from '../my-worker?worker&inline' new InlineWorker({ name: "named-inline-worker" })
-```
-
---------------------------------
-
-### Inline Worker with import.meta.url Access
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing and instantiating an inline worker, demonstrating access to import.meta.url, for the .pong-inline-url test case.
-
-```javascript
-import InlineWorker from '../my-worker?worker&inline' new InlineWorker() import.meta.url
-```
-
---------------------------------
-
-### Module Worker with URL and import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a module worker using a URL relative to import.meta.url, for the .worker-import-meta-url test case.
-
-```javascript
-new Worker(new URL('./url-worker.js', import.meta.url), { type: 'module' })
-```
-
---------------------------------
-
-### Importing a Shared Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing a named shared worker module for the .tick-count test case.
-
-```javascript
-import mySharedWorker from '../my-shared-worker?sharedworker&name=shared'
-```
-
---------------------------------
-
-### Deeply Nested Module Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a deeply nested module worker, for the .deeply-nested-worker test case.
-
-```javascript
-new Worker(new URL('../deeply-nested-worker.js', import.meta.url), { type: 'module' })
-```
-
---------------------------------
-
-### Importing and Instantiating a Named Shared Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing and instantiating a named shared worker module, for the .tick-count-named test case.
-
-```javascript
-import mySharedWorker from '../my-shared-worker?sharedworker&name=shared' new mySharedWorker({ name: "namedSharedWorker" })
-```
-
---------------------------------
-
-### Module Worker with URL Without Extension
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a module worker using a URL without a file extension and import.meta.url, for the .worker-import-meta-url-without-extension test case.
-
-```javascript
-new Worker(new URL('./url-worker', import.meta.url), { type: 'module' })
-```
-
---------------------------------
-
-### Asset Import and Usage Examples
-
-Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
-
-This comprehensive snippet showcases diverse asset import strategies in a JavaScript context, covering CSS imports, image imports (relative, absolute, public, inline), JSON and JavaScript file imports as URLs, SVG fragment imports, raw asset imports, and usage of `import.meta.url` for dynamic asset resolution.
-
-```javascript
-@import '/foo.css'; import './css/fonts.css' import './css/css-url.css' import './css/icons.css' import './css/manual-chunks.css' import { multilineUrl } from './multiline-import-meta-url.js' text('.base', `import.meta.${''}env.BASE_URL: ${import.meta.env.BASE_URL}`) import url from './nested/asset.png' text('.asset-import-relative', url) import absoluteUrl from '/nested/asset.png' text('.asset-import-absolute', absoluteUrl) import publicUrl from '/icon.png' text('.public-import', publicUrl) import publicJsonUrl from '/foo.json?url' text('.public-json-import', publicJsonUrl) ;(async () => { const res = await fetch(publicJsonUrl) text('.public-json-import-content', await res.text()) })() import publicJsUrl from '/raw.js?url' text('.public-js-import', publicJsUrl) ;(async () => { const res = await fetch(publicJsUrl) text('.public-js-import-content', await res.text()) text( '.public-js-import-content-type', await res.headers.get('Content-Type'), ) })() import publicTsUrl from '/raw.ts?url' text('.public-ts-import', publicTsUrl) ;(async () => { const res = await fetch(publicTsUrl) text('.public-ts-import-content', await res.text()) text( '.public-ts-import-content-type', await res.headers.get('Content-Type'), ) })() import publicMtsUrl from '/raw.mts?url' text('.public-mts-import', publicMtsUrl) ;(async () => { const res = await fetch(publicMtsUrl) text('.public-mts-import-content', await res.text()) text( '.public-mts-import-content-type', await res.headers.get('Content-Type'), ) })() import svgFrag from './nested/fragment.svg' text('.svg-frag-import-path', svgFrag) document.querySelector('.svg-frag-import').src = svgFrag + '#icon-heart-view' import unknownExtUrl from './nested/foo.unknown' text('.unknown-ext', unknownExtUrl) import rawSvg from './nested/fragment.svg?raw' text('.raw', rawSvg) import rawHtml from './nested/partial.html?raw' text('.raw-html', rawHtml) import.meta.hot?.accept('./nested/partial.html?raw', (m) => { text('.raw-html', m.default) }) import noInlineSvg from './nested/fragment.svg?no-inline' text('.no-inline-svg', noInlineSvg) import noInlineSvgMP from './nested/fragment.svg?no-inline&foo=bar' text('.no-inline-svg-mp', noInlineSvgMP) import inlinePng from './nested/asset.png?inline' text('.inline-png', inlinePng) import inlinePublicPng from '/icon.png?inline' text('.inline-public-png', inlinePublicPng) import inlinePublicJson from '/foo.json?url&inline' text('.inline-public-json', inlinePublicJson) import fooUrl from './foo.js?url' text('.url', fooUrl) import unicodeUrl from './テスト-測試-white space.js?url' text('.unicode-url', unicodeUrl) import filenameIncludingSingleQuoteUrl from "./nested/with-single'quote.png" text('.filename-including-single-quote', filenameIncludingSingleQuoteUrl) // TODO: is not supported yet (https://github.com/vitejs/vite/pull/16243) // import percentUrl from './asset/percent%25.png?url' // text('.percent-url', percentUrl) import cssUrl from './css/icons.css?url' text('.url-css', cssUrl) import cssUrlUrl from './css/css-url-url.css?url' const linkTag = document.createElement('link') linkTag.href = cssUrlUrl linkTag.rel = 'stylesheet' document.body.appendChild(linkTag) // const url = new URL('non_existent_file.png', import.meta.url) const metaUrl = new URL('./import-meta-url/img.png', import.meta.url) text('.import-meta-url', metaUrl) document.querySelector('.import-meta-url-img').src = metaUrl const metaUrlDep = new URL('@/asset.png', import.meta.url) text('.import-meta-url-dep', metaUrlDep) document.querySelector('.import-meta-url-dep-img').src = metaUrlDep // testing URLs for public assets served at the public base path // equivalent to `new URL(`${import.meta.env.BASE_URL}/icon.png`, import.meta.url) const metaUrlBasePath = new URL('/icon.png', import.meta.url) text('.import-meta-url-base-path', metaUrlBasePath) document.querySelector('.import-meta-url-base-path-img').src = metaUrlBasePath const metaUrlDataUri = new URL( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA0CAYAAADWr1sfAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NTAyNkI1RkE4N0VCMTFFQUFBQzJENzUzNDFGRjc1N0UiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTAyNkI1Rjk4N0VCMTFFQUFBQzJENzUzNDFGRjc1N0UiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHJkZjpEZXNjcmlwdGlvbiBzdFJlZjppbnN0YW5jZUlEPnhtcC5paWQ6QTc3NzA2Q0Y4N0FCMTFFM0I3
-```
-
---------------------------------
-
-### Shared Module Worker with URL and import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a module shared worker using a URL relative to import.meta.url, for the .shared-worker-import-meta-url test case.
-
-```javascript
-new SharedWorker(new URL('./url-shared-worker.js', import.meta.url), { type: 'module' })
-```
-
---------------------------------
-
-### Worker with URL .href
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a worker using the .href property of a URL derived from import.meta.url, for the .simple-worker-url test case.
-
-```javascript
-new Worker(new URL('../simple-worker.js', import.meta.url).href)
-```
-
---------------------------------
-
 ### Configure preview port
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -872,18 +523,6 @@ Example of configuring the preview server's port in package.json.
     "preview": "vite preview --port 8080"
   }
 }
-```
-
---------------------------------
-
-### Require JSON in Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Demonstrates requiring a JSON file within a worker, for the .worker-require-json test case.
-
-```javascript
-require('./some.json') in worker
 ```
 
 --------------------------------
@@ -943,36 +582,458 @@ export default defineConfig({
 
 --------------------------------
 
-### Module Worker with URL Alias Resolution
+### Preview command
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Instantiating a module worker using a URL with an alias and import.meta.url for resolution, for the .worker-import-meta-url-resolve test case.
+Command to test the built application locally.
 
-```javascript
-new Worker(new URL('@/url-worker', import.meta.url), { type: 'module' })
+```bash
+$ npm run preview
 ```
 
 --------------------------------
 
-### Worker from TypeScript Output
+### Netlify CLI Site Initialization
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Importing a worker module that might be a TypeScript output, for the .pong-ts-output test case.
+Command to create a new Netlify site using the CLI.
 
-```javascript
-import TSOutputWorker from '../possible-ts-output-worker?worker'
+```bash
+netlify init
 ```
 
 --------------------------------
 
-### Second Deeply Nested Module Worker
+### Basic Playwright Test Example
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Instantiating a second deeply nested module worker, for the .deeply-nested-second-worker test case.
+Demonstrates a simple integration test using the `page` object from `~utils` to interact with the served page.
+
+```js
+import { page } from '~utils'
+
+test('should work', async () => {
+  expect(await page.textContent('.foo')).toMatch('foo')
+})
+```
+
+--------------------------------
+
+### Using pnpm overrides for local Vite testing
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Example of how to configure pnpm overrides in `pnpm-workspace.yaml` to link a local Vite package for testing against external packages.
+
+```yaml
+# pnpm-workspace.yaml
+overrides:
+  vite: link:../path/to/vite/packages/vite
+```
+
+--------------------------------
+
+### Build for production
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to build the application for production.
+
+```bash
+npm run build
+```
+
+--------------------------------
+
+### Local Release Preparation Commands
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
+
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
+```
+
+```bash
+pnpm release
+```
+
+```bash
+pnpm release --dry
+```
+
+--------------------------------
+
+### Express server setup
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
+
+Example of setting up a Vite dev server in middleware mode with Express, disabling Vite's own HTML serving logic to allow the parent server to take control.
+
+```js
+import fs from 'node:fs'
+import path from 'node:path'
+import express from 'express'
+import { createServer as createViteServer } from 'vite'
+
+async function createServer() {
+  const app = express()
+
+  // Create Vite server in middleware mode and configure the app type as
+  // 'custom', disabling Vite's own HTML serving logic so parent server
+  // can take control
+  const vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: 'custom'
+  })
+
+  // Use vite's connect instance as middleware. If you use your own
+  // express router (express.Router()), you should use router.use
+  // When the server restarts (for example after the user modifies
+  // vite.config.js), `vite.middlewares` is still going to be the same
+  // reference (with a new internal stack of Vite and plugin-injected
+  // middlewares). The following is valid even after restarts.
+  app.use(vite.middlewares)
+
+  app.use('*all', async (req, res) => {
+    // serve index.html - we will tackle this next
+  })
+
+  app.listen(5173)
+}
+
+createServer()
+```
+
+--------------------------------
+
+### Build command
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to build the application.
+
+```bash
+$ npm run build
+```
+
+--------------------------------
+
+### Run development server
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to run the application in development mode.
+
+```bash
+npm run dev
+```
+
+--------------------------------
+
+### Entry file exports
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example of an entry file (`lib/main.js`) exporting components for library users.
+
+```js
+import Foo from './Foo.vue'
+import Bar from './Bar.vue'
+export { Foo, Bar }
+```
+
+--------------------------------
+
+### Install Terser
+
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+
+Command to install Terser, which is required by plugin-legacy for minification.
+
+```sh
+npm add -D terser
+```
+
+--------------------------------
+
+### Component Setup Script
+
+Source: https://github.com/vitejs/vite/blob/main/docs/team.md
+
+Imports necessary components and data for rendering the team page.
 
 ```javascript
-new Worker(new URL('deeply-nested-second-worker.js', import.meta.url), { type: 'module' })
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamPageSection,
+  VPTeamMembers
+} from '@voidzero-dev/vitepress-theme'
+import { core, emeriti } from './_data/team'
+```
+
+--------------------------------
+
+### Accessing Environments from the Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+
+Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+
+```js
+// create the server, or get it from the configureServer hook
+const server = await createServer(/* options */)
+
+const clientEnvironment = server.environments.client
+clientEnvironment.transformRequest(url)
+console.log(server.environments.ssr.moduleGraph)
+```
+
+--------------------------------
+
+### Install Minifiers
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Commands to install esbuild and terser as development dependencies for minification.
+
+```sh
+npm add -D esbuild
+npm add -D terser
+```
+
+--------------------------------
+
+### assetsInclude Configuration Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Example of adding GLTF files to be treated as static assets.
+
+```js
+export default defineConfig({
+  assetsInclude: ['**/*.gltf'],
+})
+```
+
+--------------------------------
+
+### Install CSS Pre-processors
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Commands to install the necessary pre-processor packages for Sass, Less, and Stylus.
+
+```bash
+# .scss and .sass
+npm add -D sass-embedded # or sass
+
+# .less
+npm add -D less
+
+# .styl and .stylus
+npm add -D stylus
+```
+
+--------------------------------
+
+### Creating and using FetchableDevEnvironment
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
+
+This example demonstrates how to create a `FetchableDevEnvironment` using `createFetchableDevEnvironment` and implement its `handleRequest` method. It also shows how to dispatch a fetch request using `dispatchFetch` on the created environment.
+
+```typescript
+import {
+  createServer,
+  createFetchableDevEnvironment,
+  isFetchableDevEnvironment,
+} from 'vite'
+
+const server = await createServer({
+  server: { middlewareMode: true },
+  appType: 'custom',
+  environments: {
+    custom: {
+      dev: {
+        createEnvironment(name, config) {
+          return createFetchableDevEnvironment(name, config, {
+            handleRequest(request: Request): Promise<Response> | Response {
+              // handle Request and return a Response
+            },
+          })
+        },
+      },
+    },
+  },
+})
+
+// Any consumer of the environment API can now call `dispatchFetch`
+if (isFetchableDevEnvironment(server.environments.custom)) {
+  const response: Response = await server.environments.custom.dispatchFetch(
+    new Request('http://example.com/request-to-handle'),
+  )
+}
+```
+
+--------------------------------
+
+### Vite build command output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
+
+```shell
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```
+
+--------------------------------
+
+### Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Example of adding type declarations for defined global constants in `vite-env.d.ts` for TypeScript users.
+
+```ts
+// vite-env.d.ts
+declare const __APP_VERSION__: string
+```
+
+--------------------------------
+
+### Example Generated License File
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+An example of the content generated in the .vite/license.md file, listing bundled dependencies and their licenses.
+
+```markdown
+# Licenses
+
+The app bundles dependencies which contain the following licenses:
+
+## dep-1 - 1.2.3 (CC0-1.0)
+
+CC0 1.0 Universal
+
+...
+
+## dep-2 - 4.5.6 (MIT)
+
+MIT License
+
+...
+```
+
+--------------------------------
+
+### build Function Example Usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+An example demonstrating how to programmatically use the `build` function with an inline configuration.
+
+```ts
+import path from 'node:path'
+import { build } from 'vite'
+
+await build({
+  root: path.resolve(import.meta.dirname, './project'),
+  base: '/foo/',
+  build: {
+    rolldownOptions: {
+      // ...
+    },
+  },
+})
+```
+
+--------------------------------
+
+### Basic `experimental.renderBuiltUrl` usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
+### Advanced `experimental.renderBuiltUrl` with asset types
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example showing how to define different base options for public files, JavaScript host IDs, and other assets using the `type` and `hostId` context parameters.
+
+```ts
+import type { UserConfig } from 'vite'
+import path from 'node:path'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostId, hostType, type }) {
+    if (type === 'public') {
+      return 'https://www.domain.com/' + filename
+    } else if (path.extname(hostId) === '.js') {
+      return {
+        runtime: `window.__assetsPath(${JSON.stringify(filename)})`
+      }
+    } else {
+      return 'https://cdn.domain.com/assets/' + filename
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
+### Conditional Exports Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Example of the `exports` field in `package.json` demonstrating conditional exports for `import` and `require`.
+
+```json
+{
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  }
+}
 ```
