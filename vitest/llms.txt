@@ -365,6 +365,18 @@ bun add -D vitest @vitest/browser-playwright
 
 --------------------------------
 
+### Install Vitest with npm
+
+Source: https://main.vitest.dev/guide
+
+Install Vitest as a development dependency using npm.
+
+```bash
+npm install -D vitest
+```
+
+--------------------------------
+
 ### sequence.setupFiles Configuration
 
 Source: https://main.vitest.dev/config/sequence
@@ -388,18 +400,6 @@ Changes the order in which setup files are executed.
 
 ### CLI
 `--sequence.setupFiles=<value>`
-```
-
---------------------------------
-
-### Install Vitest with npm
-
-Source: https://main.vitest.dev/guide
-
-Install Vitest as a development dependency using npm.
-
-```bash
-npm install -D vitest
 ```
 
 --------------------------------
@@ -1488,29 +1488,6 @@ test('expect rejects toThrow', async ({ expect }) => {
 
 --------------------------------
 
-### Handle Newly Added Files in Watcher
-
-Source: https://main.vitest.dev/guide/advanced/tests
-
-This example shows how to handle newly added files by checking if they match any project glob patterns and then creating and running their specifications. This is an alternative to `getModuleSpecifications` when a file is newly created.
-
-```typescript
-watcher.on('add', async (file) => {
-  const specifications = []
-  for (const project of vitest.projects) {
-    if (project.matchesGlobPattern(file)) {
-      specifications.push(project.createSpecification(file))
-    }
-  }
-
-  if (specifications.length) {
-    await vitest.rerunTestSpecifications(specifications)
-  }
-})
-```
-
---------------------------------
-
 ### Detecting Async Leaks Example
 
 Source: https://main.vitest.dev/config/detectasyncleaks
@@ -1814,4 +1791,50 @@ class MyReporter implements Reporter {
 }
 
 export default new MyReporter()
+```
+
+--------------------------------
+
+### startVitest API
+
+Source: https://main.vitest.dev/guide/advanced
+
+Starts Vitest tests programmatically. It returns a Vitest instance if tests can be started. If watch mode is not enabled, Vitest will call the `close` method automatically. If watch mode is enabled and the terminal supports TTY, Vitest will register console shortcuts.
+
+```APIDOC
+## startVitest
+
+### Description
+Starts Vitest tests programmatically. Returns a `Vitest` instance if tests can be started. Automatically calls `close` if not in watch mode. Registers console shortcuts in watch mode if the terminal supports TTY.
+
+### Method
+`startVitest(mode: VitestRunMode, cliFilters: string[] = [], options: CliOptions = {}, viteOverrides?: ViteUserConfig, vitestOptions?: VitestOptions): Promise<Vitest>`
+
+### Parameters
+- **mode** (VitestRunMode) - Required - The mode to run Vitest in (e.g., 'test').
+- **cliFilters** (string[]) - Optional - A list of filters. Vitest will run only tests whose file path contains at least one of these strings.
+- **options** (CliOptions) - Optional - CLI arguments that will override any test config options.
+- **viteOverrides** (ViteUserConfig) - Optional - Complete Vite config, which takes precedence over other user-defined options.
+- **vitestOptions** (VitestOptions) - Optional - Vitest specific options.
+
+### Request Example
+```js
+import { startVitest } from 'vitest/node'
+
+const vitest = await startVitest('test')
+await vitest.close()
+```
+
+### Response
+#### Success Response (Vitest Instance)
+- **state.getTestModules** (Array<TestModule>) - Returns an array of `TestModule` objects containing test results.
+
+#### Response Example
+```ts
+import type { TestModule } from 'vitest/node'
+
+const vitest = await startVitest('test')
+
+console.log(vitest.state.getTestModules()) // [TestModule]
+```
 ```
