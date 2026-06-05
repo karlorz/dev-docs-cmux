@@ -348,30 +348,6 @@ vite:transform 102.54ms /src/utils/big-utils.js +1ms
 
 --------------------------------
 
-### Example of build.modulePreload.resolveDependencies
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Configuration example showing how to use the `resolveDependencies` function to filter module preload dependencies.
-
-```js
-/** @type {import('vite').UserConfig} */
-const config = {
-  // prettier-ignore
-  build: {
-// ---cut-before---
-modulePreload: {
-  resolveDependencies: (filename, deps, { hostId, hostType }) => {
-    return deps.filter(condition)
-  },
-},
-// ---cut-after---
-  },
-}
-```
-
---------------------------------
-
 ### Install dependencies
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
@@ -380,31 +356,6 @@ Command to install project dependencies using npm, pnpm, or yarn.
 
 ```bash
 $ npm install # or pnpm install or yarn install
-```
-
---------------------------------
-
-### Example License Metadata JSON
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-An example of the JSON metadata generated when `build.license.fileName` ends with `.json`.
-
-```json
-[
-  {
-    "name": "dep-1",
-    "version": "1.2.3",
-    "identifier": "CC0-1.0",
-    "text": "CC0 1.0 Universal\n\n..."
-  },
-  {
-    "name": "dep-2",
-    "version": "4.5.6",
-    "identifier": "MIT",
-    "text": "MIT License\n\n..."
-  }
-]
 ```
 
 --------------------------------
@@ -542,6 +493,24 @@ Example of a CSS Modules file with a simple class.
 .red {
   color: red;
 }
+```
+
+--------------------------------
+
+### Multi-Page App Directory Structure
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example directory structure for a multi-page application.
+
+```plaintext
+├── package.json
+├── vite.config.js
+├── index.html
+├── main.js
+└── nested
+    ├── index.html
+    └── nested.js
 ```
 
 --------------------------------
@@ -687,6 +656,18 @@ overrides:
 
 --------------------------------
 
+### Build for production
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to build the application for production.
+
+```bash
+npm run build
+```
+
+--------------------------------
+
 ### Local Release Preparation Commands
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -711,6 +692,29 @@ pnpm release
 
 ```bash
 pnpm release --dry
+```
+
+--------------------------------
+
+### Programmatic Vite Build Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+Illustrates how to use the `build` function with an `InlineConfig` object to configure the build process, specifying root and base paths.
+
+```javascript
+import path from 'node:path'
+import { build } from 'vite'
+
+await build({
+  root: path.resolve(import.meta.dirname, './project'),
+  base: '/foo/',
+  build: {
+    rolldownOptions: {
+      // ...
+    },
+  },
+})
 ```
 
 --------------------------------
@@ -758,53 +762,6 @@ createServer()
 
 --------------------------------
 
-### Programmatic Vite Build Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
-
-Illustrates how to use the `build` function with an `InlineConfig` object to configure the build process, specifying root and base paths.
-
-```javascript
-import path from 'node:path'
-import { build } from 'vite'
-
-await build({
-  root: path.resolve(import.meta.dirname, './project'),
-  base: '/foo/',
-  build: {
-    rolldownOptions: {
-      // ...
-    },
-  },
-})
-```
-
---------------------------------
-
-### Build for production
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
-
-Command to build the application for production.
-
-```bash
-npm run build
-```
-
---------------------------------
-
-### Install Terser
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Command to install Terser, which is required by plugin-legacy for minification.
-
-```sh
-npm add -D terser
-```
-
---------------------------------
-
 ### Build command
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -829,14 +786,13 @@ npm run dev
 
 --------------------------------
 
-### Install Minifiers
+### Install Terser
 
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
 
-Commands to install esbuild and terser as development dependencies for minification.
+Command to install Terser, which is required by plugin-legacy for minification.
 
 ```sh
-npm add -D esbuild
 npm add -D terser
 ```
 
@@ -875,6 +831,24 @@ npm add -D stylus
 
 --------------------------------
 
+### Component Setup Script
+
+Source: https://github.com/vitejs/vite/blob/main/docs/team.md
+
+Imports necessary components and data for rendering the team page.
+
+```javascript
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamPageSection,
+  VPTeamMembers
+} from '@voidzero-dev/vitepress-theme'
+import { core, emeriti } from './_data/team'
+```
+
+--------------------------------
+
 ### Configure CSS Preprocessor Options
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
@@ -905,20 +879,14 @@ export default defineConfig({
 
 --------------------------------
 
-### Component Setup Script
+### Install esbuild for CSS Minification
 
-Source: https://github.com/vitejs/vite/blob/main/docs/team.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Imports necessary components and data for rendering the team page.
+Install esbuild as a development dependency to use it as the CSS minifier when `build.cssMinify` is set to `'esbuild'`.
 
-```javascript
-import {
-  VPTeamPage,
-  VPTeamPageTitle,
-  VPTeamPageSection,
-  VPTeamMembers
-} from '@voidzero-dev/vitepress-theme'
-import { core, emeriti } from './_data/team'
+```sh
+npm add -D esbuild
 ```
 
 --------------------------------
@@ -993,6 +961,19 @@ if (isFetchableDevEnvironment(server.environments.custom)) {
 
 --------------------------------
 
+### Example .env file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+
+```env
+VITE_SOME_KEY=123
+DB_PASSWORD=foobar
+```
+
+--------------------------------
+
 ### HTML Tags for 'views/foo.js' Entry Point
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
@@ -1024,31 +1005,6 @@ dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 
 --------------------------------
 
-### Install esbuild for CSS minification
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Command to install esbuild as a development dependency when using it for CSS minification.
-
-```sh
-npm add -D esbuild
-```
-
---------------------------------
-
-### Example .env file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
-
-```env
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
-```
-
---------------------------------
-
 ### Bare module import example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -1057,6 +1013,19 @@ An example of a bare module import that native ES imports do not support and Vit
 
 ```js
 import { someMethod } from 'my-dep'
+```
+
+--------------------------------
+
+### Install Minifiers for Vite Build
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Install esbuild or Terser as development dependencies if you intend to use them as minifiers for your Vite build process.
+
+```sh
+npm add -D esbuild
+npm add -D terser
 ```
 
 --------------------------------
@@ -1072,4 +1041,28 @@ An example of a simple external Svelte store that can be used to retain state ac
 // An extremely simple external store
 import { writable } from 'svelte/store'
 export default writable(0)
+```
+
+--------------------------------
+
+### Basic `experimental.renderBuiltUrl` usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
 ```
