@@ -64,33 +64,6 @@ console.log(tmp.extra) // "extra data"
 
 --------------------------------
 
-### Quickstart Example
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/http-recorder/README.md
-
-Example demonstrating how to use HttpRecorder's cassetteLayer to record or replay HTTP requests, with an option to force recording.
-
-```ts
-import { Effect } from "effect"
-import { HttpClient, HttpClientRequest } from "effect/unstable/http"
-import { HttpRecorder } from "@opencode-ai/http-recorder"
-
-const program = Effect.gen(function* () {
-  const http = yield* HttpClient.HttpClient
-  const response = yield* http.execute(HttpClientRequest.get("https://api.example.com/users/1"))
-  return yield* response.json
-})
-
-// Records if the cassette is missing, replays if it exists.
-// In CI (CI=true) always replays — fails loudly on missing fixtures.
-Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one"))))
-
-// Force a refresh — always hits upstream and overwrites.
-Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one", { mode: "record" }))))
-```
-
---------------------------------
-
 ### Install dependencies (Linux)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -112,25 +85,6 @@ Command to install project dependencies using Bun.
 
 ```bash
 bun install
-```
-
---------------------------------
-
-### Provider Facade Configuration Examples
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/llm/AGENTS.md
-
-Examples demonstrating how to configure different LLM providers using their respective facades.
-
-```ts
-const openai = OpenAI.configure({ apiKey, baseURL })
-const model = openai.responses("gpt-4o-mini")
-
-const azure = Azure.configure({ resourceName, apiKey, apiVersion: "v1" })
-const deployment = azure.responses("my-deployment")
-
-const gateway = CloudflareAIGateway.configure({ accountId, gatewayId, gatewayApiKey, apiKey })
-const proxied = gateway.model("openai/gpt-4o-mini")
 ```
 
 --------------------------------
@@ -187,6 +141,30 @@ brew install anomalyco/tap/opencode
 
 --------------------------------
 
+### Install OpenCode on Windows using Scoop
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Install OpenCode on Windows using Scoop.
+
+```bash
+scoop install opencode
+```
+
+--------------------------------
+
+### Install OpenCode on Windows using NPM
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Install OpenCode on Windows using NPM.
+
+```bash
+npm install -g opencode-ai
+```
+
+--------------------------------
+
 ### Single code block example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -205,14 +183,14 @@ const apiConfig = {
 
 --------------------------------
 
-### Install OpenCode on Windows using Scoop
+### Configure environment step
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
 
-Install OpenCode on Windows using Scoop.
+Example of configuring environment variables within a step.
 
 ```bash
-scoop install opencode
+API_KEY=your_api_key_here
 ```
 
 --------------------------------
@@ -226,30 +204,6 @@ Commands to install Node.js and a package on macOS using Homebrew.
 ```bash
 brew install node
 npm install -g package-name
-```
-
---------------------------------
-
-### Install OpenCode on Windows using NPM
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Install OpenCode on Windows using NPM.
-
-```bash
-npm install -g opencode-ai
-```
-
---------------------------------
-
-### Configure environment step
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
-
-Example of configuring environment variables within a step.
-
-```bash
-API_KEY=your_api_key_here
 ```
 
 --------------------------------
@@ -305,6 +259,18 @@ Example of the YAML frontmatter required at the beginning of every documentation
 title: "Clear, specific, keyword-rich title"
 description: "Concise description explaining page purpose and value"
 ---
+```
+
+--------------------------------
+
+### Install Mintlify CLI
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
+
+Command to install the Mintlify CLI globally using npm.
+
+```bash
+npm i -g mint
 ```
 
 --------------------------------
@@ -396,6 +362,26 @@ description: "Concise description for SEO and navigation"
 
 --------------------------------
 
+### OpenAPI Configuration Examples
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/essentials/settings.mdx
+
+Examples demonstrating different ways to configure the 'openapi' property.
+
+```json
+"openapi": "https://example.com/openapi.json"
+```
+
+```json
+"openapi": "/openapi.json"
+```
+
+```json
+"openapi": ["https://example.com/openapi1.json", "/openapi2.json", "/openapi3.json"]
+```
+
+--------------------------------
+
 ### Start OpenCode web interface
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
@@ -420,24 +406,6 @@ opencode plugin <module>
 
 --------------------------------
 
-### Example Request Flow
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/llm/AGENTS.md
-
-Demonstrates how to construct an LLM request using `LLM.request` and generate a response using `LLMClient.generate`.
-
-```ts
-const request = LLM.request({
-  model: OpenAI.configure({ apiKey }).responses("gpt-4o-mini"),
-  system: "You are concise.",
-  prompt: "Say hello.",
-})
-
-const response = yield * LLMClient.generate(request)
-```
-
---------------------------------
-
 ### Start OpenCode server
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
@@ -446,6 +414,18 @@ Starts a headless OpenCode server for API access.
 
 ```bash
 opencode serve
+```
+
+--------------------------------
+
+### Start TUI with optional project
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Start the OpenCode TUI, optionally specifying a project path.
+
+```bash
+opencode [project]
 ```
 
 --------------------------------
@@ -474,18 +454,6 @@ curl -fsSL https://opencode.ai/install | bash
 
 --------------------------------
 
-### Navigate to project directory
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Change directory to your project.
-
-```bash
-cd /path/to/project
-```
-
---------------------------------
-
 ### Example of opencode run command
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
@@ -494,6 +462,18 @@ A practical example of using `opencode run` with a specific prompt.
 
 ```bash
 opencode run Explain the use of context in Go
+```
+
+--------------------------------
+
+### Navigate to project directory
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Change directory to your project.
+
+```bash
+cd /path/to/project
 ```
 
 --------------------------------
@@ -546,18 +526,6 @@ yarn global add opencode-ai
 
 --------------------------------
 
-### Install Claude Code globally
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/claude-code.mdx
-
-Command to install the Claude Code CLI tool using npm.
-
-```bash
-npm install -g @anthropic-ai/claude-code
-```
-
---------------------------------
-
 ### Run Development Server
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
@@ -570,23 +538,26 @@ mint dev
 
 --------------------------------
 
-### Route Composition Example
+### Install Claude Code globally
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/llm/AGENTS.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/claude-code.mdx
 
-Example of composing a route using `Route.make(...)` for an OpenAI chat endpoint.
+Command to install the Claude Code CLI tool using npm.
 
-```ts
-export const route = Route.make({
-  id: "openai-chat",
-  provider: "openai",
-  protocol: OpenAIChat.protocol,
-  endpoint: Endpoint.path("/chat/completions", {
-    baseURL: "https://api.openai.com/v1",
-  }),
-  auth: Auth.bearer(),
-  framing: Framing.sse,
-})
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+--------------------------------
+
+### Example Request-context Call
+
+Source: https://github.com/anomalyco/opencode/blob/dev/specs/v2/api.html
+
+An example of a GET request to retrieve a file system tree, specifying a path, directory, and workspace.
+
+```HTTP
+GET /api/fs/tree?path=.&directory=/repo/app&workspace=ws_123
 ```
 
 --------------------------------
@@ -604,14 +575,29 @@ How is authentication handled in @packages/functions/src/api/index.ts
 
 --------------------------------
 
-### Example Request-context Call
+### Quickstart Example
 
-Source: https://github.com/anomalyco/opencode/blob/dev/specs/v2/api.html
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/http-recorder/README.md
 
-An example of a GET request to retrieve a file system tree, specifying a path, directory, and workspace.
+Example demonstrating how to use HttpRecorder's cassetteLayer to record or replay HTTP requests, with an option to force recording.
 
-```HTTP
-GET /api/fs/tree?path=.&directory=/repo/app&workspace=ws_123
+```ts
+import { Effect } from "effect"
+import { HttpClient, HttpClientRequest } from "effect/unstable/http"
+import { HttpRecorder } from "@opencode-ai/http-recorder"
+
+const program = Effect.gen(function* () {
+  const http = yield* HttpClient.HttpClient
+  const response = yield* http.execute(HttpClientRequest.get("https://api.example.com/users/1"))
+  return yield* response.json
+})
+
+// Records if the cassette is missing, replays if it exists.
+// In CI (CI=true) always replays — fails loudly on missing fixtures.
+Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one"))))
+
+// Force a refresh — always hits upstream and overwrites.
+Effect.runPromise(program.pipe(Effect.provide(HttpRecorder.cassetteLayer("users/get-one", { mode: "record" }))))
 ```
 
 --------------------------------
@@ -691,18 +677,6 @@ Example of the prompt to paste your API key.
 
 --------------------------------
 
-### Install Mintlify CLI
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
-
-Command to install the Mintlify CLI globally using npm.
-
-```bash
-npm i -g mint
-```
-
---------------------------------
-
 ### tmpdir with Git repository
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
@@ -731,26 +705,6 @@ gh pr diff $ARGUMENTS
 
 --------------------------------
 
-### OpenAPI Configuration Examples
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/essentials/settings.mdx
-
-Examples demonstrating different ways to configure the 'openapi' property.
-
-```json
-"openapi": "https://example.com/openapi.json"
-```
-
-```json
-"openapi": "/openapi.json"
-```
-
-```json
-"openapi": ["https://example.com/openapi1.json", "/openapi2.json", "/openapi3.json"]
-```
-
---------------------------------
-
 ### Path API Get Current Path
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
@@ -760,6 +714,20 @@ Example of using `path.get()` to retrieve current path information.
 ```javascript
 // Get current path information
 const pathInfo = await client.path.get()
+```
+
+--------------------------------
+
+### tmpdir with config file
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Example of creating a temporary directory with a pre-configured `opencode.json` file.
+
+```typescript
+await using tmp = await tmpdir({
+  config: { model: "test/model", username: "testuser" },
+})
 ```
 
 --------------------------------
@@ -799,20 +767,6 @@ await client.session.prompt({
 
 --------------------------------
 
-### tmpdir with config file
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
-
-Example of creating a temporary directory with a pre-configured `opencode.json` file.
-
-```typescript
-await using tmp = await tmpdir({
-  config: { model: "test/model", username: "testuser" },
-})
-```
-
---------------------------------
-
 ### Run the project
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
@@ -841,18 +795,6 @@ opencode attach http://10.20.30.40:4096
 
 --------------------------------
 
-### Connect to LLM provider
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Run the /connect command in the TUI to configure an LLM provider.
-
-```txt
-/connect
-```
-
---------------------------------
-
 ### Project API List and Current
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
@@ -865,6 +807,18 @@ const projects = await client.project.list()
 
 // Get current project
 const currentProject = await client.project.current()
+```
+
+--------------------------------
+
+### Connect to LLM provider
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Run the /connect command in the TUI to configure an LLM provider.
+
+```txt
+/connect
 ```
 
 --------------------------------
@@ -1011,19 +965,6 @@ it.instance("uses the temp directory", () =>
 
 --------------------------------
 
-### Provide feedback or add details to the plan
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
-
-```txt
-We'd like to design this new screen using a design I've used before.
-[Image #1] Take a look at this image and use it as a reference.
-```
-
---------------------------------
-
 ### Create Starlight Project
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/README.md
@@ -1032,24 +973,6 @@ Command to initialize a new Astro project using the Starlight template.
 
 ```bash
 npm create astro@latest -- --template starlight
-```
-
---------------------------------
-
-### Example Tool Loop Representation
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/llm/AGENTS.md
-
-Demonstrates how tool calls and results are represented in common messages and events for LLM agents.
-
-```typescript
-const call = ToolCallPart.make({ id: "call_1", name: "lookup", input: { query: "weather" } })
-const result = Message.tool({ id: "call_1", name: "lookup", result: { forecast: "sunny" } })
-
-const followUp = LLM.request({
-  model,
-  messages: [Message.user("Weather?"), Message.assistant([call]), result],
-})
 ```
 
 --------------------------------
@@ -1066,29 +989,15 @@ agent-browser snapshot -i
 
 --------------------------------
 
-### Directly ask OpenCode to make changes
+### Provide feedback or add details to the plan
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
 
-Example of asking OpenCode to make straightforward changes without a prior plan review, referencing specific files.
+Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
 
 ```txt
-We need to add authentication to the /settings route. Take a look at how this is
-handled in the /notes route in @packages/functions/src/notes.ts and implement
-the same logic in @packages/functions/src/settings.ts
-```
-
---------------------------------
-
-### Import session data examples
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
-
-Examples of importing session data from a local file and a share URL.
-
-```bash
-opencode import session.json
-opencode import https://opncd.ai/s/abc123
+We'd like to design this new screen using a design I've used before.
+[Image #1] Take a look at this image and use it as a reference.
 ```
 
 --------------------------------
@@ -1168,4 +1077,58 @@ variables:
   - ANTHROPIC_API_KEY
   - GITLAB_TOKEN_OPENCODE
   - GITLAB_HOST
+```
+
+--------------------------------
+
+### Synchronization Example: Antipattern vs. Fix
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Comparison of an antipattern using fixed sleep for synchronization and the recommended fix using a published readiness signal.
+
+```ts
+// Antipattern — race
+yield * prompt.shell({ command: "sleep 30" }).pipe(Effect.forkChild)
+yield * Effect.sleep(50)
+yield * prompt.cancel(chat.id)
+
+// Fix — wait for a published readiness signal
+yield * prompt.shell({ command: "sleep 30" }).pipe(Effect.forkChild)
+yield *
+  pollWithTimeout(
+    Effect.gen(function* () {
+      const s = yield* (yield* SessionStatus.Service).get(chat.id)
+      return s.type === "busy" ? (true as const) : undefined
+    }),
+    "session never became busy",
+  )
+yield * prompt.cancel(chat.id)
+```
+
+--------------------------------
+
+### Directly ask OpenCode to make changes
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Example of asking OpenCode to make straightforward changes without a prior plan review, referencing specific files.
+
+```txt
+We need to add authentication to the /settings route. Take a look at how this is
+handled in the /notes route in @packages/functions/src/notes.ts and implement
+the same logic in @packages/functions/src/settings.ts
+```
+
+--------------------------------
+
+### Import session data examples
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Examples of importing session data from a local file and a share URL.
+
+```bash
+opencode import session.json
+opencode import https://opncd.ai/s/abc123
 ```
