@@ -788,6 +788,18 @@ export { Foo, Bar }
 
 --------------------------------
 
+### Install Cloudflare Vite Plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to install the Cloudflare Vite plugin as a development dependency.
+
+```bash
+npm install --save-dev @cloudflare/vite-plugin
+```
+
+--------------------------------
+
 ### Configure CSS Preprocessor Options
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
@@ -814,18 +826,6 @@ export default defineConfig({
     },
   },
 })
-```
-
---------------------------------
-
-### Install Cloudflare Vite Plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to install the Cloudflare Vite plugin as a development dependency.
-
-```bash
-npm install --save-dev @cloudflare/vite-plugin
 ```
 
 --------------------------------
@@ -965,6 +965,60 @@ security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-
 
 --------------------------------
 
+### Basic `experimental.renderBuiltUrl` usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
+### Start Node.js Inspector for Dev Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
+
+```bash
+vite --profile --open
+```
+
+--------------------------------
+
+### Dependency Notation and Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
+
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
+
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
+
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
+```
+
+--------------------------------
+
 ### Manual DevEnvironment Communication with Virtual Module
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
@@ -1007,60 +1061,6 @@ export function createHandler(input) {
   return function handler(req) {
     return new Response('hello')
   }
-}
-```
-
---------------------------------
-
-### Start Node.js Inspector for Dev Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
-
-```bash
-vite --profile --open
-```
-
---------------------------------
-
-### Dependency Notation and Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
-
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
-
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
-
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
-```
-
---------------------------------
-
-### Basic `experimental.renderBuiltUrl` usage
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
-
-```ts
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostType }) {
-    if (hostType === 'js') {
-      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-    } else {
-      return { relative: true }
-    }
-  },
-},
 }
 ```
 
