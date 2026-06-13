@@ -428,6 +428,24 @@ npm add -D stylus
 
 --------------------------------
 
+### Component Setup Script
+
+Source: https://github.com/vitejs/vite/blob/main/docs/team.md
+
+Imports necessary components and data for rendering the team page.
+
+```javascript
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamPageSection,
+  VPTeamMembers
+} from '@voidzero-dev/vitepress-theme'
+import { core, emeriti } from './_data/team'
+```
+
+--------------------------------
+
 ### Entry file exports
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -671,6 +689,29 @@ pnpm release --dry
 
 --------------------------------
 
+### Programmatic Vite Build Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+Illustrates how to use the `build` function with an `InlineConfig` object to configure the build process, specifying root and base paths.
+
+```javascript
+import path from 'node:path'
+import { build } from 'vite'
+
+await build({
+  root: path.resolve(import.meta.dirname, './project'),
+  base: '/foo/',
+  build: {
+    rolldownOptions: {
+      // ...
+    },
+  },
+})
+```
+
+--------------------------------
+
 ### Express server setup
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -722,29 +763,6 @@ Command to build the application for production.
 
 ```bash
 npm run build
-```
-
---------------------------------
-
-### Programmatic Vite Build Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
-
-Illustrates how to use the `build` function with an `InlineConfig` object to configure the build process, specifying root and base paths.
-
-```javascript
-import path from 'node:path'
-import { build } from 'vite'
-
-await build({
-  root: path.resolve(import.meta.dirname, './project'),
-  base: '/foo/',
-  build: {
-    rolldownOptions: {
-      // ...
-    },
-  },
-})
 ```
 
 --------------------------------
@@ -904,42 +922,6 @@ export default writable(0)
 
 --------------------------------
 
-### Basic `experimental.renderBuiltUrl` usage
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
-
-```ts
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostType }) {
-    if (hostType === 'js') {
-      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-    } else {
-      return { relative: true }
-    }
-  },
-},
-}
-```
-
---------------------------------
-
-### Install trusted cert via CLI on macOS
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Command to install a trusted SSL certificate via the command line on macOS.
-
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
-```
-
---------------------------------
-
 ### Manual DevEnvironment Communication with Virtual Module
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
@@ -987,6 +969,72 @@ export function createHandler(input) {
 
 --------------------------------
 
+### Install trusted cert via CLI on macOS
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Command to install a trusted SSL certificate via the command line on macOS.
+
+```shell
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
+### Start Node.js Inspector for Dev Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
+
+```bash
+vite --profile --open
+```
+
+--------------------------------
+
+### Basic `experimental.renderBuiltUrl` usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
+### Dependency Notation and Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
+
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
+
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
+
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
+```
+
+--------------------------------
+
 ### Advanced `experimental.renderBuiltUrl` with asset types
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1016,14 +1064,23 @@ experimental: {
 
 --------------------------------
 
-### Start Node.js Inspector for Dev Server
+### Plugin-side Application Communication Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
 
-Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
+Example of a plugin communicating with application instances using `environment.hot.on` to listen for messages and `environment.hot.send` to broadcast messages.
 
-```bash
-vite --profile --open
+```js
+configureServer(server) {
+  server.environments.ssr.hot.on('my:greetings', (data, client) => {
+    // do something with the data,
+    // and optionally send a response to that application instance
+    client.send('my:foo:reply', `Hello from server! You said: ${data}`)
+  })
+
+  // broadcast a message to all application instances
+  server.environments.ssr.hot.send('my:foo', 'Hello from server!')
+}
 ```
 
 --------------------------------
@@ -1053,45 +1110,6 @@ Example `package.json` showing how to export a bundled CSS file for users to imp
 
 --------------------------------
 
-### Dependency Notation and Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
-
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
-
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
-
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
-```
-
---------------------------------
-
-### Plugin-side Application Communication Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
-
-Example of a plugin communicating with application instances using `environment.hot.on` to listen for messages and `environment.hot.send` to broadcast messages.
-
-```js
-configureServer(server) {
-  server.environments.ssr.hot.on('my:greetings', (data, client) => {
-    // do something with the data,
-    // and optionally send a response to that application instance
-    client.send('my:foo:reply', `Hello from server! You said: ${data}`)
-  })
-
-  // broadcast a message to all application instances
-  server.environments.ssr.hot.send('my:foo', 'Hello from server!')
-}
-```
-
---------------------------------
-
 ### Custom Environment Instance Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
@@ -1112,33 +1130,5 @@ export default {
       },
     }),
   },
-}
-```
-
---------------------------------
-
-### package.json (multiple entries)
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Recommended `package.json` configuration for a library with multiple entry points, defining `main`, `module`, and `exports` for each entry.
-
-```json
-{
-  "name": "my-lib",
-  "type": "module",
-  "files": ["dist"],
-  "main": "./dist/my-lib.cjs",
-  "module": "./dist/my-lib.js",
-  "exports": {
-    ".": {
-      "import": "./dist/my-lib.js",
-      "require": "./dist/my-lib.cjs"
-    },
-    "./secondary": {
-      "import": "./dist/secondary.js",
-      "require": "./dist/secondary.cjs"
-    }
-  }
 }
 ```
