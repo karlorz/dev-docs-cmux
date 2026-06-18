@@ -367,6 +367,22 @@ p { background: rgba(0, 0, 0, 0.1); }
 
 --------------------------------
 
+### Vercel CLI Installation and Deployment
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to install the Vercel CLI globally and deploy an application.
+
+```bash
+npm i -g vercel
+```
+
+```bash
+vercel
+```
+
+--------------------------------
+
 ### Install CSS Pre-processors for Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -382,22 +398,6 @@ npm add -D less
 
 # .styl and .stylus
 npm add -D stylus
-```
-
---------------------------------
-
-### Vercel CLI Installation and Deployment
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to install the Vercel CLI globally and deploy an application.
-
-```bash
-npm i -g vercel
-```
-
-```bash
-vercel
 ```
 
 --------------------------------
@@ -592,34 +592,6 @@ overrides:
 
 --------------------------------
 
-### Local Release Preparation Commands
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
-
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
-```
-
-```bash
-pnpm release
-```
-
-```bash
-pnpm release --dry
-```
-
---------------------------------
-
 ### preview
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -666,6 +638,34 @@ const previewServer = await preview({
 previewServer.printUrls()
 previewServer.bindCLIShortcuts({ print: true })
 ```
+```
+
+--------------------------------
+
+### Local Release Preparation Commands
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
+
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
+```
+
+```bash
+pnpm release
+```
+
+```bash
+pnpm release --dry
 ```
 
 --------------------------------
@@ -838,6 +838,19 @@ export default defineConfig({
 
 --------------------------------
 
+### Example .env file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+
+```env
+VITE_SOME_KEY=123
+DB_PASSWORD=foobar
+```
+
+--------------------------------
+
 ### Accessing Environments from the Server
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
@@ -851,19 +864,6 @@ const server = await createServer(/* options */)
 const clientEnvironment = server.environments.client
 clientEnvironment.transformRequest(url)
 console.log(server.environments.ssr.moduleGraph)
-```
-
---------------------------------
-
-### Example .env file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
-
-```env
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
 ```
 
 --------------------------------
@@ -923,6 +923,18 @@ security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-
 
 --------------------------------
 
+### Start Node.js Inspector for Dev Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
+
+```bash
+vite --profile --open
+```
+
+--------------------------------
+
 ### Basic `experimental.renderBuiltUrl` usage
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -943,36 +955,6 @@ experimental: {
   },
 },
 }
-```
-
---------------------------------
-
-### Start Node.js Inspector for Dev Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
-
-```bash
-vite --profile --open
-```
-
---------------------------------
-
-### Dependency Notation and Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
-
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
-
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
-
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
 ```
 
 --------------------------------
@@ -1024,6 +1006,49 @@ export function createHandler(input) {
 
 --------------------------------
 
+### Dependency Notation and Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
+
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
+
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
+
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
+```
+
+--------------------------------
+
+### Custom Environment Instance Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
+
+An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
+
+```js
+import { customEnvironment } from 'vite-environment-provider'
+
+export default {
+  build: {
+    outDir: '/dist/client',
+  },
+  environments: {
+    ssr: customEnvironment({
+      build: {
+        outDir: '/dist/ssr',
+      },
+    }),
+  },
+}
+```
+
+--------------------------------
+
 ### Advanced `experimental.renderBuiltUrl` with asset types
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1069,31 +1094,6 @@ configureServer(server) {
 
   // broadcast a message to all application instances
   server.environments.ssr.hot.send('my:foo', 'Hello from server!')
-}
-```
-
---------------------------------
-
-### Custom Environment Instance Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
-
-An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
-
-```js
-import { customEnvironment } from 'vite-environment-provider'
-
-export default {
-  build: {
-    outDir: '/dist/client',
-  },
-  environments: {
-    ssr: customEnvironment({
-      build: {
-        outDir: '/dist/ssr',
-      },
-    }),
-  },
 }
 ```
 
