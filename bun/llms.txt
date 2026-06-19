@@ -35,42 +35,6 @@ bun run start
 
 --------------------------------
 
-### Install Settings Inheritance Example
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/test/configuration.mdx
-
-Example `bunfig.toml` demonstrating how `[install]` settings are inherited by `bun test`.
-
-```toml
-[install]
-# These settings are inherited by bun test
-registry = "https://npm.company.com/"
-exact = true
-prefer = "offline"
-
-[test]
-# Test-specific configuration
-coverage = true
-timeout = 10000
-
-```
-
---------------------------------
-
-### Manual CI Setup - Install packages
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
-
-Commands to manually install required packages and then run the tests.
-
-```bash
-apt-get update && apt-get install -y libsecret-1-dev gnome-keyring dbus-x11
-
-bun test test/js/bun/secrets.test.ts
-```
-
---------------------------------
-
 ### Install dependencies and run development server
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/solidstart.mdx
@@ -137,6 +101,19 @@ This JSON snippet shows how to add a 'start' script to your package.json file, w
 
 --------------------------------
 
+### Install figlet package and types
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
+
+Installs the `figlet` package and its TypeScript type declarations.
+
+```bash
+bun add figlet
+bun add -d @types/figlet # TypeScript users only
+```
+
+--------------------------------
+
 ### Example package.json with non-npm dependencies
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
@@ -154,23 +131,6 @@ Demonstrates installing dependencies from Git, GitHub, and local/remote tarballs
     "bun-types": "npm:@types/bun"
   }
 }
-```
-
---------------------------------
-
-### Configure global installation behavior
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/add.mdx
-
-Example `bunfig.toml` configuration for global installation paths.
-
-```toml
-[install]
-# where `bun add --global` installs packages
-globalDir = "~/.bun/install/global"
-
-# where globally-installed package bins are linked
-globalBinDir = "~/.bun/bin"
 ```
 
 --------------------------------
@@ -238,6 +198,20 @@ Example of running Bun secrets tests in GitHub Actions with explicit installatio
 
 - name: Run secrets tests
   run: bun test test/js/bun/secrets.test.ts
+```
+
+--------------------------------
+
+### Manual CI Setup - Install packages
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
+
+Commands to manually install required packages and then run the tests.
+
+```bash
+apt-get update && apt-get install -y libsecret-1-dev gnome-keyring dbus-x11
+
+bun test test/js/bun/secrets.test.ts
 ```
 
 --------------------------------
@@ -437,20 +411,6 @@ await Bun.secrets.set({
 
 --------------------------------
 
-### Delete credential with empty string
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
-
-Examples showing how to delete a credential using Bun.secrets.delete or by setting an empty string with Bun.secrets.set.
-
-```ts
-// These are equivalent:
-await Bun.secrets.delete({ service: "myapp", name: "token" });
-await Bun.secrets.set({ service: "myapp", name: "token", value: "" });
-```
-
---------------------------------
-
 ### Initialize a new project with Blank template
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
@@ -474,6 +434,42 @@ bun init my-app
 
 --------------------------------
 
+### Delete credential with empty string
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
+
+Examples showing how to delete a credential using Bun.secrets.delete or by setting an empty string with Bun.secrets.set.
+
+```ts
+// These are equivalent:
+await Bun.secrets.delete({ service: "myapp", name: "token" });
+await Bun.secrets.set({ service: "myapp", name: "token", value: "" });
+```
+
+--------------------------------
+
+### Install Settings Inheritance Example
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/test/configuration.mdx
+
+Example `bunfig.toml` demonstrating how `[install]` settings are inherited by `bun test`.
+
+```toml
+[install]
+# These settings are inherited by bun test
+registry = "https://npm.company.com/"
+exact = true
+prefer = "offline"
+
+[test]
+# Test-specific configuration
+coverage = true
+timeout = 10000
+
+```
+
+--------------------------------
+
 ### Run Downloaded Release Build
 
 Source: https://github.com/oven-sh/bun/blob/main/CONTRIBUTING.md
@@ -482,18 +478,6 @@ Example of running a specific release build downloaded via `bun-pr`.
 
 ```sh
 bun-1234566 --version
-```
-
---------------------------------
-
-### Use a globally installed package
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
-
-Example of executing a command-line tool installed globally.
-
-```bash
-cowsay "Bun!"
 ```
 
 --------------------------------
@@ -516,6 +500,18 @@ Creates a basic HTML file to be served by the Bun server.
     <h1>Bun!</h1>
   </body>
 </html>
+```
+
+--------------------------------
+
+### Use a globally installed package
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
+
+Example of executing a command-line tool installed globally.
+
+```bash
+cowsay "Bun!"
 ```
 
 --------------------------------
@@ -581,19 +577,6 @@ FORCE_KEYRING_SETUP=1 bun test test/js/bun/secrets.test.ts
 
 --------------------------------
 
-### Navigate and install dependencies
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/vite.mdx
-
-Change into the project directory and install dependencies using Bun.
-
-```bash
-cd my-app
-bun install
-```
-
---------------------------------
-
 ### cowsay output example
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/add.mdx
@@ -609,6 +592,19 @@ Example output from the globally installed `cowsay` command.
             (__)\       )\/\
                 ||----w |
                 ||     ||
+```
+
+--------------------------------
+
+### Navigate and install dependencies
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/vite.mdx
+
+Change into the project directory and install dependencies using Bun.
+
+```bash
+cd my-app
+bun install
 ```
 
 --------------------------------
@@ -641,6 +637,23 @@ bun test test/js/bun/secrets.test.ts
 
 --------------------------------
 
+### Configure global installation behavior
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/add.mdx
+
+Example `bunfig.toml` configuration for global installation paths.
+
+```toml
+[install]
+# where `bun add --global` installs packages
+globalDir = "~/.bun/install/global"
+
+# where globally-installed package bins are linked
+globalBinDir = "~/.bun/bin"
+```
+
+--------------------------------
+
 ### Setup commands
 
 Source: https://github.com/oven-sh/bun/blob/main/packages/bun-lambda/README.md
@@ -657,19 +670,6 @@ bun run publish-layer
 
 --------------------------------
 
-### Install figlet package and types
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
-
-Installs the `figlet` package and its TypeScript type declarations.
-
-```bash
-bun add figlet
-bun add -d @types/figlet # TypeScript users only
-```
-
---------------------------------
-
 ### Start the dev server
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/tanstack-start.mdx
@@ -679,25 +679,6 @@ Change to the project directory and run the dev server with Bun.
 ```sh
 cd my-tanstack-app
 bun --bun run dev
-```
-
---------------------------------
-
-### Install dependencies for filtered packages
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/filter.mdx
-
-Examples of using `bun install` with `--filter` to install dependencies for specific packages in a monorepo.
-
-```bash
-# Install dependencies for all workspaces except `pkg-c`
-bun install --filter '!pkg-c'
-
-# Install dependencies for packages in `./packages` (`pkg-a`, `pkg-b`, `pkg-c`)
-bun install --filter './packages/*'
-
-# Save as above, but exclude the root package.json
-bun install --filter '!./' --filter './packages/*'
 ```
 
 --------------------------------
@@ -717,6 +698,25 @@ const server = Bun.serve({
 });
 
 console.log(`Listening on ${server.url}`);
+```
+
+--------------------------------
+
+### Install dependencies for filtered packages
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/filter.mdx
+
+Examples of using `bun install` with `--filter` to install dependencies for specific packages in a monorepo.
+
+```bash
+# Install dependencies for all workspaces except `pkg-c`
+bun install --filter '!pkg-c'
+
+# Install dependencies for packages in `./packages` (`pkg-a`, `pkg-b`, `pkg-c`)
+bun install --filter './packages/*'
+
+# Save as above, but exclude the root package.json
+bun install --filter '!./' --filter './packages/*'
 ```
 
 --------------------------------
@@ -744,19 +744,6 @@ catalogs:
 
 --------------------------------
 
-### Start development server
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sveltekit.mdx
-
-Navigate into the project directory and start the SvelteKit development server using Bun.
-
-```sh
-cd my-app
-bun --bun run dev
-```
-
---------------------------------
-
 ### Use Setup and Teardown
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/test/writing-tests.mdx
@@ -779,6 +766,19 @@ afterEach(() => {
 test("should update user profile", () => {
   // Use testUser in test
 });
+```
+
+--------------------------------
+
+### Start development server
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sveltekit.mdx
+
+Navigate into the project directory and start the SvelteKit development server using Bun.
+
+```sh
+cd my-app
+bun --bun run dev
 ```
 
 --------------------------------
@@ -861,6 +861,18 @@ bun run start
 
 --------------------------------
 
+### Install Bun TypeScript types
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
+
+Installs `@types/bun` as a development dependency to resolve TypeScript errors.
+
+```bash
+bun add -d @types/bun
+```
+
+--------------------------------
+
 ### Basic Example: Build Command (JavaScript)
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
@@ -872,18 +884,6 @@ await Bun.build({
   entrypoints: ["./index.tsx"],
   outdir: "./out",
 });
-```
-
---------------------------------
-
-### Install Bun TypeScript types
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
-
-Installs `@types/bun` as a development dependency to resolve TypeScript errors.
-
-```bash
-bun add -d @types/bun
 ```
 
 --------------------------------
@@ -1099,14 +1099,13 @@ bunx --bun vite
 
 --------------------------------
 
-### Defining a GET route
+### Install ccache (openSUSE)
 
-Source: https://github.com/oven-sh/bun/blob/main/packages/bun-uws/misc/READMORE.md
+Source: https://github.com/oven-sh/bun/blob/main/CONTRIBUTING.md
 
-Example of attaching behavior to a URL route using the `get` method with `uWS::App`.
+Install ccache on openSUSE using zypper.
 
-```c++
-uWS::App().get("/hello", [](auto *res, auto *req) {
-    res->end("Hello World!");
-});
+```bash
+# For openSUSE
+$ sudo zypper install ccache
 ```
