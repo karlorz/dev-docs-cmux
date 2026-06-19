@@ -367,22 +367,6 @@ p { background: rgba(0, 0, 0, 0.1); }
 
 --------------------------------
 
-### Vercel CLI Installation and Deployment
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to install the Vercel CLI globally and deploy an application.
-
-```bash
-npm i -g vercel
-```
-
-```bash
-vercel
-```
-
---------------------------------
-
 ### Install CSS Pre-processors for Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -398,6 +382,22 @@ npm add -D less
 
 # .styl and .stylus
 npm add -D stylus
+```
+
+--------------------------------
+
+### Vercel CLI Installation and Deployment
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to install the Vercel CLI globally and deploy an application.
+
+```bash
+npm i -g vercel
+```
+
+```bash
+vercel
 ```
 
 --------------------------------
@@ -434,18 +434,6 @@ export { Foo, Bar }
 
 --------------------------------
 
-### Adding a Plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
-
-Command to install the @vitejs/plugin-legacy package.
-
-```bash
-$ npm add -D @vitejs/plugin-legacy
-```
-
---------------------------------
-
 ### Install esbuild for CSS Minification
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
@@ -454,6 +442,18 @@ Install esbuild as a development dependency to use it for CSS minification when 
 
 ```sh
 npm add -D esbuild
+```
+
+--------------------------------
+
+### Adding a Plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
+
+Command to install the @vitejs/plugin-legacy package.
+
+```bash
+$ npm add -D @vitejs/plugin-legacy
 ```
 
 --------------------------------
@@ -544,6 +544,18 @@ test('should work', async () => {
 
 --------------------------------
 
+### Preview command
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to test the built application locally.
+
+```bash
+$ npm run preview
+```
+
+--------------------------------
+
 ### Perform Named Imports with import.meta.glob in TypeScript
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -566,18 +578,6 @@ const modules = {
 
 --------------------------------
 
-### Preview command
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to test the built application locally.
-
-```bash
-$ npm run preview
-```
-
---------------------------------
-
 ### Using pnpm overrides for local Vite testing
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -588,6 +588,34 @@ Example of how to configure pnpm overrides in `pnpm-workspace.yaml` to link a lo
 # pnpm-workspace.yaml
 overrides:
   vite: link:../path/to/vite/packages/vite
+```
+
+--------------------------------
+
+### Local Release Preparation Commands
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
+
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
+```
+
+```bash
+pnpm release
+```
+
+```bash
+pnpm release --dry
 ```
 
 --------------------------------
@@ -638,34 +666,6 @@ const previewServer = await preview({
 previewServer.printUrls()
 previewServer.bindCLIShortcuts({ print: true })
 ```
-```
-
---------------------------------
-
-### Local Release Preparation Commands
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
-
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
-```
-
-```bash
-pnpm release
-```
-
-```bash
-pnpm release --dry
 ```
 
 --------------------------------
@@ -838,19 +838,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Example .env file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
-
-```env
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
-```
-
---------------------------------
-
 ### Accessing Environments from the Server
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
@@ -864,6 +851,19 @@ const server = await createServer(/* options */)
 const clientEnvironment = server.environments.client
 clientEnvironment.transformRequest(url)
 console.log(server.environments.ssr.moduleGraph)
+```
+
+--------------------------------
+
+### Example .env file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+
+```env
+VITE_SOME_KEY=123
+DB_PASSWORD=foobar
 ```
 
 --------------------------------
@@ -959,6 +959,24 @@ experimental: {
 
 --------------------------------
 
+### Dependency Notation and Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
+
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
+
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
+
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
+```
+
+--------------------------------
+
 ### Manual DevEnvironment Communication with Virtual Module
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
@@ -1001,49 +1019,6 @@ export function createHandler(input) {
   return function handler(req) {
     return new Response('hello')
   }
-}
-```
-
---------------------------------
-
-### Dependency Notation and Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
-
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
-
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
-
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
-```
-
---------------------------------
-
-### Custom Environment Instance Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
-
-An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
-
-```js
-import { customEnvironment } from 'vite-environment-provider'
-
-export default {
-  build: {
-    outDir: '/dist/client',
-  },
-  environments: {
-    ssr: customEnvironment({
-      build: {
-        outDir: '/dist/ssr',
-      },
-    }),
-  },
 }
 ```
 
@@ -1094,6 +1069,31 @@ configureServer(server) {
 
   // broadcast a message to all application instances
   server.environments.ssr.hot.send('my:foo', 'Hello from server!')
+}
+```
+
+--------------------------------
+
+### Custom Environment Instance Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
+
+An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
+
+```js
+import { customEnvironment } from 'vite-environment-provider'
+
+export default {
+  build: {
+    outDir: '/dist/client',
+  },
+  environments: {
+    ssr: customEnvironment({
+      build: {
+        outDir: '/dist/ssr',
+      },
+    }),
+  },
 }
 ```
 
