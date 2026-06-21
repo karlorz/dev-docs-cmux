@@ -78,6 +78,55 @@ pnpm dev
 
 --------------------------------
 
+### Quick Start with createQueryController in Lit
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+This example demonstrates how to set up a QueryClient, define a QueryClientProvider, and use createQueryController within a Lit element to fetch and display user data.
+
+```ts
+import { LitElement, html } from 'lit'
+import {
+  QueryClient,
+  QueryClientProvider,
+  createQueryController,
+} from '@tanstack/lit-query'
+
+const client = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+class AppProvider extends QueryClientProvider {
+  constructor() {
+    super()
+    this.client = client
+  }
+}
+customElements.define('app-provider', AppProvider)
+
+class UsersView extends LitElement {
+  private readonly users = createQueryController(this, {
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await fetch('/api/users')
+      return response.json() as Promise<Array<{ id: string; name: string }>>
+    },
+  })
+
+  render() {
+    const query = this.users()
+    if (query.isPending) return html`Loading...`
+    if (query.isError) return html`Error`
+    return html`<ul>
+      ${query.data?.map((u) => html`<li>${u.name}</li>`)}
+    </ul>`
+  }
+}
+customElements.define('users-view', UsersView)
+```
+
+--------------------------------
+
 ### Install createAsyncStoragePersister
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/plugins/createAsyncStoragePersister.md
@@ -279,6 +328,18 @@ pnpm dev
 
 --------------------------------
 
+### Start Auto-Build in Root Directory (Bash)
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+Runs the auto-build process for the TanStack Query project from the root directory during online development setup.
+
+```bash
+npm start
+```
+
+--------------------------------
+
 ### Run Lit Examples with Custom Ports
 
 Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
@@ -299,18 +360,6 @@ SSR_PORT=4180 pnpm --dir examples/lit/ssr run dev
 
 ```bash
 SSR_HOST=0.0.0.0 pnpm --dir examples/lit/ssr run dev
-```
-
---------------------------------
-
-### Start Auto-Build in Root Directory (Bash)
-
-Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
-
-Runs the auto-build process for the TanStack Query project from the root directory during online development setup.
-
-```bash
-npm start
 ```
 
 --------------------------------
@@ -762,6 +811,18 @@ pnpm dev
 
 --------------------------------
 
+### Run Development Server for TanStack Query
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+Starts the development server in watch mode, allowing for live reloading during general development.
+
+```bash
+pnpm run watch
+```
+
+--------------------------------
+
 ### Basic Vue Query Component Example
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/quick-start.md
@@ -807,18 +868,6 @@ function onButtonClick() {
   </ul>
   <button @click="onButtonClick">Add Todo</button>
 </template>
-```
-
---------------------------------
-
-### Run Development Server for TanStack Query
-
-Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
-
-Starts the development server in watch mode, allowing for live reloading during general development.
-
-```bash
-pnpm run watch
 ```
 
 --------------------------------
@@ -1023,30 +1072,6 @@ bun add @tanstack/svelte-query
 
 --------------------------------
 
-### Correct useQuery with queryOptions in a Component (TypeScript/TSX)
-
-Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
-
-This example demonstrates defining `queryKey` and `queryFn` within `queryOptions` and then passing the result to `useQuery` in a component.
-
-```tsx
-/* eslint "@tanstack/query/prefer-query-options": "error" */
-
-function getFooOptions(id) {
-  return queryOptions({
-    queryKey: ['get', id],
-    queryFn: () => Api.get(`/foo/${id}`),
-  })
-}
-
-function Component({ id }) {
-  const query = useQuery(getFooOptions(id))
-  // ...
-}
-```
-
---------------------------------
-
 ### Prefetch Data in Nuxt 3 with onServerPrefetch
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/guides/ssr.md
@@ -1092,6 +1117,29 @@ This function can be used to restore queries that are currently stored by persis
 
 ### Returns
 - **Promise<void>** - A Promise that resolves when the queries have been restored.
+```
+
+--------------------------------
+
+### Directly Using QueryClientProvider in Lit
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
+
+This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
+
+```ts
+import { html } from 'lit'
+import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
+
+const queryClient = new QueryClient()
+
+customElements.define('query-client-provider', QueryClientProvider)
+
+const view = html`
+  <query-client-provider .client=${queryClient}>
+    <todos-view></todos-view>
+  </query-client-provider>
+`
 ```
 
 --------------------------------
@@ -1155,29 +1203,6 @@ export default function PostsRoute({ dehydratedState }) {
     </HydrationBoundary>
   )
 }
-```
-
---------------------------------
-
-### Directly Using QueryClientProvider in Lit
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
-
-This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
-
-```ts
-import { html } from 'lit'
-import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
-
-const queryClient = new QueryClient()
-
-customElements.define('query-client-provider', QueryClientProvider)
-
-const view = html`
-  <query-client-provider .client=${queryClient}>
-    <todos-view></todos-view>
-  </query-client-provider>
-`
 ```
 
 --------------------------------
@@ -1753,6 +1778,22 @@ customElements.define('todos-view', TodosView)
 
 --------------------------------
 
+### Get Number of Fetching Queries with useIsFetching (React)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useIsFetching.md
+
+Use `useIsFetching` to get the total number of active queries or filter by `queryKey` to count specific queries, useful for global loading indicators.
+
+```tsx
+import { useIsFetching } from '@tanstack/react-query'
+// How many queries are fetching?
+const isFetching = useIsFetching()
+// How many queries matching the posts prefix are fetching?
+const isFetchingPosts = useIsFetching({ queryKey: ['posts'] })
+```
+
+--------------------------------
+
 ### Initialize broadcastQueryClient with QueryClient
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/plugins/broadcastQueryClient.md
@@ -1768,22 +1809,6 @@ broadcastQueryClient({
   queryClient,
   broadcastChannel: 'my-app',
 })
-```
-
---------------------------------
-
-### Get Number of Fetching Queries with useIsFetching (React)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/reference/useIsFetching.md
-
-Use `useIsFetching` to get the total number of active queries or filter by `queryKey` to count specific queries, useful for global loading indicators.
-
-```tsx
-import { useIsFetching } from '@tanstack/react-query'
-// How many queries are fetching?
-const isFetching = useIsFetching()
-// How many queries matching the posts prefix are fetching?
-const isFetchingPosts = useIsFetching({ queryKey: ['posts'] })
 ```
 
 --------------------------------
@@ -1809,18 +1834,6 @@ mutateAsync: MutationObserverResult<TData, TError, TVariables, TOnMutateResult>[
 
 --------------------------------
 
-### Build application for production
-
-Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
-
-Execute this command to build the Nuxt 3 application for production deployment.
-
-```bash
-pnpm build
-```
-
---------------------------------
-
 ### MutationResultAccessor mutateAsync Property
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/type-aliases/MutationResultAccessor.md
@@ -1829,6 +1842,18 @@ Starts the mutation and returns the observer promise. Rejects if no `QueryClient
 
 ```ts
 mutateAsync: MutationObserverResult<TData, TError, TVariables, TOnMutateResult>["mutate"];
+```
+
+--------------------------------
+
+### Build application for production
+
+Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
+
+Execute this command to build the Nuxt 3 application for production deployment.
+
+```bash
+pnpm build
 ```
 
 --------------------------------
@@ -1881,18 +1906,6 @@ Use this method to access the query cache instance associated with the QueryClie
 
 ```tsx
 const queryCache = queryClient.getQueryCache()
-```
-
---------------------------------
-
-### Build All TanStack Query Packages
-
-Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
-
-Builds all packages within the TanStack Query monorepo. This should be run after installing dependencies.
-
-```bash
-pnpm build:all
 ```
 
 --------------------------------
@@ -1960,6 +1973,18 @@ class ProjectsView extends LitElement {
 
 --------------------------------
 
+### Build All TanStack Query Packages
+
+Source: https://github.com/tanstack/query/blob/main/CONTRIBUTING.md
+
+Builds all packages within the TanStack Query monorepo. This should be run after installing dependencies.
+
+```bash
+pnpm build:all
+```
+
+--------------------------------
+
 ### Concise `injectQuery` Assignment in Angular
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/queries.md
@@ -1980,20 +2005,6 @@ This command compiles your Svelte application into a production-ready build.
 
 ```bash
 npm run build
-```
-
---------------------------------
-
-### Update React Query and Devtools Packages
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/migrating-to-react-query-4.md
-
-Use these commands to uninstall `react-query` and install the new `@tanstack/react-query` and `@tanstack/react-query-devtools` packages.
-
-```bash
-npm uninstall react-query
-npm install @tanstack/react-query
-npm install @tanstack/react-query-devtools
 ```
 
 --------------------------------
@@ -2023,6 +2034,20 @@ const usersMessages = useQueries(() => ({
       })
     : [], // if usersQuery.data is undefined, an empty array will be returned
 }))
+```
+
+--------------------------------
+
+### Update React Query and Devtools Packages
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/migrating-to-react-query-4.md
+
+Use these commands to uninstall `react-query` and install the new `@tanstack/react-query` and `@tanstack/react-query-devtools` packages.
+
+```bash
+npm uninstall react-query
+npm install @tanstack/react-query
+npm install @tanstack/react-query-devtools
 ```
 
 --------------------------------
@@ -2078,21 +2103,6 @@ function Component({ id }) {
 
 --------------------------------
 
-### Test Component Queries with fixture.whenStable()
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/testing.md
-
-Shows how to bootstrap a component using `TestBed.createComponent` and wait for its queries to resolve using `fixture.whenStable()` before asserting on data.
-
-```ts
-const fixture = TestBed.createComponent(ExampleComponent)
-
-await fixture.whenStable()
-expect(fixture.componentInstance.query.data()).toEqual({ value: 42 })
-```
-
---------------------------------
-
 ### Correct queryKey reference in getQueryData (TypeScript/TSX)
 
 Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
@@ -2113,6 +2123,21 @@ function Component({ id }) {
   const queryClient = useQueryClient()
   return queryClient.getQueryData(todoOptions(id).queryKey)
 }
+```
+
+--------------------------------
+
+### Test Component Queries with fixture.whenStable()
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/testing.md
+
+Shows how to bootstrap a component using `TestBed.createComponent` and wait for its queries to resolve using `fixture.whenStable()` before asserting on data.
+
+```ts
+const fixture = TestBed.createComponent(ExampleComponent)
+
+await fixture.whenStable()
+expect(fixture.componentInstance.query.data()).toEqual({ value: 42 })
 ```
 
 --------------------------------
@@ -2165,23 +2190,6 @@ function Component({ id }) {
 
 --------------------------------
 
-### Create a Query Controller in LitElement
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/reactive-controllers-vs-hooks.md
-
-Demonstrates how to create a createQueryController instance within a LitElement class, binding it to the host (this) to manage query state for a list of todos.
-
-```ts
-class TodosView extends LitElement {
-  private readonly todos = createQueryController(this, {
-    queryKey: ['todos'],
-    queryFn: fetchTodos,
-  })
-}
-```
-
---------------------------------
-
 ### Hydrating Paused Mutations (Angular)
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/mutations.md
@@ -2194,44 +2202,17 @@ hydrate(queryClient, state)
 
 --------------------------------
 
-### Get Mutation Defaults with QueryClient
+### Create a Query Controller in LitElement
 
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/reactive-controllers-vs-hooks.md
 
-Use this method to retrieve default options previously set for a specific mutation key.
-
-```tsx
-const defaultOptions = queryClient.getMutationDefaults(['addPost'])
-```
-
---------------------------------
-
-### Using createInfiniteQueryController in a LitElement (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createInfiniteQueryController.md
-
-Demonstrates how to integrate `createInfiniteQueryController` into a LitElement to manage an infinite list of projects, including fetching next pages.
+Demonstrates how to create a createQueryController instance within a LitElement class, binding it to the host (this) to manage query state for a list of todos.
 
 ```ts
-import { LitElement, html } from 'lit'
-import { createInfiniteQueryController } from '@tanstack/lit-query'
-
-class ProjectsView extends LitElement {
-  private readonly projects = createInfiniteQueryController(this, {
-    queryKey: ['projects'],
-    queryFn: ({ pageParam }) => fetchProjects(pageParam),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
   })
-
-  render() {
-    const query = this.projects()
-
-    return html`
-      <button ?disabled=${!query.hasNextPage} @click=${() => this.projects.fetchNextPage()}>
-        Load more
-      </button>
-    `
-  }
 }
 ```
