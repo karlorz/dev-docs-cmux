@@ -138,6 +138,18 @@ npm install -g package-name
 
 --------------------------------
 
+### Install OpenCode on Windows using Scoop
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Install OpenCode on Windows using Scoop.
+
+```bash
+scoop install opencode
+```
+
+--------------------------------
+
 ### Advanced configuration example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -149,18 +161,6 @@ const config = {
   performance: { cache: true, timeout: 30000 },
   security: { encryption: 'AES-256' }
 };
-```
-
---------------------------------
-
-### Install OpenCode on Windows using Scoop
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Install OpenCode on Windows using Scoop.
-
-```bash
-scoop install opencode
 ```
 
 --------------------------------
@@ -201,18 +201,6 @@ yarn global add opencode-ai
 
 --------------------------------
 
-### Configure environment step
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
-
-Example of configuring environment variables within a step.
-
-```bash
-API_KEY=your_api_key_here
-```
-
---------------------------------
-
 ### Install OpenCode on Arch Linux
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -225,6 +213,18 @@ sudo pacman -S opencode
 
 ```bash
 paru -S opencode-bin
+```
+
+--------------------------------
+
+### Configure environment step
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+
+Example of configuring environment variables within a step.
+
+```bash
+API_KEY=your_api_key_here
 ```
 
 --------------------------------
@@ -617,20 +617,6 @@ description: "Concise description for SEO and navigation"
 
 --------------------------------
 
-### Describe the feature in Plan mode
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Example of describing a new feature to OpenCode in Plan mode.
-
-```txt
-When a user deletes a note, we'd like to flag it as deleted in the database.
-Then create a screen that shows all the recently deleted notes.
-From this screen, the user can undelete a note or permanently delete it.
-```
-
---------------------------------
-
 ### Partial Service Stub Example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
@@ -644,6 +630,20 @@ import { Account } from "@/account/account"
 const failingAccountLayer = Layer.mock(Account.Service, {
   orgsByAccount: () => Effect.fail(new Account.AccountServiceError({ message: "simulated upstream failure" })),
 })
+```
+
+--------------------------------
+
+### Describe the feature in Plan mode
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Example of describing a new feature to OpenCode in Plan mode.
+
+```txt
+When a user deletes a note, we'd like to flag it as deleted in the database.
+Then create a screen that shows all the recently deleted notes.
+From this screen, the user can undelete a note or permanently delete it.
 ```
 
 --------------------------------
@@ -691,6 +691,24 @@ gh pr diff $ARGUMENTS
 
 --------------------------------
 
+### Instalando o aplicativo desktop OpenCode (BETA)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.br.md
+
+Instale a versão desktop do OpenCode usando gerenciadores de pacotes específicos para macOS e Windows.
+
+```bash
+# macOS (Homebrew)
+brew install --cask opencode-desktop
+```
+
+```bash
+# Windows (Scoop)
+scoop bucket add extras; scoop install extras/opencode-desktop
+```
+
+--------------------------------
+
 ### Path API Get Current Path
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
@@ -700,6 +718,20 @@ Example of using `path.get()` to retrieve current path information.
 ```javascript
 // Get current path information
 const pathInfo = await client.path.get()
+```
+
+--------------------------------
+
+### tmpdir with config file
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Example of creating a temporary directory with a pre-configured `opencode.json` file.
+
+```typescript
+await using tmp = await tmpdir({
+  config: { model: "test/model", username: "testuser" },
+})
 ```
 
 --------------------------------
@@ -723,16 +755,18 @@ $ /connect
 
 --------------------------------
 
-### tmpdir with config file
+### Example of attaching TUI to a running backend
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
 
-Example of creating a temporary directory with a pre-configured `opencode.json` file.
+Demonstrates starting a web backend and then attaching the TUI from another terminal.
 
-```typescript
-await using tmp = await tmpdir({
-  config: { model: "test/model", username: "testuser" },
-})
+```bash
+# Start the backend server for web/mobile access
+opencode web --port 4096 --hostname 0.0.0.0
+
+# In another terminal, attach the TUI to the running backend
+opencode attach http://10.20.30.40:4096
 ```
 
 --------------------------------
@@ -836,18 +870,43 @@ Illustrates the full structure and all available optional fields within the open
 
 --------------------------------
 
-### Example of attaching TUI to a running backend
+### Project API List and Current
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
 
-Demonstrates starting a web backend and then attaching the TUI from another terminal.
+Examples of listing all projects using `project.list()` and getting the current project using `project.current()`.
 
-```bash
-# Start the backend server for web/mobile access
-opencode web --port 4096 --hostname 0.0.0.0
+```javascript
+// List all projects
+const projects = await client.project.list()
 
-# In another terminal, attach the TUI to the running backend
-opencode attach http://10.20.30.40:4096
+// Get current project
+const currentProject = await client.project.current()
+```
+
+--------------------------------
+
+### Code group with multiple languages
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+
+Example of a code group demonstrating API calls in Node.js, Python, and cURL.
+
+```javascript
+const response = await fetch('/api/endpoint', {
+  headers: { Authorization: `Bearer ${apiKey}` }
+});
+```
+
+```python
+import requests
+response = requests.get('/api/endpoint',
+  headers={'Authorization': f'Bearer {api_key}'})
+```
+
+```curl
+curl -X GET '/api/endpoint' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
 ```
 
 --------------------------------
@@ -887,22 +946,6 @@ await client.session.prompt({
 
 --------------------------------
 
-### Project API List and Current
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
-
-Examples of listing all projects using `project.list()` and getting the current project using `project.current()`.
-
-```javascript
-// List all projects
-const projects = await client.project.list()
-
-// Get current project
-const currentProject = await client.project.current()
-```
-
---------------------------------
-
 ### Prompting with a Local MCP Tool (TXT)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
@@ -911,43 +954,6 @@ Example of how to use a locally configured MCP tool, `mcp_everything`, within a 
 
 ```txt
 use the mcp_everything tool to add the number 3 and 4
-```
-
---------------------------------
-
-### Code group with multiple languages
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
-
-Example of a code group demonstrating API calls in Node.js, Python, and cURL.
-
-```javascript
-const response = await fetch('/api/endpoint', {
-  headers: { Authorization: `Bearer ${apiKey}` }
-});
-```
-
-```python
-import requests
-response = requests.get('/api/endpoint',
-  headers={'Authorization': f'Bearer {api_key}'})
-```
-
-```curl
-curl -X GET '/api/endpoint' \
-  -H 'Authorization: Bearer YOUR_API_KEY'
-```
-
---------------------------------
-
-### Run the project
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
-
-Command to run the project's main script using Bun.
-
-```bash
-bun run index.ts
 ```
 
 --------------------------------
@@ -974,14 +980,14 @@ await using tmp = await tmpdir({
 
 --------------------------------
 
-### Connect to LLM provider
+### Run the project
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
 
-Run the /connect command in the TUI to configure an LLM provider.
+Command to run the project's main script using Bun.
 
-```txt
-/connect
+```bash
+bun run index.ts
 ```
 
 --------------------------------
@@ -1065,6 +1071,18 @@ it.instance("uses the temp directory", () =>
     expect(test.directory).toContain("opencode-test-")
   }),
 )
+```
+
+--------------------------------
+
+### Connect to LLM provider
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Run the /connect command in the TUI to configure an LLM provider.
+
+```txt
+/connect
 ```
 
 --------------------------------
@@ -1224,27 +1242,52 @@ describe("getUser", () => {
 
 --------------------------------
 
-### Provide feedback or add details to the plan
+### Instalando OpenCode via script ou gerenciadores de pacotes
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/README.br.md
 
-Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
-
-```txt
-We'd like to design this new screen using a design I've used before.
-[Image #1] Take a look at this image and use it as a reference.
-```
-
---------------------------------
-
-### Create Starlight Project
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/README.md
-
-Command to initialize a new Astro project using the Starlight template.
+Instale o OpenCode usando o script de instalação direto ou através de vários gerenciadores de pacotes populares para diferentes sistemas operacionais.
 
 ```bash
-npm create astro@latest -- --template starlight
+# YOLO
+curl -fsSL https://opencode.ai/install | bash
+```
+
+```bash
+# Gerenciadores de pacotes
+npm i -g opencode-ai@latest        # ou bun/pnpm/yarn
+```
+
+```bash
+scoop install opencode             # Windows
+```
+
+```bash
+choco install opencode             # Windows
+```
+
+```bash
+brew install anomalyco/tap/opencode # macOS e Linux (recomendado, sempre atualizado)
+```
+
+```bash
+brew install opencode              # macOS e Linux (fórmula oficial do brew, atualiza menos)
+```
+
+```bash
+sudo pacman -S opencode            # Arch Linux (Stable)
+```
+
+```bash
+paru -S opencode-bin               # Arch Linux (Latest from AUR)
+```
+
+```bash
+mise use -g opencode               # qualquer sistema
+```
+
+```bash
+nix run nixpkgs#opencode           # ou github:anomalyco/opencode para a branch dev mais recente
 ```
 
 --------------------------------
@@ -1261,14 +1304,13 @@ npm install agents
 
 --------------------------------
 
-### Directly ask OpenCode to make changes
+### Provide feedback or add details to the plan
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
 
-Example of asking OpenCode to make straightforward changes without a prior plan review, referencing specific files.
+Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
 
 ```txt
-We need to add authentication to the /settings route. Take a look at how this is
-handled in the /notes route in @packages/functions/src/notes.ts and implement
-the same logic in @packages/functions/src/settings.ts
+We'd like to design this new screen using a design I've used before.
+[Image #1] Take a look at this image and use it as a reference.
 ```
