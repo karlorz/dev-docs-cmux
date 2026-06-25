@@ -893,6 +893,30 @@ export default writable(0)
 
 --------------------------------
 
+### Basic `experimental.renderBuiltUrl` usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
 ### Install trusted cert via CLI on macOS
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
@@ -901,6 +925,18 @@ Command to install a trusted SSL certificate via the command line on macOS.
 
 ```shell
 security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
+### Start Node.js Inspector for Dev Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
+
+```bash
+vite --profile --open
 ```
 
 --------------------------------
@@ -948,42 +984,6 @@ export function createHandler(input) {
     return new Response('hello')
   }
 }
-```
-
---------------------------------
-
-### Basic `experimental.renderBuiltUrl` usage
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
-
-```ts
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostType }) {
-    if (hostType === 'js') {
-      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-    } else {
-      return { relative: true }
-    }
-  },
-},
-}
-```
-
---------------------------------
-
-### Start Node.js Inspector for Dev Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
-
-```bash
-vite --profile --open
 ```
 
 --------------------------------
