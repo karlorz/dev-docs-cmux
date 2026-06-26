@@ -367,6 +367,22 @@ p { background: rgba(0, 0, 0, 0.1); }
 
 --------------------------------
 
+### Vercel CLI Installation and Deployment
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to install the Vercel CLI globally and deploy an application.
+
+```bash
+npm i -g vercel
+```
+
+```bash
+vercel
+```
+
+--------------------------------
+
 ### Install CSS Pre-processors for Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -386,18 +402,20 @@ npm add -D stylus
 
 --------------------------------
 
-### Vercel CLI Installation and Deployment
+### Component Setup Script
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/docs/team.md
 
-Command to install the Vercel CLI globally and deploy an application.
+Imports necessary components and data for rendering the team page.
 
-```bash
-npm i -g vercel
-```
-
-```bash
-vercel
+```javascript
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamPageSection,
+  VPTeamMembers
+} from '@voidzero-dev/vitepress-theme'
+import { core, emeriti } from './_data/team'
 ```
 
 --------------------------------
@@ -412,18 +430,6 @@ Example of an entry file (`lib/main.js`) exporting components for library users.
 import Foo from './Foo.vue'
 import Bar from './Bar.vue'
 export { Foo, Bar }
-```
-
---------------------------------
-
-### Install esbuild for CSS Minification
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Install esbuild as a development dependency to use it for CSS minification when `build.cssMinify` is set to 'esbuild'.
-
-```sh
-npm add -D esbuild
 ```
 
 --------------------------------
@@ -475,6 +481,18 @@ export default {
     }),
   ],
 }
+```
+
+--------------------------------
+
+### Vite Dev Server Usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+
+Basic usage for starting the Vite development server.
+
+```bash
+vite [root]
 ```
 
 --------------------------------
@@ -574,34 +592,6 @@ overrides:
 
 --------------------------------
 
-### Local Release Preparation Commands
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
-
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
-```
-
-```bash
-pnpm release
-```
-
-```bash
-pnpm release --dry
-```
-
---------------------------------
-
 ### preview
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -652,14 +642,30 @@ previewServer.bindCLIShortcuts({ print: true })
 
 --------------------------------
 
-### Netlify CLI Site Initialization
+### Local Release Preparation Commands
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Command to create a new Netlify site using the CLI.
+Command-line instructions to be executed locally for preparing a package release, including updating the repository, installing dependencies, building the project, and initiating the release script.
 
 ```bash
-netlify init
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
+```
+
+```bash
+pnpm release
+```
+
+```bash
+pnpm release --dry
 ```
 
 --------------------------------
@@ -707,6 +713,30 @@ createServer()
 
 --------------------------------
 
+### Netlify CLI Site Initialization
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to create a new Netlify site using the CLI.
+
+```bash
+netlify init
+```
+
+--------------------------------
+
+### Build for production
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to build the application for production.
+
+```bash
+npm run build
+```
+
+--------------------------------
+
 ### Programmatic Vite Build Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -726,18 +756,6 @@ await build({
     },
   },
 })
-```
-
---------------------------------
-
-### Build for production
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
-
-Command to build the application for production.
-
-```bash
-npm run build
 ```
 
 --------------------------------
@@ -820,19 +838,14 @@ export default defineConfig({
 
 --------------------------------
 
-### Accessing Environments from the Server
+### Install esbuild for CSS Minification
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+Install esbuild as a development dependency to use it for CSS minification when `build.cssMinify` is set to 'esbuild'.
 
-```js
-// create the server, or get it from the configureServer hook
-const server = await createServer(/* options */)
-
-const clientEnvironment = server.environments.client
-clientEnvironment.transformRequest(url)
-console.log(server.environments.ssr.moduleGraph)
+```sh
+npm add -D esbuild
 ```
 
 --------------------------------
@@ -846,6 +859,23 @@ An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed va
 ```env
 VITE_SOME_KEY=123
 DB_PASSWORD=foobar
+```
+
+--------------------------------
+
+### Accessing Environments from the Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+
+Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+
+```js
+// create the server, or get it from the configureServer hook
+const server = await createServer(/* options */)
+
+const clientEnvironment = server.environments.client
+clientEnvironment.transformRequest(url)
+console.log(server.environments.ssr.moduleGraph)
 ```
 
 --------------------------------
@@ -893,50 +923,20 @@ export default writable(0)
 
 --------------------------------
 
-### Basic `experimental.renderBuiltUrl` usage
+### Dependency Notation and Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
 
-An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
 
-```ts
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostType }) {
-    if (hostType === 'js') {
-      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-    } else {
-      return { relative: true }
-    }
-  },
-},
-}
-```
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
 
---------------------------------
-
-### Install trusted cert via CLI on macOS
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Command to install a trusted SSL certificate via the command line on macOS.
-
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
-```
-
---------------------------------
-
-### Start Node.js Inspector for Dev Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Command to start the Vite development server with the Node.js inspector enabled for CPU profiling.
-
-```bash
-vite --profile --open
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
 ```
 
 --------------------------------
@@ -982,78 +982,6 @@ const response = handler(new Request('http://example.com/'))
 export function createHandler(input) {
   return function handler(req) {
     return new Response('hello')
-  }
-}
-```
-
---------------------------------
-
-### Dependency Notation and Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
-
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
-
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
-
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
-```
-
---------------------------------
-
-### Advanced `experimental.renderBuiltUrl` with asset types
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-An example showing how to define different base options for public files, JavaScript host IDs, and other assets using the `type` and `hostId` context parameters.
-
-```ts
-import type { UserConfig } from 'vite'
-import path from 'node:path'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostId, hostType, type }) {
-    if (type === 'public') {
-      return 'https://www.domain.com/' + filename
-    } else if (path.extname(hostId) === '.js') {
-      return {
-        runtime: `window.__assetsPath(${JSON.stringify(filename)})`
-      }
-    } else {
-      return 'https://cdn.domain.com/assets/' + filename
-    }
-  },
-},
-}
-```
-
---------------------------------
-
-### package.json with CSS export
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Example `package.json` showing how to export a bundled CSS file for users to import, alongside JS modules.
-
-```json
-{
-  "name": "my-lib",
-  "type": "module",
-  "files": ["dist"],
-  "main": "./dist/my-lib.umd.cjs",
-  "module": "./dist/my-lib.js",
-  "exports": {
-    ".": {
-      "import": "./dist/my-lib.js",
-      "require": "./dist/my-lib.umd.cjs"
-    },
-    "./style.css": "./dist/my-lib.css"
   }
 }
 ```
@@ -1106,20 +1034,109 @@ export default {
 
 --------------------------------
 
-### Example of unhandled error log forwarding
+### Basic `experimental.renderBuiltUrl` usage
 
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-This example shows the enhanced formatting of an unhandled error logged in the server terminal when `forwardConsole` is configured to capture unhandled errors.
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
 
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
+### Install SWC Plugins for Native Decorator Lowering (Bash)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+
+Install the required SWC plugins and the Rollup SWC plugin to enable lowering of native decorators in your project.
+
+```bash
+$ npm install -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ yarn add -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ pnpm add -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ bun add -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
+```
+
+--------------------------------
+
+### Advanced `experimental.renderBuiltUrl` with asset types
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example showing how to define different base options for public files, JavaScript host IDs, and other assets using the `type` and `hostId` context parameters.
+
+```ts
+import type { UserConfig } from 'vite'
+import path from 'node:path'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostId, hostType, type }) {
+    if (type === 'public') {
+      return 'https://www.domain.com/' + filename
+    } else if (path.extname(hostId) === '.js') {
+      return {
+        runtime: `window.__assetsPath(${JSON.stringify(filename)})`
+      }
+    } else {
+      return 'https://cdn.domain.com/assets/' + filename
+    }
+  },
+},
+}
+```
+
+--------------------------------
+
+### Install Babel Plugins for Native Decorator Lowering (Bash)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+
+Install the required Babel plugins and the Rolldown Babel plugin to enable lowering of native decorators in your project.
+
+```bash
+$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 ```
