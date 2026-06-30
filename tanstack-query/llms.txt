@@ -505,6 +505,18 @@ class TodosView extends LitElement {
 
 --------------------------------
 
+### Install Lit Query with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/installation.md
+
+Use pnpm to install the Lit Query adapter, TanStack Query Core, and Lit.
+
+```bash
+pnpm add @tanstack/lit-query @tanstack/query-core lit
+```
+
+--------------------------------
+
 ### Install Preact Query Devtools
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/preact/devtools.md
@@ -525,18 +537,6 @@ yarn add @tanstack/preact-query-devtools
 
 ```bash
 bun add @tanstack/preact-query-devtools
-```
-
---------------------------------
-
-### Install Lit Query with pnpm
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/installation.md
-
-Use pnpm to install the Lit Query adapter, TanStack Query Core, and Lit.
-
-```bash
-pnpm add @tanstack/lit-query @tanstack/query-core lit
 ```
 
 --------------------------------
@@ -663,18 +663,6 @@ pnpm --dir packages/lit-query run build
 
 --------------------------------
 
-### Install @tanstack/lit-query with npm
-
-Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
-
-Use this command to install the @tanstack/lit-query package along with its core dependencies.
-
-```bash
-npm install @tanstack/lit-query @tanstack/query-core lit
-```
-
---------------------------------
-
 ### Install React Query Devtools
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/devtools.md
@@ -695,6 +683,18 @@ yarn add @tanstack/react-query-devtools
 
 ```bash
 bun add @tanstack/react-query-devtools
+```
+
+--------------------------------
+
+### Install @tanstack/lit-query with npm
+
+Source: https://github.com/tanstack/query/blob/main/packages/lit-query/README.md
+
+Use this command to install the @tanstack/lit-query package along with its core dependencies.
+
+```bash
+npm install @tanstack/lit-query @tanstack/query-core lit
 ```
 
 --------------------------------
@@ -888,6 +888,19 @@ yarn dev
 
 ```bash
 pnpm dev
+```
+
+--------------------------------
+
+### Example Query Keys Matching a Prefix (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
+
+These examples illustrate how different query keys can match a common prefix, demonstrating which keys would be affected by a prefix-based invalidation.
+
+```ts
+const projectsListKey = ['projects']
+const projectsPageKey = ['projects', 1, 250, false]
 ```
 
 --------------------------------
@@ -1108,6 +1121,29 @@ This function can be used to restore queries that are currently stored by persis
 
 --------------------------------
 
+### Directly Using QueryClientProvider in Lit
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
+
+This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
+
+```ts
+import { html } from 'lit'
+import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
+
+const queryClient = new QueryClient()
+
+customElements.define('query-client-provider', QueryClientProvider)
+
+const view = html`
+  <query-client-provider .client=${queryClient}>
+    <todos-view></todos-view>
+  </query-client-provider>
+`
+```
+
+--------------------------------
+
 ### Prefetching and Hydration with Next.js Pages Router
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/advanced-ssr.md
@@ -1167,29 +1203,6 @@ export default function PostsRoute({ dehydratedState }) {
     </HydrationBoundary>
   )
 }
-```
-
---------------------------------
-
-### Directly Using QueryClientProvider in Lit
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
-
-This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
-
-```ts
-import { html } from 'lit'
-import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
-
-const queryClient = new QueryClient()
-
-customElements.define('query-client-provider', QueryClientProvider)
-
-const view = html`
-  <query-client-provider .client=${queryClient}>
-    <todos-view></todos-view>
-  </query-client-provider>
-`
 ```
 
 --------------------------------
@@ -1385,33 +1398,6 @@ npm create svelte@latest
 
 # create a new project in my-app
 npm create svelte@latest my-app
-```
-
---------------------------------
-
-### Configure QueryClient with experimental_createQueryPersister
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/plugins/createPersister.md
-
-Create an `experimental_createQueryPersister` instance with a storage and `maxAge`, then apply its `persisterFn` to the `defaultOptions.queries` of your `QueryClient`.
-
-```tsx
-import { QueryClient } from '@tanstack/vue-query'
-import { experimental_createQueryPersister } from '@tanstack/query-persist-client-core'
-
-const persister = experimental_createQueryPersister({
-  storage: AsyncStorage,
-  maxAge: 1000 * 60 * 60 * 12, // 12 hours
-})
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      gcTime: 1000 * 30, // 30 seconds
-      persister: persister.persisterFn,
-    },
-  },
-})
 ```
 
 --------------------------------
@@ -1658,19 +1644,6 @@ npm create svelte@latest my-app
 
 --------------------------------
 
-### Example Query Keys Matching a Prefix (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
-
-These examples illustrate how different query keys can match a common prefix, demonstrating which keys would be affected by a prefix-based invalidation.
-
-```ts
-const projectsListKey = ['projects']
-const projectsPageKey = ['projects', 1, 250, false]
-```
-
---------------------------------
-
 ### Implement Lit Query with Queries and Mutations in LitElement
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/quick-start.md
@@ -1858,34 +1831,6 @@ mutateAsync: MutationObserverResult<TData, TError, TVariables, TOnMutateResult>[
 
 --------------------------------
 
-### mutate(variables, options?)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/type-aliases/MutationResultAccessor.md
-
-Starts the mutation and swallows the returned promise. Throws synchronously if no `QueryClient` can be resolved.
-
-```APIDOC
-## mutate(variables, options?)
-
-### Description
-Starts the mutation and swallows the returned promise.
-Throws synchronously if no `QueryClient` can be resolved.
-
-### Method Signature
-```ts
-mutate: (variables, options?) => void;
-```
-
-### Parameters
-- **variables** (`TVariables`) - Required - The variables for the mutation.
-- **options?** (`MutateOptions<TData, TError, TVariables, TOnMutateResult>`) - Optional - Options for the mutation.
-
-### Returns
-`void`
-```
-
---------------------------------
-
 ### createInfiniteQueryController()
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createInfiniteQueryController.md
@@ -1949,6 +1894,34 @@ class ProjectsView extends LitElement {
 
 --------------------------------
 
+### mutate(variables, options?)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/type-aliases/MutationResultAccessor.md
+
+Starts the mutation and swallows the returned promise. Throws synchronously if no `QueryClient` can be resolved.
+
+```APIDOC
+## mutate(variables, options?)
+
+### Description
+Starts the mutation and swallows the returned promise.
+Throws synchronously if no `QueryClient` can be resolved.
+
+### Method Signature
+```ts
+mutate: (variables, options?) => void;
+```
+
+### Parameters
+- **variables** (`TVariables`) - Required - The variables for the mutation.
+- **options?** (`MutateOptions<TData, TError, TVariables, TOnMutateResult>`) - Optional - Options for the mutation.
+
+### Returns
+`void`
+```
+
+--------------------------------
+
 ### Get Mutation Cache from QueryClient
 
 Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
@@ -1985,18 +1958,6 @@ pnpm build:all
 
 --------------------------------
 
-### Concise `injectQuery` Assignment in Angular
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/queries.md
-
-This example shows a more concise way to assign the result of an `injectQuery` call to a variable.
-
-```ts
-result = injectQuery(() => ({ queryKey: ['todos'], queryFn: fetchTodoList }))
-```
-
---------------------------------
-
 ### Building a Svelte app for production
 
 Source: https://github.com/tanstack/query/blob/main/examples/svelte/load-more-infinite-scroll/README.md
@@ -2005,6 +1966,18 @@ This command compiles your Svelte application into a production-ready build.
 
 ```bash
 npm run build
+```
+
+--------------------------------
+
+### Concise `injectQuery` Assignment in Angular
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/queries.md
+
+This example shows a more concise way to assign the result of an `injectQuery` call to a variable.
+
+```ts
+result = injectQuery(() => ({ queryKey: ['todos'], queryFn: fetchTodoList }))
 ```
 
 --------------------------------
@@ -2038,20 +2011,6 @@ const usersMessages = useQueries(() => ({
 
 --------------------------------
 
-### Update React Query and Devtools Packages
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/migrating-to-react-query-4.md
-
-Use these commands to uninstall `react-query` and install the new `@tanstack/react-query` and `@tanstack/react-query-devtools` packages.
-
-```bash
-npm uninstall react-query
-npm install @tanstack/react-query
-npm install @tanstack/react-query-devtools
-```
-
---------------------------------
-
 ### Install React Query via Package Managers
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
@@ -2076,6 +2035,20 @@ bun add @tanstack/react-query
 
 ```bash
 deno add @tanstack/react-query
+```
+
+--------------------------------
+
+### Update React Query and Devtools Packages
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/migrating-to-react-query-4.md
+
+Use these commands to uninstall `react-query` and install the new `@tanstack/react-query` and `@tanstack/react-query-devtools` packages.
+
+```bash
+npm uninstall react-query
+npm install @tanstack/react-query
+npm install @tanstack/react-query-devtools
 ```
 
 --------------------------------
@@ -2218,12 +2191,17 @@ function Component({ id }) {
 
 --------------------------------
 
-### Hydrating Paused Mutations (Angular)
+### Create a Query Controller in LitElement
 
-Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/mutations.md
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/reactive-controllers-vs-hooks.md
 
-Restores the `queryClient` state, including previously dehydrated paused mutations, when the application starts.
+Demonstrates how to create a createQueryController instance within a LitElement class, binding it to the host (this) to manage query state for a list of todos.
 
-```typescript
-hydrate(queryClient, state)
+```ts
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  })
+}
 ```
