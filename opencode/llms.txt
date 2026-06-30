@@ -45,14 +45,21 @@ Example of a JSON API response.
 
 --------------------------------
 
-### Initialize AGENTS.md in TUI (Bash)
+### tmpdir with custom initialization
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tui.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
 
-Starts a guided setup process for creating or updating the 'AGENTS.md' file, defining project rules.
+Example demonstrating how to use a custom `init` function to perform setup and return extra data accessible via `tmp.extra`.
 
-```bash
-/init
+```typescript
+await using tmp = await tmpdir<string>({
+  init: async (dir) => {
+    await Bun.write(path.join(dir, "file.txt"), "content")
+    return "extra data"
+  },
+})
+// Access extra data via tmp.extra
+console.log(tmp.extra) // "extra data"
 ```
 
 --------------------------------
@@ -66,6 +73,18 @@ Commands to install Node.js and a package on Linux using apt.
 ```bash
 sudo apt install nodejs npm
 npm install -g package-name
+```
+
+--------------------------------
+
+### Initialize AGENTS.md in TUI (Bash)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tui.mdx
+
+Starts a guided setup process for creating or updating the 'AGENTS.md' file, defining project rules.
+
+```bash
+/init
 ```
 
 --------------------------------
@@ -119,6 +138,18 @@ npm install -g package-name
 
 --------------------------------
 
+### Install OpenCode on Windows using Scoop
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Install OpenCode on Windows using Scoop.
+
+```bash
+scoop install opencode
+```
+
+--------------------------------
+
 ### Advanced configuration example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -134,18 +165,6 @@ const config = {
 
 --------------------------------
 
-### Install OpenCode on Windows using Scoop
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Install OpenCode on Windows using Scoop.
-
-```bash
-scoop install opencode
-```
-
---------------------------------
-
 ### Install OpenCode on Windows using NPM
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -154,18 +173,6 @@ Install OpenCode on Windows using NPM.
 
 ```bash
 npm install -g opencode-ai
-```
-
---------------------------------
-
-### Configure environment step
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
-
-Example of configuring environment variables within a step.
-
-```bash
-API_KEY=your_api_key_here
 ```
 
 --------------------------------
@@ -194,6 +201,18 @@ yarn global add opencode-ai
 
 --------------------------------
 
+### Configure environment step
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+
+Example of configuring environment variables within a step.
+
+```bash
+API_KEY=your_api_key_here
+```
+
+--------------------------------
+
 ### Install OpenCode on Arch Linux
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -206,19 +225,6 @@ sudo pacman -S opencode
 
 ```bash
 paru -S opencode-bin
-```
-
---------------------------------
-
-### Install dependencies (macOS)
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
-
-Commands to install Node.js and a package on macOS using Homebrew.
-
-```bash
-brew install node
-npm install -g package-name
 ```
 
 --------------------------------
@@ -253,6 +259,19 @@ choco install opencode
 
 --------------------------------
 
+### Install dependencies (macOS)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+
+Commands to install Node.js and a package on macOS using Homebrew.
+
+```bash
+brew install node
+npm install -g package-name
+```
+
+--------------------------------
+
 ### Install SDK
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
@@ -277,21 +296,6 @@ npm i -g mint
 
 --------------------------------
 
-### Required YAML frontmatter
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
-
-Example of the YAML frontmatter required at the beginning of every documentation page.
-
-```yaml
----
-title: "Clear, specific, keyword-rich title"
-description: "Concise description explaining page purpose and value"
----
-```
-
---------------------------------
-
 ### OpenAPI Configuration Examples
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/essentials/settings.mdx
@@ -308,6 +312,21 @@ Examples demonstrating different ways to configure the 'openapi' property.
 
 ```json
 "openapi": ["https://example.com/openapi1.json", "/openapi2.json", "/openapi3.json"]
+```
+
+--------------------------------
+
+### Required YAML frontmatter
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+
+Example of the YAML frontmatter required at the beginning of every documentation page.
+
+```yaml
+---
+title: "Clear, specific, keyword-rich title"
+description: "Concise description explaining page purpose and value"
+---
 ```
 
 --------------------------------
@@ -496,25 +515,6 @@ docker run -it --rm ghcr.io/anomalyco/opencode
 
 --------------------------------
 
-### tmpdir with custom initialization
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
-
-Example demonstrating how to use a custom `init` function to perform setup and return extra data accessible via `tmp.extra`.
-
-```typescript
-await using tmp = await tmpdir<string>({
-  init: async (dir) => {
-    await Bun.write(path.join(dir, "file.txt"), "content")
-    return "extra data"
-  },
-})
-// Access extra data via tmp.extra
-console.log(tmp.extra) // "extra data"
-```
-
---------------------------------
-
 ### Initialize OpenCode for project
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -539,18 +539,6 @@ mint dev
 
 --------------------------------
 
-### Install Claude Code globally
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/claude-code.mdx
-
-Command to install the Claude Code CLI tool using npm.
-
-```bash
-npm install -g @anthropic-ai/claude-code
-```
-
---------------------------------
-
 ### Ask OpenCode a question
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -560,6 +548,18 @@ Example of asking OpenCode to explain a part of the codebase.
 ```txt
 @packages/functions/src/api/index.ts
 How is authentication handled in @packages/functions/src/api/index.ts
+```
+
+--------------------------------
+
+### Install Claude Code globally
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/claude-code.mdx
+
+Command to install the Claude Code CLI tool using npm.
+
+```bash
+npm install -g @anthropic-ai/claude-code
 ```
 
 --------------------------------
@@ -663,22 +663,6 @@ await using tmp = await tmpdir({ git: true })
 
 --------------------------------
 
-### Reviewing a Pull Request
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/command/template/review.txt
-
-Commands to get context and diff for a pull request.
-
-```bash
-gh pr view $ARGUMENTS
-```
-
-```bash
-gh pr diff $ARGUMENTS
-```
-
---------------------------------
-
 ### Instalando o aplicativo desktop OpenCode (BETA)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/README.br.md
@@ -693,6 +677,22 @@ brew install --cask opencode-desktop
 ```bash
 # Windows (Scoop)
 scoop bucket add extras; scoop install extras/opencode-desktop
+```
+
+--------------------------------
+
+### Reviewing a Pull Request
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/command/template/review.txt
+
+Commands to get context and diff for a pull request.
+
+```bash
+gh pr view $ARGUMENTS
+```
+
+```bash
+gh pr diff $ARGUMENTS
 ```
 
 --------------------------------
@@ -720,6 +720,22 @@ Example of creating a temporary directory with a pre-configured `opencode.json` 
 await using tmp = await tmpdir({
   config: { model: "test/model", username: "testuser" },
 })
+```
+
+--------------------------------
+
+### Example of attaching TUI to a running backend
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Demonstrates starting a web backend and then attaching the TUI from another terminal.
+
+```bash
+# Start the backend server for web/mobile access
+opencode web --port 4096 --hostname 0.0.0.0
+
+# In another terminal, attach the TUI to the running backend
+opencode attach http://10.20.30.40:4096
 ```
 
 --------------------------------
@@ -823,18 +839,18 @@ Illustrates the full structure and all available optional fields within the open
 
 --------------------------------
 
-### Example of attaching TUI to a running backend
+### Project API List and Current
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
 
-Demonstrates starting a web backend and then attaching the TUI from another terminal.
+Examples of listing all projects using `project.list()` and getting the current project using `project.current()`.
 
-```bash
-# Start the backend server for web/mobile access
-opencode web --port 4096 --hostname 0.0.0.0
+```javascript
+// List all projects
+const projects = await client.project.list()
 
-# In another terminal, attach the TUI to the running backend
-opencode attach http://10.20.30.40:4096
+// Get current project
+const currentProject = await client.project.current()
 ```
 
 --------------------------------
@@ -886,22 +902,6 @@ use the mcp_everything tool to add the number 3 and 4
 
 --------------------------------
 
-### Project API List and Current
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
-
-Examples of listing all projects using `project.list()` and getting the current project using `project.current()`.
-
-```javascript
-// List all projects
-const projects = await client.project.list()
-
-// Get current project
-const currentProject = await client.project.current()
-```
-
---------------------------------
-
 ### Code group with multiple languages
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -927,18 +927,6 @@ curl -X GET '/api/endpoint' \
 
 --------------------------------
 
-### Run the project
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
-
-Command to run the project's main script using Bun.
-
-```bash
-bun run index.ts
-```
-
---------------------------------
-
 ### tmpdir with custom cleanup
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
@@ -957,6 +945,18 @@ await using tmp = await tmpdir({
     await fs.rm(path.join(dir, "special"), { recursive: true })
   },
 })
+```
+
+--------------------------------
+
+### Run the project
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
+
+Command to run the project's main script using Bun.
+
+```bash
+bun run index.ts
 ```
 
 --------------------------------
@@ -1257,19 +1257,6 @@ describe("getUser", () => {
     }).pipe(Effect.provide(HttpRecorder.http("users/get-one"))),
   )
 })
-```
-
---------------------------------
-
-### Provide feedback or add details to the plan
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
-
-```txt
-We'd like to design this new screen using a design I've used before.
-[Image #1] Take a look at this image and use it as a reference.
 ```
 
 --------------------------------
