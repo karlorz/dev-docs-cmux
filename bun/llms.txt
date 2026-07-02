@@ -1720,14 +1720,37 @@ An example of an HTML block starting with <div> (type 6) containing markdown con
 
 --------------------------------
 
-### Install Bun (npm)
+### Multiple Asynchronous onStart Callbacks
 
-Source: https://github.com/oven-sh/bun/blob/main/CONTRIBUTING.md
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
 
-Install a release build of Bun using npm.
+Demonstrates using multiple "onStart" callbacks within a single build, including asynchronous operations that Bun waits for before proceeding.
 
-```bash
-$ npm install -g bun
+```ts
+const result = await Bun.build({
+  entrypoints: ["./app.ts"],
+  outdir: "./dist",
+  sourcemap: "external",
+  plugins: [
+    {
+      name: "Sleep for 10 seconds",
+      setup(build) {
+        build.onStart(async () => {
+          await Bunlog.sleep(10_000);
+        });
+      },
+    },
+    {
+      name: "Log bundle time to a file",
+      setup(build) {
+        build.onStart(async () => {
+          const now = Date.now();
+          await Bun.$`echo ${now} > bundle-time.txt`;
+        });
+      },
+    },
+  ],
+});
 ```
 
 --------------------------------
