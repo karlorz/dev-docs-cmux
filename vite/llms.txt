@@ -230,27 +230,6 @@ export * from './slash.js'
 
 --------------------------------
 
-### Configuring Server Warmup
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/performance.md
-
-Example `vite.config.js` configuration to warm up frequently used client files, preventing request waterfalls.
-
-```js
-export default defineConfig({
-  server: {
-    warmup: {
-      clientFiles: [
-        './src/components/BigComponent.vue',
-        './src/utils/big-utils.js'
-      ]
-    }
-  }
-})
-```
-
---------------------------------
-
 ### Install specific commit
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -271,6 +250,27 @@ $ pnpm add -D https://pkg.pr.new/vite@SHA
 
 ```bash
 $ bun add -D https://pkg.pr.new/vite@SHA
+```
+
+--------------------------------
+
+### Configuring Server Warmup
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/performance.md
+
+Example `vite.config.js` configuration to warm up frequently used client files, preventing request waterfalls.
+
+```js
+export default defineConfig({
+  server: {
+    warmup: {
+      clientFiles: [
+        './src/components/BigComponent.vue',
+        './src/utils/big-utils.js'
+      ]
+    }
+  }
+})
 ```
 
 --------------------------------
@@ -410,24 +410,6 @@ npm i -g vercel
 
 ```bash
 vercel
-```
-
---------------------------------
-
-### Component Setup Script
-
-Source: https://github.com/vitejs/vite/blob/main/docs/team.md
-
-Imports necessary components and data for rendering the team page.
-
-```javascript
-import {
-  VPTeamPage,
-  VPTeamPageTitle,
-  VPTeamPageSection,
-  VPTeamMembers
-} from '@voidzero-dev/vitepress-theme'
-import { core, emeriti } from './_data/team'
 ```
 
 --------------------------------
@@ -590,18 +572,6 @@ function
 
 --------------------------------
 
-### Preview command
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to test the built application locally.
-
-```bash
-$ npm run preview
-```
-
---------------------------------
-
 ### Express server setup
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -645,14 +615,14 @@ createServer()
 
 --------------------------------
 
-### Netlify CLI Site Initialization
+### Preview command
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Command to create a new Netlify site using the CLI.
+Command to test the built application locally.
 
 ```bash
-netlify init
+$ npm run preview
 ```
 
 --------------------------------
@@ -665,6 +635,18 @@ Command to install Terser, which is required by plugin-legacy for minification.
 
 ```sh
 npm add -D terser
+```
+
+--------------------------------
+
+### Netlify CLI Site Initialization
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to create a new Netlify site using the CLI.
+
+```bash
+netlify init
 ```
 
 --------------------------------
@@ -793,6 +775,26 @@ H -> A -> B ... X
 
 --------------------------------
 
+### Prepare Local Environment for Release (pnpm)
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
+
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
+```
+
+--------------------------------
+
 ### Plugin-side Application Communication Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
@@ -814,22 +816,17 @@ configureServer(server) {
 
 --------------------------------
 
-### Prepare Local Environment for Release (pnpm)
+### Vite build command output
 
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
+Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
 
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
+```shell
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 ```
 
 --------------------------------
@@ -859,26 +856,27 @@ export default {
 
 --------------------------------
 
-### Vite build command output
+### Configure Vite to Open Specific Path on Server Start
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
 
-Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
+This configuration sets Vite to automatically open the browser to a specific path, '/docs/index.html', when the development server starts.
 
-```shell
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```js
+export default defineConfig({
+  server: {
+    open: '/docs/index.html',
+  },
+})
 ```
 
 --------------------------------
 
-### Install SWC Plugins for Native Decorator Lowering (Bash)
+### Install SWC Plugin for Decorator Lowering
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Install the required SWC plugins and the Rollup SWC plugin to enable lowering of native decorators in your project.
+Install the necessary SWC plugin and core package to enable lowering of native decorators as a workaround for Oxc's current lack of support.
 
 ```bash
 $ npm install -D @rollup/plugin-swc @swc/core
@@ -898,34 +896,6 @@ $ bun add -D @rollup/plugin-swc @swc/core
 
 ```bash
 $ deno add -D npm:@rollup/plugin-swc npm:@swc/core
-```
-
---------------------------------
-
-### Install Babel Plugins for Native Decorator Lowering (Bash)
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Install the required Babel plugins and the Rolldown Babel plugin to enable lowering of native decorators in your project.
-
-```bash
-$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 ```
 
 --------------------------------
@@ -954,30 +924,30 @@ experimental: {
 
 --------------------------------
 
-### Configure Vite to Open Specific Path on Server Start
+### Install Babel Plugin for Decorator Lowering
 
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-This configuration sets Vite to automatically open the browser to a specific path, '/docs/index.html', when the development server starts.
+Install the necessary Babel plugin and Rolldown Babel plugin to enable lowering of native decorators as a workaround for Oxc's current lack of support.
 
-```js
-export default defineConfig({
-  server: {
-    open: '/docs/index.html',
-  },
-})
+```bash
+$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 ```
 
---------------------------------
+```bash
+$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
 
-### SSR Dependencies Example
+```bash
+$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
 
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+```bash
+$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
 
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```bash
+$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 ```
 
 --------------------------------
@@ -1025,6 +995,18 @@ export function createHandler(input) {
     return new Response('hello')
   }
 }
+```
+
+--------------------------------
+
+### SSR Dependencies Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
 ```
 
 --------------------------------
@@ -1114,4 +1096,25 @@ await build({
     },
   },
 })
+```
+
+--------------------------------
+
+### Usage
+
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+
+Example of how to configure the @vitejs/plugin-legacy in vite.config.js.
+
+```js
+// vite.config.js
+import legacy from '@vitejs/plugin-legacy'
+
+export default {
+  plugins: [
+    legacy({
+      targets: ['defaults', 'not IE 11']
+    })
+  ]
+}
 ```
