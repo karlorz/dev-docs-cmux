@@ -505,18 +505,6 @@ class TodosView extends LitElement {
 
 --------------------------------
 
-### Install Lit Query with pnpm
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/installation.md
-
-Use pnpm to install the Lit Query adapter, TanStack Query Core, and Lit.
-
-```bash
-pnpm add @tanstack/lit-query @tanstack/query-core lit
-```
-
---------------------------------
-
 ### Install Preact Query Devtools
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/preact/devtools.md
@@ -537,6 +525,18 @@ yarn add @tanstack/preact-query-devtools
 
 ```bash
 bun add @tanstack/preact-query-devtools
+```
+
+--------------------------------
+
+### Install Lit Query with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/installation.md
+
+Use pnpm to install the Lit Query adapter, TanStack Query Core, and Lit.
+
+```bash
+pnpm add @tanstack/lit-query @tanstack/query-core lit
 ```
 
 --------------------------------
@@ -783,22 +783,6 @@ pnpm run watch
 
 --------------------------------
 
-### Run Next.js Development Server
-
-Source: https://github.com/tanstack/query/blob/main/examples/react/nextjs-app-prefetching/README.md
-
-Execute one of these commands in your terminal to start the Next.js development server locally.
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
---------------------------------
-
 ### Basic Vue Query Component Example
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/quick-start.md
@@ -848,6 +832,22 @@ function onButtonClick() {
 
 --------------------------------
 
+### Run Next.js Development Server
+
+Source: https://github.com/tanstack/query/blob/main/examples/react/nextjs-app-prefetching/README.md
+
+Execute one of these commands in your terminal to start the Next.js development server locally.
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+```
+
+--------------------------------
+
 ### Install TanStack Angular Query
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/installation.md
@@ -872,6 +872,19 @@ bun add @tanstack/angular-query-experimental
 
 --------------------------------
 
+### Example Query Keys Matching a Prefix (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
+
+These examples illustrate how different query keys can match a common prefix, demonstrating which keys would be affected by a prefix-based invalidation.
+
+```ts
+const projectsListKey = ['projects']
+const projectsPageKey = ['projects', 1, 250, false]
+```
+
+--------------------------------
+
 ### Run Next.js Development Server
 
 Source: https://github.com/tanstack/query/blob/main/integrations/react-next-15/README.md
@@ -888,19 +901,6 @@ yarn dev
 
 ```bash
 pnpm dev
-```
-
---------------------------------
-
-### Example Query Keys Matching a Prefix (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
-
-These examples illustrate how different query keys can match a common prefix, demonstrating which keys would be affected by a prefix-based invalidation.
-
-```ts
-const projectsListKey = ['projects']
-const projectsPageKey = ['projects', 1, 250, false]
 ```
 
 --------------------------------
@@ -1121,29 +1121,6 @@ This function can be used to restore queries that are currently stored by persis
 
 --------------------------------
 
-### Directly Using QueryClientProvider in Lit
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
-
-This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
-
-```ts
-import { html } from 'lit'
-import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
-
-const queryClient = new QueryClient()
-
-customElements.define('query-client-provider', QueryClientProvider)
-
-const view = html`
-  <query-client-provider .client=${queryClient}>
-    <todos-view></todos-view>
-  </query-client-provider>
-`
-```
-
---------------------------------
-
 ### Prefetching and Hydration with Next.js Pages Router
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/advanced-ssr.md
@@ -1203,6 +1180,29 @@ export default function PostsRoute({ dehydratedState }) {
     </HydrationBoundary>
   )
 }
+```
+
+--------------------------------
+
+### Directly Using QueryClientProvider in Lit
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
+
+This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
+
+```ts
+import { html } from 'lit'
+import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
+
+const queryClient = new QueryClient()
+
+customElements.define('query-client-provider', QueryClientProvider)
+
+const view = html`
+  <query-client-provider .client=${queryClient}>
+    <todos-view></todos-view>
+  </query-client-provider>
+`
 ```
 
 --------------------------------
@@ -1398,6 +1398,33 @@ npm create svelte@latest
 
 # create a new project in my-app
 npm create svelte@latest my-app
+```
+
+--------------------------------
+
+### Configure QueryClient with experimental_createQueryPersister
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/plugins/createPersister.md
+
+Create an `experimental_createQueryPersister` instance with a storage and `maxAge`, then apply its `persisterFn` to the `defaultOptions.queries` of your `QueryClient`.
+
+```tsx
+import { QueryClient } from '@tanstack/vue-query'
+import { experimental_createQueryPersister } from '@tanstack/query-persist-client-core'
+
+const persister = experimental_createQueryPersister({
+  storage: AsyncStorage,
+  maxAge: 1000 * 60 * 60 * 12, // 12 hours
+})
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 30, // 30 seconds
+      persister: persister.persisterFn,
+    },
+  },
+})
 ```
 
 --------------------------------
@@ -1762,6 +1789,18 @@ const isFetchingPosts = useIsFetching({ queryKey: ['posts'] })
 
 --------------------------------
 
+### Build application for production
+
+Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
+
+Execute this command to build the Nuxt 3 application for production deployment.
+
+```bash
+pnpm build
+```
+
+--------------------------------
+
 ### Install Vue Query Devtools Package
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/devtools.md
@@ -1782,18 +1821,6 @@ yarn add @tanstack/vue-query-devtools
 
 ```bash
 bun add @tanstack/vue-query-devtools
-```
-
---------------------------------
-
-### Build application for production
-
-Source: https://github.com/tanstack/query/blob/main/examples/vue/nuxt3/README.md
-
-Execute this command to build the Nuxt 3 application for production deployment.
-
-```bash
-pnpm build
 ```
 
 --------------------------------
@@ -1827,6 +1854,46 @@ Starts the mutation and returns the observer promise. Rejects if no `QueryClient
 
 ```ts
 mutateAsync: MutationObserverResult<TData, TError, TVariables, TOnMutateResult>["mutate"];
+```
+
+--------------------------------
+
+### mutate(variables, options?)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/type-aliases/MutationResultAccessor.md
+
+Starts the mutation and swallows the returned promise. Throws synchronously if no `QueryClient` can be resolved.
+
+```APIDOC
+## mutate(variables, options?)
+
+### Description
+Starts the mutation and swallows the returned promise.
+Throws synchronously if no `QueryClient` can be resolved.
+
+### Method Signature
+```ts
+mutate: (variables, options?) => void;
+```
+
+### Parameters
+- **variables** (`TVariables`) - Required - The variables for the mutation.
+- **options?** (`MutateOptions<TData, TError, TVariables, TOnMutateResult>`) - Optional - Options for the mutation.
+
+### Returns
+`void`
+```
+
+--------------------------------
+
+### Get Mutation Cache from QueryClient
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Use this method to access the mutation cache instance associated with the QueryClient.
+
+```tsx
+const mutationCache = queryClient.getMutationCache()
 ```
 
 --------------------------------
@@ -1894,46 +1961,6 @@ class ProjectsView extends LitElement {
 
 --------------------------------
 
-### mutate(variables, options?)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/type-aliases/MutationResultAccessor.md
-
-Starts the mutation and swallows the returned promise. Throws synchronously if no `QueryClient` can be resolved.
-
-```APIDOC
-## mutate(variables, options?)
-
-### Description
-Starts the mutation and swallows the returned promise.
-Throws synchronously if no `QueryClient` can be resolved.
-
-### Method Signature
-```ts
-mutate: (variables, options?) => void;
-```
-
-### Parameters
-- **variables** (`TVariables`) - Required - The variables for the mutation.
-- **options?** (`MutateOptions<TData, TError, TVariables, TOnMutateResult>`) - Optional - Options for the mutation.
-
-### Returns
-`void`
-```
-
---------------------------------
-
-### Get Mutation Cache from QueryClient
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Use this method to access the mutation cache instance associated with the QueryClient.
-
-```tsx
-const mutationCache = queryClient.getMutationCache()
-```
-
---------------------------------
-
 ### Get Query Cache from QueryClient
 
 Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
@@ -1958,18 +1985,6 @@ pnpm build:all
 
 --------------------------------
 
-### Building a Svelte app for production
-
-Source: https://github.com/tanstack/query/blob/main/examples/svelte/load-more-infinite-scroll/README.md
-
-This command compiles your Svelte application into a production-ready build.
-
-```bash
-npm run build
-```
-
---------------------------------
-
 ### Concise `injectQuery` Assignment in Angular
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/queries.md
@@ -1978,6 +1993,18 @@ This example shows a more concise way to assign the result of an `injectQuery` c
 
 ```ts
 result = injectQuery(() => ({ queryKey: ['todos'], queryFn: fetchTodoList }))
+```
+
+--------------------------------
+
+### Building a Svelte app for production
+
+Source: https://github.com/tanstack/query/blob/main/examples/svelte/load-more-infinite-scroll/README.md
+
+This command compiles your Svelte application into a production-ready build.
+
+```bash
+npm run build
 ```
 
 --------------------------------
@@ -2053,6 +2080,30 @@ npm install @tanstack/react-query-devtools
 
 --------------------------------
 
+### Correct queryKey reference in invalidateQueries (TypeScript/TSX)
+
+Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
+
+This example demonstrates correctly referencing `queryKey` from the `queryOptions` result when using `queryClient.invalidateQueries`.
+
+```tsx
+/* eslint "@tanstack/query/prefer-query-options": "error" */
+
+function todoOptions(id) {
+  return queryOptions({
+    queryKey: ['todo', id],
+    queryFn: () => api.getTodo(id),
+  })
+}
+
+function Component({ id }) {
+  const queryClient = useQueryClient()
+  return queryClient.invalidateQueries({ queryKey: todoOptions(id).queryKey })
+}
+```
+
+--------------------------------
+
 ### Defining Query Functions with useQuery in Solid
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/query-functions.md
@@ -2080,45 +2131,6 @@ useQuery(() => ({
 
 --------------------------------
 
-### Correct queryKey reference in invalidateQueries (TypeScript/TSX)
-
-Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
-
-This example demonstrates correctly referencing `queryKey` from the `queryOptions` result when using `queryClient.invalidateQueries`.
-
-```tsx
-/* eslint "@tanstack/query/prefer-query-options": "error" */
-
-function todoOptions(id) {
-  return queryOptions({
-    queryKey: ['todo', id],
-    queryFn: () => api.getTodo(id),
-  })
-}
-
-function Component({ id }) {
-  const queryClient = useQueryClient()
-  return queryClient.invalidateQueries({ queryKey: todoOptions(id).queryKey })
-}
-```
-
---------------------------------
-
-### Test Component Queries with fixture.whenStable()
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/testing.md
-
-Shows how to bootstrap a component using `TestBed.createComponent` and wait for its queries to resolve using `fixture.whenStable()` before asserting on data.
-
-```ts
-const fixture = TestBed.createComponent(ExampleComponent)
-
-await fixture.whenStable()
-expect(fixture.componentInstance.query.data()).toEqual({ value: 42 })
-```
-
---------------------------------
-
 ### Correct queryKey reference in getQueryData (TypeScript/TSX)
 
 Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
@@ -2139,6 +2151,21 @@ function Component({ id }) {
   const queryClient = useQueryClient()
   return queryClient.getQueryData(todoOptions(id).queryKey)
 }
+```
+
+--------------------------------
+
+### Test Component Queries with fixture.whenStable()
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/testing.md
+
+Shows how to bootstrap a component using `TestBed.createComponent` and wait for its queries to resolve using `fixture.whenStable()` before asserting on data.
+
+```ts
+const fixture = TestBed.createComponent(ExampleComponent)
+
+await fixture.whenStable()
+expect(fixture.componentInstance.query.data()).toEqual({ value: 42 })
 ```
 
 --------------------------------
@@ -2186,22 +2213,5 @@ function todoOptions(id) {
 function Component({ id }) {
   const queryClient = useQueryClient()
   return queryClient.getQueryData(['todo', id])
-}
-```
-
---------------------------------
-
-### Create a Query Controller in LitElement
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/reactive-controllers-vs-hooks.md
-
-Demonstrates how to create a createQueryController instance within a LitElement class, binding it to the host (this) to manage query state for a list of todos.
-
-```ts
-class TodosView extends LitElement {
-  private readonly todos = createQueryController(this, {
-    queryKey: ['todos'],
-    queryFn: fetchTodos,
-  })
 }
 ```

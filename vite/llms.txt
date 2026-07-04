@@ -230,6 +230,27 @@ export * from './slash.js'
 
 --------------------------------
 
+### Configuring Server Warmup
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/performance.md
+
+Example `vite.config.js` configuration to warm up frequently used client files, preventing request waterfalls.
+
+```js
+export default defineConfig({
+  server: {
+    warmup: {
+      clientFiles: [
+        './src/components/BigComponent.vue',
+        './src/utils/big-utils.js'
+      ]
+    }
+  }
+})
+```
+
+--------------------------------
+
 ### Install specific commit
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -250,27 +271,6 @@ $ pnpm add -D https://pkg.pr.new/vite@SHA
 
 ```bash
 $ bun add -D https://pkg.pr.new/vite@SHA
-```
-
---------------------------------
-
-### Configuring Server Warmup
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/performance.md
-
-Example `vite.config.js` configuration to warm up frequently used client files, preventing request waterfalls.
-
-```js
-export default defineConfig({
-  server: {
-    warmup: {
-      clientFiles: [
-        './src/components/BigComponent.vue',
-        './src/utils/big-utils.js'
-      ]
-    }
-  }
-})
 ```
 
 --------------------------------
@@ -410,6 +410,24 @@ npm i -g vercel
 
 ```bash
 vercel
+```
+
+--------------------------------
+
+### Component Setup Script
+
+Source: https://github.com/vitejs/vite/blob/main/docs/team.md
+
+Imports necessary components and data for rendering the team page.
+
+```javascript
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamPageSection,
+  VPTeamMembers
+} from '@voidzero-dev/vitepress-theme'
+import { core, emeriti } from './_data/team'
 ```
 
 --------------------------------
@@ -627,18 +645,6 @@ $ npm run preview
 
 --------------------------------
 
-### Install Terser
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Command to install Terser, which is required by plugin-legacy for minification.
-
-```sh
-npm add -D terser
-```
-
---------------------------------
-
 ### Netlify CLI Site Initialization
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -647,6 +653,18 @@ Command to create a new Netlify site using the CLI.
 
 ```bash
 netlify init
+```
+
+--------------------------------
+
+### Install Terser
+
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+
+Command to install Terser, which is required by plugin-legacy for minification.
+
+```sh
+npm add -D terser
 ```
 
 --------------------------------
@@ -775,26 +793,6 @@ H -> A -> B ... X
 
 --------------------------------
 
-### Prepare Local Environment for Release (pnpm)
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
-
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
-```
-
---------------------------------
-
 ### Plugin-side Application Communication Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
@@ -816,17 +814,22 @@ configureServer(server) {
 
 --------------------------------
 
-### Vite build command output
+### Prepare Local Environment for Release (pnpm)
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
+Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
 
-```shell
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
 ```
 
 --------------------------------
@@ -852,6 +855,21 @@ export default {
     }),
   },
 }
+```
+
+--------------------------------
+
+### Vite build command output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
+
+```shell
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 ```
 
 --------------------------------
@@ -1011,6 +1029,18 @@ Example demonstrating hydration scripts and dynamic module imports, including a 
 
 --------------------------------
 
+### Install Trusted SSL Certificate on macOS (Shell)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Install a self-signed SSL certificate as trusted via the macOS command line to prevent network requests from stalling due to Chrome's caching behavior.
+
+```shell
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
 ### Advanced `experimental.renderBuiltUrl` with asset types
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1036,18 +1066,6 @@ experimental: {
   },
 },
 }
-```
-
---------------------------------
-
-### Install Trusted SSL Certificate on macOS (Shell)
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Install a self-signed SSL certificate as trusted via the macOS command line to prevent network requests from stalling due to Chrome's caching behavior.
-
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
 ```
 
 --------------------------------
@@ -1096,25 +1114,4 @@ await build({
     },
   },
 })
-```
-
---------------------------------
-
-### Usage
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Example of how to configure the @vitejs/plugin-legacy in vite.config.js.
-
-```js
-// vite.config.js
-import legacy from '@vitejs/plugin-legacy'
-
-export default {
-  plugins: [
-    legacy({
-      targets: ['defaults', 'not IE 11']
-    })
-  ]
-}
 ```
