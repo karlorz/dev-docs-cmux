@@ -414,24 +414,6 @@ npm add -D stylus
 
 --------------------------------
 
-### Component Setup Script
-
-Source: https://github.com/vitejs/vite/blob/main/docs/team.md
-
-Imports necessary components and data for rendering the team page.
-
-```javascript
-import {
-  VPTeamPage,
-  VPTeamPageTitle,
-  VPTeamPageSection,
-  VPTeamMembers
-} from '@voidzero-dev/vitepress-theme'
-import { core, emeriti } from './_data/team'
-```
-
---------------------------------
-
 ### Entry file exports
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -590,18 +572,6 @@ function
 
 --------------------------------
 
-### Preview command
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to test the built application locally.
-
-```bash
-$ npm run preview
-```
-
---------------------------------
-
 ### Express server setup
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -641,6 +611,18 @@ async function createServer() {
 }
 
 createServer()
+```
+
+--------------------------------
+
+### Preview command
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to test the built application locally.
+
+```bash
+$ npm run preview
 ```
 
 --------------------------------
@@ -727,6 +709,18 @@ $ npm run build
 
 --------------------------------
 
+### Run development server
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to run the application in development mode.
+
+```bash
+npm run dev
+```
+
+--------------------------------
+
 ### Example .env file
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
@@ -736,18 +730,6 @@ An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed va
 ```env
 VITE_SOME_KEY=123
 DB_PASSWORD=foobar
-```
-
---------------------------------
-
-### Run development server
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
-
-Command to run the application in development mode.
-
-```bash
-npm run dev
 ```
 
 --------------------------------
@@ -836,6 +818,26 @@ configureServer(server) {
 
 --------------------------------
 
+### Prepare Local Environment for Release (pnpm)
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
+
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
+```
+
+--------------------------------
+
 ### Custom Environment Instance Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
@@ -857,26 +859,6 @@ export default {
     }),
   },
 }
-```
-
---------------------------------
-
-### Prepare Local Environment for Release (pnpm)
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
-
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
 ```
 
 --------------------------------
@@ -968,6 +950,53 @@ $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 
 --------------------------------
 
+### Manual DevEnvironment Communication with Virtual Module
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
+
+This snippet demonstrates setting up manual communication with a `DevEnvironment` using a virtual module when the code runs in the same runtime as user modules. It shows how to create a Vite server, define a virtual entrypoint, and handle requests.
+
+```ts
+// code using the Vite's APIs
+import { createServer } from 'vite'
+
+const server = createServer({
+  plugins: [
+    // a plugin that handles `virtual:entrypoint`
+    {
+      name: 'virtual-module',
+      /* plugin implementation */
+    },
+  ],
+})
+const ssrEnvironment = server.environment.ssr
+const input = {}
+
+// use exposed functions by each environment factories that runs the code
+// check for each environment factories what they provide
+if (ssrEnvironment instanceof CustomDevEnvironment) {
+  ssrEnvironment.runEntrypoint('virtual:entrypoint')
+} else {
+  throw new Error(`Unsupported runtime for ${ssrEnvironment.name}`)
+}
+
+// -------------------------------------
+// virtual:entrypoint
+const { createHandler } = await import('./entrypoint.js')
+const handler = createHandler(input)
+const response = handler(new Request('http://example.com/'))
+
+// -------------------------------------
+// ./entrypoint.js
+export function createHandler(input) {
+  return function handler(req) {
+    return new Response('hello')
+  }
+}
+```
+
+--------------------------------
+
 ### Basic `experimental.renderBuiltUrl` usage
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1012,53 +1041,6 @@ Install a self-signed SSL certificate as trusted via the macOS command line to p
 
 ```shell
 security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
-```
-
---------------------------------
-
-### Manual DevEnvironment Communication with Virtual Module
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
-
-This snippet demonstrates setting up manual communication with a `DevEnvironment` using a virtual module when the code runs in the same runtime as user modules. It shows how to create a Vite server, define a virtual entrypoint, and handle requests.
-
-```ts
-// code using the Vite's APIs
-import { createServer } from 'vite'
-
-const server = createServer({
-  plugins: [
-    // a plugin that handles `virtual:entrypoint`
-    {
-      name: 'virtual-module',
-      /* plugin implementation */
-    },
-  ],
-})
-const ssrEnvironment = server.environment.ssr
-const input = {}
-
-// use exposed functions by each environment factories that runs the code
-// check for each environment factories what they provide
-if (ssrEnvironment instanceof CustomDevEnvironment) {
-  ssrEnvironment.runEntrypoint('virtual:entrypoint')
-} else {
-  throw new Error(`Unsupported runtime for ${ssrEnvironment.name}`)
-}
-
-// -------------------------------------
-// virtual:entrypoint
-const { createHandler } = await import('./entrypoint.js')
-const handler = createHandler(input)
-const response = handler(new Request('http://example.com/'))
-
-// -------------------------------------
-// ./entrypoint.js
-export function createHandler(input) {
-  return function handler(req) {
-    return new Response('hello')
-  }
-}
 ```
 
 --------------------------------
@@ -1113,6 +1095,31 @@ experimental: {
     }
   },
 },
+}
+```
+
+--------------------------------
+
+### package.json with CSS export
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example `package.json` showing how to export a bundled CSS file for users to import, alongside JS modules.
+
+```json
+{
+  "name": "my-lib",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/my-lib.umd.cjs",
+  "module": "./dist/my-lib.js",
+  "exports": {
+    ".": {
+      "import": "./dist/my-lib.js",
+      "require": "./dist/my-lib.umd.cjs"
+    },
+    "./style.css": "./dist/my-lib.css"
+  }
 }
 ```
 
