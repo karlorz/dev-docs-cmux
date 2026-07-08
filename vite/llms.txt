@@ -414,6 +414,24 @@ npm add -D stylus
 
 --------------------------------
 
+### Component Setup Script
+
+Source: https://github.com/vitejs/vite/blob/main/docs/team.md
+
+Imports necessary components and data for rendering the team page.
+
+```javascript
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamPageSection,
+  VPTeamMembers
+} from '@voidzero-dev/vitepress-theme'
+import { core, emeriti } from './_data/team'
+```
+
+--------------------------------
+
 ### Entry file exports
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -424,18 +442,6 @@ Example of an entry file (`lib/main.js`) exporting components for library users.
 import Foo from './Foo.vue'
 import Bar from './Bar.vue'
 export { Foo, Bar }
-```
-
---------------------------------
-
-### Install Cloudflare Vite Plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to install the Cloudflare Vite plugin as a development dependency.
-
-```bash
-npm install --save-dev @cloudflare/vite-plugin
 ```
 
 --------------------------------
@@ -572,6 +578,18 @@ function
 
 --------------------------------
 
+### Preview command
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to test the built application locally.
+
+```bash
+$ npm run preview
+```
+
+--------------------------------
+
 ### Express server setup
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -611,18 +629,6 @@ async function createServer() {
 }
 
 createServer()
-```
-
---------------------------------
-
-### Preview command
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to test the built application locally.
-
-```bash
-$ npm run preview
 ```
 
 --------------------------------
@@ -681,6 +687,18 @@ Execute this command in Vite's root folder to run the documentation site locally
 
 ```shell
 pnpm run docs
+```
+
+--------------------------------
+
+### Install Cloudflare Vite Plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Command to install the Cloudflare Vite plugin as a development dependency.
+
+```bash
+npm install --save-dev @cloudflare/vite-plugin
 ```
 
 --------------------------------
@@ -762,23 +780,6 @@ export default writable(0)
 
 --------------------------------
 
-### Accessing Environments from the Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
-
-Example demonstrating how to access client and SSR environments from a Vite dev server instance.
-
-```js
-// create the server, or get it from the configureServer hook
-const server = await createServer(/* options */)
-
-const clientEnvironment = server.environments.client
-clientEnvironment.transformRequest(url)
-console.log(server.environments.ssr.moduleGraph)
-```
-
---------------------------------
-
 ### Dependency Notation and Example
 
 Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
@@ -793,6 +794,23 @@ H -> X ... Y
 H -> X -> Y ... B
 H -> A ... B
 H -> A -> B ... X
+```
+
+--------------------------------
+
+### Accessing Environments from the Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+
+Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+
+```js
+// create the server, or get it from the configureServer hook
+const server = await createServer(/* options */)
+
+const clientEnvironment = server.environments.client
+clientEnvironment.transformRequest(url)
+console.log(server.environments.ssr.moduleGraph)
 ```
 
 --------------------------------
@@ -814,26 +832,6 @@ configureServer(server) {
   // broadcast a message to all application instances
   server.environments.ssr.hot.send('my:foo', 'Hello from server!')
 }
-```
-
---------------------------------
-
-### Prepare Local Environment for Release (pnpm)
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
-
-```bash
-git pull
-```
-
-```bash
-pnpm i
-```
-
-```bash
-pnpm build
 ```
 
 --------------------------------
@@ -879,17 +877,22 @@ export default defineConfig({
 
 --------------------------------
 
-### Vite build command output
+### Prepare Local Environment for Release (pnpm)
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
+Updates the local repository, installs dependencies, and builds the project to ensure it's ready for a package release.
 
-```shell
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```bash
+git pull
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm build
 ```
 
 --------------------------------
@@ -922,6 +925,21 @@ $ deno add -D npm:@rollup/plugin-swc npm:@swc/core
 
 --------------------------------
 
+### Vite build command output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example output when running `vite build` in library mode, showing generated bundle files and their sizes.
+
+```shell
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```
+
+--------------------------------
+
 ### Install Babel Plugin for Decorator Lowering
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
@@ -946,6 +964,18 @@ $ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 
 ```bash
 $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
+```
+
+--------------------------------
+
+### SSR Dependencies Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
 ```
 
 --------------------------------
@@ -997,6 +1027,18 @@ export function createHandler(input) {
 
 --------------------------------
 
+### Install Trusted SSL Certificate on macOS (Shell)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Install a self-signed SSL certificate as trusted via the macOS command line to prevent network requests from stalling due to Chrome's caching behavior.
+
+```shell
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
 ### Basic `experimental.renderBuiltUrl` usage
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1017,30 +1059,6 @@ experimental: {
   },
 },
 }
-```
-
---------------------------------
-
-### SSR Dependencies Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
-
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
-```
-
---------------------------------
-
-### Install Trusted SSL Certificate on macOS (Shell)
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Install a self-signed SSL certificate as trusted via the macOS command line to prevent network requests from stalling due to Chrome's caching behavior.
-
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
 ```
 
 --------------------------------
@@ -1095,31 +1113,6 @@ experimental: {
     }
   },
 },
-}
-```
-
---------------------------------
-
-### package.json with CSS export
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Example `package.json` showing how to export a bundled CSS file for users to import, alongside JS modules.
-
-```json
-{
-  "name": "my-lib",
-  "type": "module",
-  "files": ["dist"],
-  "main": "./dist/my-lib.umd.cjs",
-  "module": "./dist/my-lib.js",
-  "exports": {
-    ".": {
-      "import": "./dist/my-lib.js",
-      "require": "./dist/my-lib.umd.cjs"
-    },
-    "./style.css": "./dist/my-lib.css"
-  }
 }
 ```
 
