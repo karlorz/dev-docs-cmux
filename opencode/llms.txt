@@ -45,6 +45,25 @@ Example of a JSON API response.
 
 --------------------------------
 
+### tmpdir with custom initialization
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Example demonstrating how to use a custom `init` function to perform setup and return extra data accessible via `tmp.extra`.
+
+```typescript
+await using tmp = await tmpdir<string>({
+  init: async (dir) => {
+    await Bun.write(path.join(dir, "file.txt"), "content")
+    return "extra data"
+  },
+})
+// Access extra data via tmp.extra
+console.log(tmp.extra) // "extra data"
+```
+
+--------------------------------
+
 ### Install dependencies (Linux)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -118,6 +137,18 @@ scoop install opencode
 
 --------------------------------
 
+### Install OpenCode on Windows using NPM
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Install OpenCode on Windows using NPM.
+
+```bash
+npm install -g opencode-ai
+```
+
+--------------------------------
+
 ### Install dependencies (Windows)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -142,18 +173,6 @@ const config = {
   performance: { cache: true, timeout: 30000 },
   security: { encryption: 'AES-256' }
 };
-```
-
---------------------------------
-
-### Install OpenCode on Windows using NPM
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Install OpenCode on Windows using NPM.
-
-```bash
-npm install -g opencode-ai
 ```
 
 --------------------------------
@@ -222,6 +241,19 @@ choco install opencode
 
 --------------------------------
 
+### Install dependencies (macOS)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+
+Commands to install Node.js and a package on macOS using Homebrew.
+
+```bash
+brew install node
+npm install -g package-name
+```
+
+--------------------------------
+
 ### Single code block example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -240,15 +272,14 @@ const apiConfig = {
 
 --------------------------------
 
-### Install dependencies (macOS)
+### Install Mintlify CLI
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
 
-Commands to install Node.js and a package on macOS using Homebrew.
+Command to install the Mintlify CLI globally using npm.
 
 ```bash
-brew install node
-npm install -g package-name
+npm i -g mint
 ```
 
 --------------------------------
@@ -261,18 +292,6 @@ Install the opencode SDK from npm.
 
 ```bash
 npm install @opencode-ai/sdk
-```
-
---------------------------------
-
-### Install Mintlify CLI
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
-
-Command to install the Mintlify CLI globally using npm.
-
-```bash
-npm i -g mint
 ```
 
 --------------------------------
@@ -431,25 +450,6 @@ Run OpenCode using Docker.
 
 ```bash
 docker run -it --rm ghcr.io/anomalyco/opencode
-```
-
---------------------------------
-
-### tmpdir with custom initialization
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
-
-Example demonstrating how to use a custom `init` function to perform setup and return extra data accessible via `tmp.extra`.
-
-```typescript
-await using tmp = await tmpdir<string>({
-  init: async (dir) => {
-    await Bun.write(path.join(dir, "file.txt"), "content")
-    return "extra data"
-  },
-})
-// Access extra data via tmp.extra
-console.log(tmp.extra) // "extra data"
 ```
 
 --------------------------------
@@ -663,6 +663,22 @@ await using tmp = await tmpdir({
 
 --------------------------------
 
+### Project API List and Current
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
+
+Examples of listing all projects using `project.list()` and getting the current project using `project.current()`.
+
+```javascript
+// List all projects
+const projects = await client.project.list()
+
+// Get current project
+const currentProject = await client.project.current()
+```
+
+--------------------------------
+
 ### Complete opencode.json Configuration Example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/core/src/plugin/skill/customize-opencode.md
@@ -762,22 +778,6 @@ Illustrates the full structure and all available optional fields within the open
 
 --------------------------------
 
-### Project API List and Current
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
-
-Examples of listing all projects using `project.list()` and getting the current project using `project.current()`.
-
-```javascript
-// List all projects
-const projects = await client.project.list()
-
-// Get current project
-const currentProject = await client.project.current()
-```
-
---------------------------------
-
 ### Code group with multiple languages
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/ai-tools/cursor.mdx
@@ -799,6 +799,28 @@ response = requests.get('/api/endpoint',
 ```curl
 curl -X GET '/api/endpoint' \
   -H 'Authorization: Bearer YOUR_API_KEY'
+```
+
+--------------------------------
+
+### tmpdir with custom cleanup
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Example showing how to use a custom `dispose` function for specific cleanup logic.
+
+```typescript
+await using tmp = await tmpdir({
+  init: async (dir) => {
+    const specialDir = path.join(dir, "special")
+    await fs.mkdir(specialDir)
+    return specialDir
+  },
+  dispose: async (dir) => {
+    // Custom cleanup logic
+    await fs.rm(path.join(dir, "special"), { recursive: true })
+  },
+})
 ```
 
 --------------------------------
@@ -838,28 +860,6 @@ await client.session.prompt({
 
 --------------------------------
 
-### tmpdir with custom cleanup
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
-
-Example showing how to use a custom `dispose` function for specific cleanup logic.
-
-```typescript
-await using tmp = await tmpdir({
-  init: async (dir) => {
-    const specialDir = path.join(dir, "special")
-    await fs.mkdir(specialDir)
-    return specialDir
-  },
-  dispose: async (dir) => {
-    // Custom cleanup logic
-    await fs.rm(path.join(dir, "special"), { recursive: true })
-  },
-})
-```
-
---------------------------------
-
 ### Prompting with a Local MCP Tool (TXT)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
@@ -868,18 +868,6 @@ Example of how to use a locally configured MCP tool, `mcp_everything`, within a 
 
 ```txt
 use the mcp_everything tool to add the number 3 and 4
-```
-
---------------------------------
-
-### Run the project
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
-
-Command to run the project's main script using Bun.
-
-```bash
-bun run index.ts
 ```
 
 --------------------------------
@@ -948,18 +936,6 @@ Example content for the CLAUDE.md file, used to train Claude Code on documentati
 
 --------------------------------
 
-### Connect to LLM provider
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Run the /connect command in the TUI to configure an LLM provider.
-
-```txt
-/connect
-```
-
---------------------------------
-
 ### Using TestInstance with it.instance
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
@@ -975,6 +951,18 @@ it.instance("uses the temp directory", () =>
     expect(test.directory).toContain("opencode-test-")
   }),
 )
+```
+
+--------------------------------
+
+### Run the project
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/README.md
+
+Command to run the project's main script using Bun.
+
+```bash
+bun run index.ts
 ```
 
 --------------------------------
@@ -1058,6 +1046,18 @@ variables:
 
 --------------------------------
 
+### Connect to LLM provider
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Run the /connect command in the TUI to configure an LLM provider.
+
+```txt
+/connect
+```
+
+--------------------------------
+
 ### OpenCode CLI: Attach TUI to Remote Backend Example
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
@@ -1070,6 +1070,33 @@ opencode web --port 4096 --hostname 0.0.0.0
 
 ```bash
 opencode attach http://10.20.30.40:4096
+```
+
+--------------------------------
+
+### Synchronization Example: Antipattern vs. Fix
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Comparison of an antipattern using fixed sleep for synchronization and the recommended fix using a published readiness signal.
+
+```ts
+// Antipattern — race
+yield * prompt.shell({ command: "sleep 30" }).pipe(Effect.forkChild)
+yield * Effect.sleep(50)
+yield * prompt.cancel(chat.id)
+
+// Fix — wait for a published readiness signal
+yield * prompt.shell({ command: "sleep 30" }).pipe(Effect.forkChild)
+yield *
+  pollWithTimeout(
+    Effect.gen(function* () {
+      const s = yield* (yield* SessionStatus.Service).get(chat.id)
+      return s.type === "busy" ? (true as const) : undefined
+    }),
+    "session never became busy",
+  )
+yield * prompt.cancel(chat.id)
 ```
 
 --------------------------------
@@ -1136,33 +1163,6 @@ nix run nixpkgs#opencode           # ou github:anomalyco/opencode para a branch 
 
 --------------------------------
 
-### Synchronization Example: Antipattern vs. Fix
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
-
-Comparison of an antipattern using fixed sleep for synchronization and the recommended fix using a published readiness signal.
-
-```ts
-// Antipattern — race
-yield * prompt.shell({ command: "sleep 30" }).pipe(Effect.forkChild)
-yield * Effect.sleep(50)
-yield * prompt.cancel(chat.id)
-
-// Fix — wait for a published readiness signal
-yield * prompt.shell({ command: "sleep 30" }).pipe(Effect.forkChild)
-yield *
-  pollWithTimeout(
-    Effect.gen(function* () {
-      const s = yield* (yield* SessionStatus.Service).get(chat.id)
-      return s.type === "busy" ? (true as const) : undefined
-    }),
-    "session never became busy",
-  )
-yield * prompt.cancel(chat.id)
-```
-
---------------------------------
-
 ### Record and Replay HTTP Requests with Effect
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/http-recorder/README.md
@@ -1200,15 +1200,14 @@ describe("getUser", () => {
 
 --------------------------------
 
-### Provide feedback or add details to the plan
+### Create Starlight Project
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/README.md
 
-Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
+Command to initialize a new Astro project using the Starlight template.
 
-```txt
-We'd like to design this new screen using a design I've used before.
-[Image #1] Take a look at this image and use it as a reference.
+```bash
+npm create astro@latest -- --template starlight
 ```
 
 --------------------------------
@@ -1225,14 +1224,27 @@ npm install agents
 
 --------------------------------
 
-### Create Starlight Project
+### Provide feedback or add details to the plan
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/README.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
 
-Command to initialize a new Astro project using the Starlight template.
+Example of providing feedback or additional details to OpenCode's plan, including referencing an image.
+
+```txt
+We'd like to design this new screen using a design I've used before.
+[Image #1] Take a look at this image and use it as a reference.
+```
+
+--------------------------------
+
+### YOLO Installation
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Quick installation using curl.
 
 ```bash
-npm create astro@latest -- --template starlight
+curl -fsSL https://opencode.ai/install | bash
 ```
 
 --------------------------------
@@ -1251,12 +1263,16 @@ the same logic in @packages/functions/src/settings.ts
 
 --------------------------------
 
-### YOLO Installation
+### Desktop App Installation
 
 Source: https://github.com/anomalyco/opencode/blob/dev/README.md
 
-Quick installation using curl.
+Installation commands for the desktop application.
 
 ```bash
-curl -fsSL https://opencode.ai/install | bash
+brew install --cask opencode-desktop
+```
+
+```bash
+scoop bucket add extras; scoop install extras/opencode-desktop
 ```
