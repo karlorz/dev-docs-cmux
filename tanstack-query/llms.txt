@@ -872,6 +872,19 @@ bun add @tanstack/angular-query-experimental
 
 --------------------------------
 
+### Example Query Keys Matching a Prefix (TypeScript)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
+
+These examples illustrate how different query keys can match a common prefix, demonstrating which keys would be affected by a prefix-based invalidation.
+
+```ts
+const projectsListKey = ['projects']
+const projectsPageKey = ['projects', 1, 250, false]
+```
+
+--------------------------------
+
 ### Run Next.js Development Server
 
 Source: https://github.com/tanstack/query/blob/main/integrations/react-next-15/README.md
@@ -1108,29 +1121,6 @@ This function can be used to restore queries that are currently stored by persis
 
 --------------------------------
 
-### Directly Using QueryClientProvider in Lit
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
-
-This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
-
-```ts
-import { html } from 'lit'
-import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
-
-const queryClient = new QueryClient()
-
-customElements.define('query-client-provider', QueryClientProvider)
-
-const view = html`
-  <query-client-provider .client=${queryClient}>
-    <todos-view></todos-view>
-  </query-client-provider>
-`
-```
-
---------------------------------
-
 ### Prefetching and Hydration with Next.js Pages Router
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/advanced-ssr.md
@@ -1190,6 +1180,29 @@ export default function PostsRoute({ dehydratedState }) {
     </HydrationBoundary>
   )
 }
+```
+
+--------------------------------
+
+### Directly Using QueryClientProvider in Lit
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/classes/QueryClientProvider.md
+
+This example shows how to directly use `QueryClientProvider` by registering it as a custom element and binding the `QueryClient` instance as a property in a Lit template.
+
+```ts
+import { html } from 'lit'
+import { QueryClient, QueryClientProvider } from '@tanstack/lit-query'
+
+const queryClient = new QueryClient()
+
+customElements.define('query-client-provider', QueryClientProvider)
+
+const view = html`
+  <query-client-provider .client=${queryClient}>
+    <todos-view></todos-view>
+  </query-client-provider>
+`
 ```
 
 --------------------------------
@@ -1457,18 +1470,6 @@ function Comments(props) {
 
 --------------------------------
 
-### Install React Hooks Testing Library
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/testing.md
-
-Installs `@testing-library/react-hooks` and `react-test-renderer` for testing React Query hooks in React 17 or earlier. `react-test-renderer` is a required peer dependency.
-
-```sh
-npm install @testing-library/react-hooks react-test-renderer --save-dev
-```
-
---------------------------------
-
 ### createQueryController()
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/reference/functions/createQueryController.md
@@ -1525,6 +1526,18 @@ class TodosView extends LitElement {
   }
 }
 ```
+```
+
+--------------------------------
+
+### Install React Hooks Testing Library
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/testing.md
+
+Installs `@testing-library/react-hooks` and `react-test-renderer` for testing React Query hooks in React 17 or earlier. `react-test-renderer` is a required peer dependency.
+
+```sh
+npm install @testing-library/react-hooks react-test-renderer --save-dev
 ```
 
 --------------------------------
@@ -1636,19 +1649,6 @@ class TodosView extends LitElement {
 }
 
 customElements.define('todos-view', TodosView)
-```
-
---------------------------------
-
-### Example Query Keys Matching a Prefix (TypeScript)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/guides/query-invalidation.md
-
-These examples illustrate how different query keys can match a common prefix, demonstrating which keys would be affected by a prefix-based invalidation.
-
-```ts
-const projectsListKey = ['projects']
-const projectsPageKey = ['projects', 1, 250, false]
 ```
 
 --------------------------------
@@ -2038,20 +2038,6 @@ const usersMessages = useQueries(() => ({
 
 --------------------------------
 
-### Update React Query and Devtools Packages
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/migrating-to-react-query-4.md
-
-Use these commands to uninstall `react-query` and install the new `@tanstack/react-query` and `@tanstack/react-query-devtools` packages.
-
-```bash
-npm uninstall react-query
-npm install @tanstack/react-query
-npm install @tanstack/react-query-devtools
-```
-
---------------------------------
-
 ### Install React Query via Package Managers
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
@@ -2076,6 +2062,20 @@ bun add @tanstack/react-query
 
 ```bash
 deno add @tanstack/react-query
+```
+
+--------------------------------
+
+### Update React Query and Devtools Packages
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/migrating-to-react-query-4.md
+
+Use these commands to uninstall `react-query` and install the new `@tanstack/react-query` and `@tanstack/react-query-devtools` packages.
+
+```bash
+npm uninstall react-query
+npm install @tanstack/react-query
+npm install @tanstack/react-query-devtools
 ```
 
 --------------------------------
@@ -2131,6 +2131,21 @@ function Component({ id }) {
 
 --------------------------------
 
+### Test Component Queries with fixture.whenStable()
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/testing.md
+
+Shows how to bootstrap a component using `TestBed.createComponent` and wait for its queries to resolve using `fixture.whenStable()` before asserting on data.
+
+```ts
+const fixture = TestBed.createComponent(ExampleComponent)
+
+await fixture.whenStable()
+expect(fixture.componentInstance.query.data()).toEqual({ value: 42 })
+```
+
+--------------------------------
+
 ### Correct queryKey reference in getQueryData (TypeScript/TSX)
 
 Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
@@ -2151,21 +2166,6 @@ function Component({ id }) {
   const queryClient = useQueryClient()
   return queryClient.getQueryData(todoOptions(id).queryKey)
 }
-```
-
---------------------------------
-
-### Test Component Queries with fixture.whenStable()
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/testing.md
-
-Shows how to bootstrap a component using `TestBed.createComponent` and wait for its queries to resolve using `fixture.whenStable()` before asserting on data.
-
-```ts
-const fixture = TestBed.createComponent(ExampleComponent)
-
-await fixture.whenStable()
-expect(fixture.componentInstance.query.data()).toEqual({ value: 42 })
 ```
 
 --------------------------------
