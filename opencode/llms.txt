@@ -803,6 +803,28 @@ curl -X GET '/api/endpoint' \
 
 --------------------------------
 
+### tmpdir with custom cleanup
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Example showing how to use a custom `dispose` function for specific cleanup logic.
+
+```typescript
+await using tmp = await tmpdir({
+  init: async (dir) => {
+    const specialDir = path.join(dir, "special")
+    await fs.mkdir(specialDir)
+    return specialDir
+  },
+  dispose: async (dir) => {
+    // Custom cleanup logic
+    await fs.rm(path.join(dir, "special"), { recursive: true })
+  },
+})
+```
+
+--------------------------------
+
 ### Create and manage sessions
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
@@ -834,40 +856,6 @@ await client.session.prompt({
     parts: [{ type: "text", text: "You are a helpful assistant." }],
   },
 })
-```
-
---------------------------------
-
-### tmpdir with custom cleanup
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
-
-Example showing how to use a custom `dispose` function for specific cleanup logic.
-
-```typescript
-await using tmp = await tmpdir({
-  init: async (dir) => {
-    const specialDir = path.join(dir, "special")
-    await fs.mkdir(specialDir)
-    return specialDir
-  },
-  dispose: async (dir) => {
-    // Custom cleanup logic
-    await fs.rm(path.join(dir, "special"), { recursive: true })
-  },
-})
-```
-
---------------------------------
-
-### Prompting with a Local MCP Tool (TXT)
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
-
-Example of how to use a locally configured MCP tool, `mcp_everything`, within a prompt to leverage its functionality.
-
-```txt
-use the mcp_everything tool to add the number 3 and 4
 ```
 
 --------------------------------
@@ -932,6 +920,18 @@ Example content for the CLAUDE.md file, used to train Claude Code on documentati
 - Use absolute URLs for internal links
 - Include untested code examples
 - Make assumptions - always ask for clarification
+```
+
+--------------------------------
+
+### Prompting with a Local MCP Tool (TXT)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
+
+Example of how to use a locally configured MCP tool, `mcp_everything`, within a prompt to leverage its functionality.
+
+```txt
+use the mcp_everything tool to add the number 3 and 4
 ```
 
 --------------------------------
