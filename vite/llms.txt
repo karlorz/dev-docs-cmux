@@ -275,14 +275,14 @@ $ bun add -D https://pkg.pr.new/vite@SHA
 
 --------------------------------
 
-### Netlify CLI Installation
+### Preview the production build
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Command to install the Netlify CLI globally.
+Starts a local web server to verify the production build at http://localhost:4173.
 
 ```bash
-npm install -g netlify-cli
+$ npm run preview
 ```
 
 --------------------------------
@@ -313,22 +313,6 @@ $ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### Configure preview port
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Example of configuring the preview server's port in package.json.
-
-```json
-{
-  "scripts": {
-    "preview": "vite preview --port 8080"
-  }
-}
-```
-
---------------------------------
-
 ### listen(port, isRestart)
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -354,19 +338,6 @@ Promise<ViteDevServer> - A promise that resolves to the `ViteDevServer` instance
 
 --------------------------------
 
-### CSS Styling Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Example of basic CSS styling for paragraphs and a class.
-
-```css
-p { background: rgba(0, 0, 0, 0.1); }
-.classname { color: green; }
-```
-
---------------------------------
-
 ### Generate Types for Documentation Code Examples
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -379,18 +350,15 @@ pnpm run build
 
 --------------------------------
 
-### Vercel CLI Installation and Deployment
+### CSS Styling Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
 
-Command to install the Vercel CLI globally and deploy an application.
+Example of basic CSS styling for paragraphs and a class.
 
-```bash
-npm i -g vercel
-```
-
-```bash
-vercel
+```css
+p { background: rgba(0, 0, 0, 0.1); }
+.classname { color: green; }
 ```
 
 --------------------------------
@@ -428,18 +396,6 @@ export { Foo, Bar }
 
 --------------------------------
 
-### Install Cloudflare Vite Plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to install the Cloudflare Vite plugin as a development dependency.
-
-```bash
-npm install --save-dev @cloudflare/vite-plugin
-```
-
---------------------------------
-
 ### Install esbuild for CSS Minification
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
@@ -464,6 +420,18 @@ $ npm add -D @vitejs/plugin-legacy
 
 --------------------------------
 
+### Install Cloudflare Vite plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Install the @cloudflare/vite-plugin as a development dependency to enable Cloudflare Workers integration.
+
+```bash
+$ npm install --save-dev @cloudflare/vite-plugin
+```
+
+--------------------------------
+
 ### Multi-Page App Directory Structure
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -482,23 +450,122 @@ Example directory structure for a multi-page application.
 
 --------------------------------
 
-### Configuring polyfill specifiers
+### Install Minifiers for Vite Build
 
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Example showing how to specify polyfills for both `polyfills` and `modernPolyfills` options.
+Install `esbuild` or `terser` as development dependencies to use them as minifiers with Vite's `build.minify` option.
+
+```sh
+npm add -D esbuild
+npm add -D terser
+```
+
+--------------------------------
+
+### Netlify CLI Deployment
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Install and use the Netlify CLI to initialize and deploy projects from the command line. The --prod flag is used to trigger a production deployment.
+
+```shell
+npm install -g netlify-cli
+```
+
+```shell
+netlify init
+```
+
+```shell
+netlify deploy
+```
+
+```shell
+prod
+```
+
+```shell
+netlify deploy --prod
+```
+
+--------------------------------
+
+### Install SWC Plugin for Decorator Lowering
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+
+Install the necessary SWC plugin and core package to enable lowering of native decorators as a workaround for Oxc's current lack of support.
+
+```bash
+$ npm install -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ yarn add -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ pnpm add -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ bun add -D @rollup/plugin-swc @swc/core
+```
+
+```bash
+$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
+```
+
+--------------------------------
+
+### Custom Environment Instance Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
+
+An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
 
 ```js
-import legacy from '@vitejs/plugin-legacy'
+import { customEnvironment } from 'vite-environment-provider'
 
 export default {
-  plugins: [
-    legacy({
-      polyfills: ['es.promise.finally', 'es/map', 'es/set'],
-      modernPolyfills: ['es.promise.finally'],
+  build: {
+    outDir: '/dist/client',
+  },
+  environments: {
+    ssr: customEnvironment({
+      build: {
+        outDir: '/dist/ssr',
+      },
     }),
-  ],
+  },
 }
+```
+
+--------------------------------
+
+### Example of Generated License Markdown Output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Shows the typical structure and content of the `.vite/license.md` file, listing bundled dependencies and their respective licenses.
+
+```markdown
+# Licenses
+
+The app bundles dependencies which contain the following licenses:
+
+## dep-1 - 1.2.3 (CC0-1.0)
+
+CC0 1.0 Universal
+
+...
+
+## dep-2 - 4.5.6 (MIT)
+
+MIT License
+
+...
 ```
 
 --------------------------------
@@ -515,6 +582,98 @@ vite [root]
 
 --------------------------------
 
+### Deploy to Surge via CLI
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Install the Surge CLI and deploy the production build directory to a surge.sh subdomain or custom domain.
+
+```shell
+npm i -g surge
+```
+
+```shell
+npm run build
+```
+
+```shell
+surge dist
+```
+
+```shell
+surge dist yourdomain.com
+```
+
+--------------------------------
+
+### Render Build Command
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+The command used to install dependencies and build the project for production on the Render platform.
+
+```shell
+npm install && npm run build
+```
+
+--------------------------------
+
+### Deploy to Google Firebase via CLI
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Install the Firebase tools globally and run the deploy command after building the project.
+
+```shell
+npm i -g firebase-tools
+```
+
+```shell
+npm run build
+```
+
+```shell
+firebase deploy
+```
+
+--------------------------------
+
+### Example of forwarded unhandled error log
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+Shows how unhandled errors from the client are formatted and displayed in the server terminal.
+
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
+```
+
+--------------------------------
+
+### Configure Automatic Browser Opening in Vite
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+Set the server.open property to a string to define the URL pathname that opens automatically on server start.
+
+```javascript
+export default defineConfig({
+  server: {
+    open: '/docs/index.html',
+  },
+})
+```
+
+--------------------------------
+
 ### Example HTML Output for 'views/foo.js' Entry Point
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
@@ -527,6 +686,18 @@ Shows the recommended HTML tags to include for the `views/foo.js` entry point in
 <script type="module" src="assets/foo-BRBmoGS9.js"></script>
 <!-- optional -->
 <link rel="modulepreload" href="assets/shared-B7PI925R.js" />
+```
+
+--------------------------------
+
+### Install Terser for legacy build minification
+
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+
+Terser is required for minification in legacy builds for Vite versions before 8.1.4 or when explicitly configured.
+
+```shell
+npm add -D terser
 ```
 
 --------------------------------
@@ -572,14 +743,14 @@ function
 
 --------------------------------
 
-### Preview command
+### Build the application
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Command to test the built application locally.
+Run this command to generate production-ready assets in the dist directory.
 
 ```bash
-$ npm run preview
+$ npm run build
 ```
 
 --------------------------------
@@ -649,30 +820,6 @@ This snippet demonstrates a basic HTML file structure in a Vite project, showing
 
 --------------------------------
 
-### Install Terser
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Command to install Terser, which is required by plugin-legacy for minification.
-
-```sh
-npm add -D terser
-```
-
---------------------------------
-
-### Netlify CLI Site Initialization
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to create a new Netlify site using the CLI.
-
-```bash
-netlify init
-```
-
---------------------------------
-
 ### Start Vite Documentation Development Server
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -693,18 +840,6 @@ Command to build the application for production.
 
 ```bash
 npm run build
-```
-
---------------------------------
-
-### Build command
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Command to build the application.
-
-```bash
-$ npm run build
 ```
 
 --------------------------------
@@ -730,19 +865,6 @@ Command to run the application in development mode.
 
 ```bash
 npm run dev
-```
-
---------------------------------
-
-### Install Minifiers for Vite Build
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Install `esbuild` or `terser` as development dependencies to use them as minifiers with Vite's `build.minify` option.
-
-```sh
-npm add -D esbuild
-npm add -D terser
 ```
 
 --------------------------------
@@ -838,31 +960,6 @@ pnpm build
 
 --------------------------------
 
-### Custom Environment Instance Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
-
-An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
-
-```js
-import { customEnvironment } from 'vite-environment-provider'
-
-export default {
-  build: {
-    outDir: '/dist/client',
-  },
-  environments: {
-    ssr: customEnvironment({
-      build: {
-        outDir: '/dist/ssr',
-      },
-    }),
-  },
-}
-```
-
---------------------------------
-
 ### Vite build command output
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -874,74 +971,6 @@ $ vite build
 building for production...
 dist/my-lib.js      0.08 kB / gzip: 0.07 kB
 dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
-```
-
---------------------------------
-
-### Configure Vite to Open Specific Path on Server Start
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-This configuration sets Vite to automatically open the browser to a specific path, '/docs/index.html', when the development server starts.
-
-```js
-export default defineConfig({
-  server: {
-    open: '/docs/index.html',
-  },
-})
-```
-
---------------------------------
-
-### Install SWC Plugin for Decorator Lowering
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Install the necessary SWC plugin and core package to enable lowering of native decorators as a workaround for Oxc's current lack of support.
-
-```bash
-$ npm install -D @rollup/plugin-swc @swc/core
-```
-
-```bash
-$ yarn add -D @rollup/plugin-swc @swc/core
-```
-
-```bash
-$ pnpm add -D @rollup/plugin-swc @swc/core
-```
-
-```bash
-$ bun add -D @rollup/plugin-swc @swc/core
-```
-
-```bash
-$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
-```
-
---------------------------------
-
-### Basic `experimental.renderBuiltUrl` usage
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
-
-```ts
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostType }) {
-    if (hostType === 'js') {
-      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-    } else {
-      return { relative: true }
-    }
-  },
-},
-}
 ```
 
 --------------------------------
@@ -970,6 +999,30 @@ $ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 
 ```bash
 $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
+```
+
+--------------------------------
+
+### SSR Dependencies Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```
+
+--------------------------------
+
+### Install Trusted SSL Certificate on macOS (Shell)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Install a self-signed SSL certificate as trusted via the macOS command line to prevent network requests from stalling due to Chrome's caching behavior.
+
+```shell
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
 ```
 
 --------------------------------
@@ -1021,26 +1074,38 @@ export function createHandler(input) {
 
 --------------------------------
 
-### SSR Dependencies Example
+### Basic `experimental.renderBuiltUrl` usage
 
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
 
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
 ```
 
 --------------------------------
 
-### Install Trusted SSL Certificate on macOS (Shell)
+### Inline CSS
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+Source: https://github.com/vitejs/vite/blob/main/playground/css-sourcemap/index.html
 
-Install a self-signed SSL certificate as trusted via the macOS command line to prevent network requests from stalling due to Chrome's caching behavior.
+An example of inline CSS styling.
 
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```css
+.inline { color: red; }
 ```
 
 --------------------------------
@@ -1074,49 +1139,23 @@ experimental: {
 
 --------------------------------
 
-### Example of Generated License Markdown Output
+### Adding a Plugin
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
 
-Shows the typical structure and content of the `.vite/license.md` file, listing bundled dependencies and their respective licenses.
-
-```markdown
-# Licenses
-
-The app bundles dependencies which contain the following licenses:
-
-## dep-1 - 1.2.3 (CC0-1.0)
-
-CC0 1.0 Universal
-
-...
-
-## dep-2 - 4.5.6 (MIT)
-
-MIT License
-
-...
-```
-
---------------------------------
-
-### Usage
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Example of how to configure the @vitejs/plugin-legacy in vite.config.js.
+Example of including the @vitejs/plugin-legacy in vite.config.js to support legacy browsers.
 
 ```js
-// vite.config.js
 import legacy from '@vitejs/plugin-legacy'
+import { defineConfig } from 'vite'
 
-export default {
+export default defineConfig({
   plugins: [
     legacy({
-      targets: ['defaults', 'not IE 11']
-    })
-  ]
-}
+      targets: ['defaults', 'not IE 11'],
+    }),
+  ],
+})
 ```
 
 --------------------------------
