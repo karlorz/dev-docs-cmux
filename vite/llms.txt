@@ -54,34 +54,6 @@ $ deno add -D npm:vite
 
 --------------------------------
 
-### Run Vite Dev Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Commands to start the Vite development server using various package managers.
-
-```bash
-$ npx vite
-```
-
-```bash
-$ yarn vite
-```
-
-```bash
-$ pnpm vite
-```
-
-```bash
-$ bunx vite
-```
-
-```bash
-$ deno run -A npm:vite
-```
-
---------------------------------
-
 ### Scaffolding Your First Vite Project
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -106,6 +78,34 @@ $ bun create vite
 
 ```bash
 $ deno init --npm vite
+```
+
+--------------------------------
+
+### Run Vite Dev Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Commands to start the Vite development server using various package managers.
+
+```bash
+$ npx vite
+```
+
+```bash
+$ yarn vite
+```
+
+```bash
+$ pnpm vite
+```
+
+```bash
+$ bunx vite
+```
+
+```bash
+$ deno run -A npm:vite
 ```
 
 --------------------------------
@@ -363,25 +363,6 @@ p { background: rgba(0, 0, 0, 0.1); }
 
 --------------------------------
 
-### Install CSS Pre-processors
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Install the corresponding pre-processor package for Sass, Less, or Stylus to enable their use in Vite projects.
-
-```bash
-# .scss and .sass
-npm add -D sass-embedded # or sass
-
-# .less
-npm add -D less
-
-# .styl and .stylus
-npm add -D stylus
-```
-
---------------------------------
-
 ### Entry file exports
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -420,6 +401,19 @@ $ npm add -D @vitejs/plugin-legacy
 
 --------------------------------
 
+### Install Minifiers for Vite Build
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Install `esbuild` or `terser` as development dependencies to use them as minifiers with Vite's `build.minify` option.
+
+```sh
+npm add -D esbuild
+npm add -D terser
+```
+
+--------------------------------
+
 ### Multi-Page App Directory Structure
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -434,6 +428,51 @@ Example directory structure for a multi-page application.
 └── nested
     ├── index.html
     └── nested.js
+```
+
+--------------------------------
+
+### Install CSS pre-processors
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Vite supports Sass, Less, and Stylus out of the box. You only need to install the pre-processor package itself to enable support.
+
+```bash
+# .scss and .sass
+npm add -D sass-embedded # or sass
+
+# .less
+npm add -D less
+
+# .styl and .stylus
+npm add -D stylus
+```
+
+--------------------------------
+
+### Example of generated license markdown file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Sample content of the .vite/license.md file produced when license generation is enabled.
+
+```markdown
+# Licenses
+
+The app bundles dependencies which contain the following licenses:
+
+## dep-1 - 1.2.3 (CC0-1.0)
+
+CC0 1.0 Universal
+
+...
+
+## dep-2 - 4.5.6 (MIT)
+
+MIT License
+
+...
 ```
 
 --------------------------------
@@ -466,43 +505,26 @@ $ deno add -D npm:@rollup/plugin-swc npm:@swc/core
 
 --------------------------------
 
-### POST /invoke
+### Custom Environment Instance Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
 
-Example HTTP endpoint implementation for communication between a ModuleRunner and the Vite server.
+An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
 
-```APIDOC
-## POST /invoke
+```js
+import { customEnvironment } from 'vite-environment-provider'
 
-### Description
-An example endpoint used when implementing an HTTP-based transport for the Module Runner. It receives a payload and delegates processing to the environment's hot channel.
-
-### Method
-POST
-
-### Endpoint
-/invoke
-
-### Parameters
-#### Request Body
-- **payload** (HotPayload) - Required - The RPC data to be processed by the server.
-
-### Request Example
-{
-  "type": "custom",
-  "event": "vite:import",
-  "data": { "id": "/src/main.ts" }
-}
-
-### Response
-#### Success Response (200)
-- **result** (any) - The result of the invocation.
-- **error** (any) - Error details if the invocation failed.
-
-### Response Example
-{
-  "result": { "code": "..." }
+export default {
+  build: {
+    outDir: '/dist/client',
+  },
+  environments: {
+    ssr: customEnvironment({
+      build: {
+        outDir: '/dist/ssr',
+      },
+    }),
+  },
 }
 ```
 
@@ -516,30 +538,6 @@ Basic usage for starting the Vite development server.
 
 ```bash
 vite [root]
-```
-
---------------------------------
-
-### Deploy to Surge via CLI
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Install the Surge CLI and deploy the production build directory to a surge.sh subdomain or custom domain.
-
-```shell
-npm i -g surge
-```
-
-```shell
-npm run build
-```
-
-```shell
-surge dist
-```
-
-```shell
-surge dist yourdomain.com
 ```
 
 --------------------------------
@@ -564,147 +562,37 @@ firebase deploy
 
 --------------------------------
 
-### configurePreviewServer
+### Accessing the WebAssembly Module object
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
 
-A hook for configuring the Vite preview server. It is called before other middlewares are installed and can return a post-hook function to inject middleware after internal ones.
+Use ?url to get the asset path and manually instantiate the module using the native WebAssembly.instantiateStreaming API.
 
-```APIDOC
-## configurePreviewServer
-
-### Description
-Configures the Vite preview server. Similar to `configureServer`, this hook is called before other middlewares are installed. If a function is returned, it will be executed after internal middlewares are installed, allowing for post-middleware injection.
-
-### Type
-`(server: PreviewServer) => (() => void) | void | Promise<(() => void) | void>`
-
-### Parameters
-- **server** (PreviewServer) - The Vite preview server instance.
-
-### Usage Example
 ```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
-```
+import 'vite/client'
+// ---cut---
+import wasmUrl from 'foo.wasm?url'
+
+const main = async () => {
+  const responsePromise = fetch(wasmUrl)
+  const { module, instance } = 
+    await WebAssembly.instantiateStreaming(responsePromise)
+  /* ... */
+}
+
+main()
 ```
 
 --------------------------------
 
-### Implement Worker Thread Transport
+### Deep Import Resolution with Babel
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
 
-Example implementation of a transport using Node.js worker threads to communicate between the runner and the server.
+Shows resolution of deep paths within external packages using a generator function example.
 
-```js
-import { parentPort } from 'node:worker_threads'
-import { fileURLToPath } from 'node:url'
-import {
-  ESModulesEvaluator,
-  ModuleRunner,
-  createNodeImportMeta,
-} from 'vite/module-runner'
-
-/** @type {import('vite/module-runner').ModuleRunnerTransport} */
-const transport = {
-  connect({ onMessage, onDisconnection }) {
-    parentPort.on('message', onMessage)
-    parentPort.on('close', onDisconnection)
-  },
-  send(data) {
-    parentPort.postMessage(data)
-  },
-}
-
-const runner = new ModuleRunner(
-  {
-    transport,
-    createImportMeta: createNodeImportMeta,
-  },
-  new ESModulesEvaluator(),
-)
-```
-
-```js
-import { BroadcastChannel } from 'node:worker_threads'
-import { createServer, RemoteEnvironmentTransport, DevEnvironment } from 'vite'
-
-function createWorkerEnvironment(name, config, context) {
-  const worker = new Worker('./worker.js')
-  const handlerToWorkerListener = new WeakMap()
-  const client = {
-    send(payload: HotPayload) {
-      worker.postMessage(payload)
-    },
-  }
-
-  const workerHotChannel = {
-    // Worker threads post messages are not exposed over the network, skip server.fs checks
-    skipFsCheck: true,
-    send: (data) => worker.postMessage(data),
-    on: (event, handler) => {
-      // client is already connected
-      if (event === 'vite:client:connect') return
-      if (event === 'vite:client:disconnect') {
-        const listener = () => {
-          handler(undefined, client)
-        }
-        handlerToWorkerListener.set(handler, listener)
-        worker.on('exit', listener)
-        return
-      }
-
-      const listener = (value) => {
-        if (value.type === 'custom' && value.event === event) {
-          handler(value.data, client)
-        }
-      }
-      handlerToWorkerListener.set(handler, listener)
-      worker.on('message', listener)
-    },
-    off: (event, handler) => {
-      if (event === 'vite:client:connect') return
-      if (event === 'vite:client:disconnect') {
-        const listener = handlerToWorkerListener.get(handler)
-        if (listener) {
-          worker.off('exit', listener)
-          handlerToWorkerListener.delete(handler)
-        }
-        return
-      }
-
-      const listener = handlerToWorkerListener.get(handler)
-      if (listener) {
-        worker.off('message', listener)
-        handlerToWorkerListener.delete(handler)
-      }
-    },
-  }
-
-  return new DevEnvironment(name, config, {
-    transport: workerHotChannel,
-  })
-}
-
-await createServer({
-  environments: {
-    worker: {
-      dev: {
-        createEnvironment: createWorkerEnvironment,
-      },
-    },
-  },
-})
+```javascript
+// deep import import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray' const iterable = (function* () { yield 2 yield 4 yield 6 yield 8 })() text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -725,94 +613,17 @@ Shows the recommended HTML tags to include for the `views/foo.js` entry point in
 
 --------------------------------
 
-### Implement HTTP Request Transport
+### Import raw SVG content in a Vue component
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
 
-Example of using HTTP requests for communication, requiring the handleInvoke method on the server side.
+Use the ?raw query suffix to import an asset's content as a string directly into a script setup block.
 
-```ts
-import { ESModulesEvaluator, ModuleRunner } from 'vite/module-runner'
-
-export const runner = new ModuleRunner(
-  {
-    transport: {
-      async invoke(data) {
-        const response = await fetch(`http://my-vite-server/invoke`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-        })
-        return response.json()
-      },
-    },
-    hmr: false, // disable HMR as HMR requires transport.connect
-  },
-  new ESModulesEvaluator(),
-)
-
-await runner.import('/entry.js')
-```
-
-```ts
-const customEnvironment = new DevEnvironment(name, config, context)
-
-server.onRequest((request: Request) => {
-  const url = new URL(request.url)
-  if (url.pathname === '/invoke') {
-    const payload = (await request.json()) as HotPayload
-    const result = customEnvironment.hot.handleInvoke(payload)
-    return new Response(JSON.stringify(result))
-  }
-  return Response.error()
-})
-```
-
---------------------------------
-
-### Implement a custom Vite logger using createLogger
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
-
-Filter or modify log messages by wrapping the default logger. This example demonstrates how to suppress specific warnings like empty CSS files.
-
-```ts
-import { createLogger, defineConfig } from 'vite'
-
-const logger = createLogger()
-const loggerWarn = logger.warn
-
-logger.warn = (msg, options) => {
-  // Ignore empty CSS files warning
-  if (msg.includes('vite:css') && msg.includes(' is empty')) return
-  loggerWarn(msg, options)
-}
-
-export default defineConfig({
-  customLogger: logger,
-})
-```
-
---------------------------------
-
-### Configure Vite Preview Server Middleware
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Inject custom middleware into the Vite preview server. Return a function to ensure the middleware is called after internal Vite middlewares are installed.
-
-```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
+```vue
+<script setup>
+import graphSvg from '../images/graph.svg?raw'
+</script>
+<svg-image :svg="graphSvg" />
 ```
 
 --------------------------------
@@ -913,62 +724,6 @@ createServer()
 
 --------------------------------
 
-### Basic HTML Transformation with transformIndexHtml
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Modify the index.html content by returning a transformed string. This example uses a regular expression to replace the title tag.
-
-```js
-const htmlPlugin = () => {
-  return {
-    name: 'html-transform',
-    transformIndexHtml(html) {
-      return html.replace(
-        /<title>(.*?)<\/title>/,
-        `<title>Title replaced!</title>`,
-      )
-    },
-  }
-}
-```
-
---------------------------------
-
-### Vite HTML Entry Point Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-This snippet demonstrates a basic HTML file structure in a Vite project, showing how assets like favicons, stylesheets, images, and JavaScript modules are referenced and processed.
-
-```html
-<!doctype html>
-<html>
-  <head>
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="/src/styles.css" />
-  </head>
-  <body>
-    <img src="/src/images/logo.svg" alt="logo" />
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-```
-
---------------------------------
-
-### Install Cloudflare Vite plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Install the @cloudflare/vite-plugin as a development dependency to enable Cloudflare Workers integration.
-
-```bash
-$ npm install --save-dev @cloudflare/vite-plugin
-```
-
---------------------------------
-
 ### Start Vite Documentation Development Server
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -989,6 +744,31 @@ Command to build the application for production.
 
 ```bash
 npm run build
+```
+
+--------------------------------
+
+### Install Cloudflare Vite plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Install the @cloudflare/vite-plugin as a development dependency to enable Cloudflare Workers integration.
+
+```bash
+$ npm install --save-dev @cloudflare/vite-plugin
+```
+
+--------------------------------
+
+### Example .env file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+
+```env
+VITE_SOME_KEY=123
+DB_PASSWORD=foobar
 ```
 
 --------------------------------
@@ -1021,32 +801,6 @@ netlify deploy --prod
 
 --------------------------------
 
-### Example .env file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
-
-```env
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
-```
-
---------------------------------
-
-### Install Minifiers for Vite Build
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Install `esbuild` or `terser` as development dependencies to use them as minifiers with Vite's `build.minify` option.
-
-```sh
-npm add -D esbuild
-npm add -D terser
-```
-
---------------------------------
-
 ### Run development server
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
@@ -1071,21 +825,6 @@ npm add -D terser
 
 --------------------------------
 
-### External Svelte Store Example
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-svelte/README.md
-
-An example of a simple external Svelte store that can be used to retain state across HMR updates.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
-
---------------------------------
-
 ### Accessing Environments from the Server
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
@@ -1099,6 +838,21 @@ const server = await createServer(/* options */)
 const clientEnvironment = server.environments.client
 clientEnvironment.transformRequest(url)
 console.log(server.environments.ssr.moduleGraph)
+```
+
+--------------------------------
+
+### External Svelte Store Example
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-svelte/README.md
+
+An example of a simple external Svelte store that can be used to retain state across HMR updates.
+
+```js
+// store.js
+// An extremely simple external store
+import { writable } from 'svelte/store'
+export default writable(0)
 ```
 
 --------------------------------
@@ -1162,31 +916,6 @@ pnpm build
 
 --------------------------------
 
-### Custom Environment Instance Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
-
-An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
-
-```js
-import { customEnvironment } from 'vite-environment-provider'
-
-export default {
-  build: {
-    outDir: '/dist/client',
-  },
-  environments: {
-    ssr: customEnvironment({
-      build: {
-        outDir: '/dist/ssr',
-      },
-    }),
-  },
-}
-```
-
---------------------------------
-
 ### Vite build command output
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1198,6 +927,30 @@ $ vite build
 building for production...
 dist/my-lib.js      0.08 kB / gzip: 0.07 kB
 dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```
+
+--------------------------------
+
+### Basic `experimental.renderBuiltUrl` usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+
+```ts
+import type { UserConfig } from 'vite'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostType }) {
+    if (hostType === 'js') {
+      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+    } else {
+      return { relative: true }
+    }
+  },
+},
+}
 ```
 
 --------------------------------
@@ -1226,18 +979,6 @@ $ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 
 ```bash
 $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
-```
-
---------------------------------
-
-### SSR Dependencies Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
-
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
 ```
 
 --------------------------------
@@ -1289,26 +1030,14 @@ export function createHandler(input) {
 
 --------------------------------
 
-### Basic `experimental.renderBuiltUrl` usage
+### SSR Dependencies Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
 
-An example demonstrating how to use `experimental.renderBuiltUrl` to return a runtime expression for JavaScript host types or a relative path otherwise.
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
 
-```ts
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-experimental: {
-  renderBuiltUrl(filename, { hostType }) {
-    if (hostType === 'js') {
-      return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-    } else {
-      return { relative: true }
-    }
-  },
-},
-}
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
 ```
 
 --------------------------------
@@ -1325,28 +1054,56 @@ security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-
 
 --------------------------------
 
-### Example of Generated License Markdown Output
+### Advanced `experimental.renderBuiltUrl` with asset types
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Shows the typical structure and content of the `.vite/license.md` file, listing bundled dependencies and their respective licenses.
+An example showing how to define different base options for public files, JavaScript host IDs, and other assets using the `type` and `hostId` context parameters.
 
-```markdown
-# Licenses
+```ts
+import type { UserConfig } from 'vite'
+import path from 'node:path'
+// prettier-ignore
+const config: UserConfig = {
+experimental: {
+  renderBuiltUrl(filename, { hostId, hostType, type }) {
+    if (type === 'public') {
+      return 'https://www.domain.com/' + filename
+    } else if (path.extname(hostId) === '.js') {
+      return {
+        runtime: `window.__assetsPath(${JSON.stringify(filename)})`
+      }
+    } else {
+      return 'https://cdn.domain.com/assets/' + filename
+    }
+  },
+},
+}
+```
 
-The app bundles dependencies which contain the following licenses:
+--------------------------------
 
-## dep-1 - 1.2.3 (CC0-1.0)
+### package.json with CSS export
 
-CC0 1.0 Universal
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-...
+Example `package.json` showing how to export a bundled CSS file for users to import, alongside JS modules.
 
-## dep-2 - 4.5.6 (MIT)
-
-MIT License
-
-...
+```json
+{
+  "name": "my-lib",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/my-lib.umd.cjs",
+  "module": "./dist/my-lib.js",
+  "exports": {
+    ".": {
+      "import": "./dist/my-lib.js",
+      "require": "./dist/my-lib.umd.cjs"
+    },
+    "./style.css": "./dist/my-lib.css"
+  }
+}
 ```
 
 --------------------------------
@@ -1359,4 +1116,118 @@ An example of inline CSS styling.
 
 ```css
 .inline { color: red; }
+```
+
+--------------------------------
+
+### Programmatic Vite Build Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+Demonstrates how to programmatically trigger a Vite build using `build()`, specifying the project root, base path, and build options.
+
+```typescript
+import path from 'node:path'
+import { build } from 'vite'
+
+await build({
+  root: path.resolve(import.meta.dirname, './project'),
+  base: '/foo/',
+  build: {
+    rolldownOptions: {
+      // ...
+    },
+  },
+})
+```
+
+--------------------------------
+
+### POST /invoke
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
+
+Example HTTP endpoint implementation for communication between a ModuleRunner and the Vite server.
+
+```APIDOC
+## POST /invoke
+
+### Description
+An example endpoint used when implementing an HTTP-based transport for the Module Runner. It receives a payload and delegates processing to the environment's hot channel.
+
+### Method
+POST
+
+### Endpoint
+/invoke
+
+### Parameters
+#### Request Body
+- **payload** (HotPayload) - Required - The RPC data to be processed by the server.
+
+### Request Example
+{
+  "type": "custom",
+  "event": "vite:import",
+  "data": { "id": "/src/main.ts" }
+}
+
+### Response
+#### Success Response (200)
+- **result** (any) - The result of the invocation.
+- **error** (any) - Error details if the invocation failed.
+
+### Response Example
+{
+  "result": { "code": "..." }
+}
+```
+
+--------------------------------
+
+### Adding a Plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
+
+Example of including the @vitejs/plugin-legacy in vite.config.js to support legacy browsers.
+
+```js
+import legacy from '@vitejs/plugin-legacy'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+    }),
+  ],
+})
+```
+
+--------------------------------
+
+### package.json (multiple entries)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Recommended `package.json` configuration for a library with multiple entry points, defining `main`, `module`, and `exports` for each entry.
+
+```json
+{
+  "name": "my-lib",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/my-lib.cjs",
+  "module": "./dist/my-lib.js",
+  "exports": {
+    ".": {
+      "import": "./dist/my-lib.js",
+      "require": "./dist/my-lib.cjs"
+    },
+    "./secondary": {
+      "import": "./dist/secondary.js",
+      "require": "./dist/secondary.cjs"
+    }
+  }
+}
 ```
