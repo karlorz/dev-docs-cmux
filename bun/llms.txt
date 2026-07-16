@@ -37,20 +37,6 @@ bun run publish-layer
 
 --------------------------------
 
-### Manual CI Setup - Install packages
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
-
-Commands to manually install required packages and then run the tests.
-
-```bash
-apt-get update && apt-get install -y libsecret-1-dev gnome-keyring dbus-x11
-
-bun test test/js/bun/secrets.test.ts
-```
-
---------------------------------
-
 ### Render Build and Start Commands for Bun
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/render.mdx
@@ -67,6 +53,20 @@ bun app.ts
 
 --------------------------------
 
+### Manual CI Setup - Install packages
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
+
+Commands to manually install required packages and then run the tests.
+
+```bash
+apt-get update && apt-get install -y libsecret-1-dev gnome-keyring dbus-x11
+
+bun test test/js/bun/secrets.test.ts
+```
+
+--------------------------------
+
 ### Install SolidStart Project Dependencies
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/solidstart.mdx
@@ -76,6 +76,21 @@ Navigate into the newly created project directory and install its dependencies u
 ```sh
 cd my-app
 bun install
+```
+
+--------------------------------
+
+### Benchmark setup commands
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/test/README.md
+
+Commands to navigate to the benchmark directory and install dependencies for Vitest, then set up the test suites.
+
+```sh
+cd bench/test
+bun install                       # for vitest
+bun parallel/setup.ts
+bun isolate-cache/setup.ts
 ```
 
 --------------------------------
@@ -104,21 +119,6 @@ bun pm pkg delete scripts.test contributors[0]    # multiple/nested
 
 # fix
 bun pm pkg fix                                    # auto-fix common issues
-```
-
---------------------------------
-
-### Benchmark setup commands
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/test/README.md
-
-Commands to navigate to the benchmark directory and install dependencies for Vitest, then set up the test suites.
-
-```sh
-cd bench/test
-bun install                       # for vitest
-bun parallel/setup.ts
-bun isolate-cache/setup.ts
 ```
 
 --------------------------------
@@ -397,14 +397,16 @@ apt-get install -y \
 
 --------------------------------
 
-### Install
+### Initialize a new Bun project
 
-Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/postject/README.markdown
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
 
-Command to install postject globally.
+Use `mkdir` and `bun init` to set up a new project directory.
 
-```sh
-npm i -g postject
+```bash
+mkdir prisma-postgres-app
+cd prisma-postgres-app
+bun init
 ```
 
 --------------------------------
@@ -422,16 +424,28 @@ Example of running Bun secrets tests in GitHub Actions with automatic setup.
 
 --------------------------------
 
-### Initialize a new Bun project
+### Install
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
+Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/postject/README.markdown
 
-Use `mkdir` and `bun init` to set up a new project directory.
+Command to install postject globally.
 
-```bash
-mkdir prisma-postgres-app
-cd prisma-postgres-app
-bun init
+```sh
+npm i -g postject
+```
+
+--------------------------------
+
+### BuildKite
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
+
+Example of running Bun secrets tests in BuildKite.
+
+```yaml
+steps:
+  - command: bun test test/js/bun/secrets.test.ts
+    label: "🔐 Secrets API Tests"
 ```
 
 --------------------------------
@@ -447,20 +461,6 @@ mkdir bun-neon-postgres
 cd bun-neon-postgres
 bun init -y
 bun add @neondatabase/serverless
-```
-
---------------------------------
-
-### BuildKite
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
-
-Example of running Bun secrets tests in BuildKite.
-
-```yaml
-steps:
-  - command: bun test test/js/bun/secrets.test.ts
-    label: "🔐 Secrets API Tests"
 ```
 
 --------------------------------
@@ -622,6 +622,18 @@ This output shows the interactive prompts and successful creation of a new Qwik 
 
 --------------------------------
 
+### Run Bun with an HTML Entry Point
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/html-static.mdx
+
+Use the `bun` command to start the development server, pointing it directly to an HTML file for automatic bundling and serving.
+
+```bash
+bun ./index.html
+```
+
+--------------------------------
+
 ### Install Bun and Dependencies in GitHub Actions
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
@@ -647,14 +659,14 @@ jobs:
 
 --------------------------------
 
-### Run Bun with an HTML Entry Point
+### Initialize Project with All Defaults
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/html-static.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/init.mdx
 
-Use the `bun` command to start the development server, pointing it directly to an HTML file for automatic bundling and serving.
+Use this command to initialize a new project, automatically accepting all default prompts without requiring user interaction.
 
 ```bash
-bun ./index.html
+bun init -y
 ```
 
 --------------------------------
@@ -667,18 +679,6 @@ Command to force the automatic keyring setup using an environment variable.
 
 ```bash
 FORCE_KEYRING_SETUP=1 bun test test/js/bun/secrets.test.ts
-```
-
---------------------------------
-
-### Initialize Project with All Defaults
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/init.mdx
-
-Use this command to initialize a new project, automatically accepting all default prompts without requiring user interaction.
-
-```bash
-bun init -y
 ```
 
 --------------------------------
@@ -704,18 +704,6 @@ Command to run the secrets test, which automatically handles setup in CI environ
 
 ```bash
 bun test test/js/bun/secrets.test.ts
-```
-
---------------------------------
-
-### Start development server
-
-Source: https://github.com/oven-sh/bun/blob/main/src/runtime/cli/init/README2.default.md
-
-Command to start the development server for the project.
-
-```bash
-bun dev
 ```
 
 --------------------------------
@@ -747,6 +735,18 @@ bun add nitro
 
 --------------------------------
 
+### Start development server
+
+Source: https://github.com/oven-sh/bun/blob/main/src/runtime/cli/init/README2.default.md
+
+Command to start the development server for the project.
+
+```bash
+bun dev
+```
+
+--------------------------------
+
 ### Set Up Local Template Directory
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/templating/create.mdx
@@ -769,6 +769,18 @@ Example of an ordered list with a start number beginning with 0.
 
 ```markdown
 0. ok
+```
+
+--------------------------------
+
+### Ordered list start number with leading zeros
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
+
+Example of an ordered list with a start number containing leading zeros.
+
+```markdown
+003. ok
 ```
 
 --------------------------------
@@ -822,18 +834,6 @@ console.log(`Server running at ${server.url}`);
 
 --------------------------------
 
-### Ordered list start number with leading zeros
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
-
-Example of an ordered list with a start number containing leading zeros.
-
-```markdown
-003. ok
-```
-
---------------------------------
-
 ### Valid ordered list start number
 
 Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
@@ -871,6 +871,20 @@ bun --bun run dev
 
 --------------------------------
 
+### Defining a GET route
+
+Source: https://github.com/oven-sh/bun/blob/main/packages/bun-uws/misc/READMORE.md
+
+Example of attaching behavior to a URL route using the `get` method with `uWS::App`.
+
+```c++
+uWS::App().get("/hello", [](auto *res, auto *req) {
+    res->end("Hello World!");
+});
+```
+
+--------------------------------
+
 ### Install Bun and run commands in GitHub Actions
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/runtime/cicd.mdx
@@ -896,16 +910,14 @@ jobs:
 
 --------------------------------
 
-### Defining a GET route
+### Run Mintlify Development Server
 
-Source: https://github.com/oven-sh/bun/blob/main/packages/bun-uws/misc/READMORE.md
+Source: https://github.com/oven-sh/bun/blob/main/docs/README.md
 
-Example of attaching behavior to a URL route using the `get` method with `uWS::App`.
+Execute this command to start the local development server for the documentation, which will be served at http://localhost:3000.
 
-```c++
-uWS::App().get("/hello", [](auto *res, auto *req) {
-    res->end("Hello World!");
-});
+```bash
+mint dev
 ```
 
 --------------------------------
@@ -918,18 +930,6 @@ Example of an ordered list with an invalid start number (more than nine digits),
 
 ```markdown
 1234567890. not ok
-```
-
---------------------------------
-
-### Run Mintlify Development Server
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/README.md
-
-Execute this command to start the local development server for the documentation, which will be served at http://localhost:3000.
-
-```bash
-mint dev
 ```
 
 --------------------------------
@@ -950,6 +950,18 @@ bun init --react=tailwind
 
 ```bash
 bun init --react=shadcn
+```
+
+--------------------------------
+
+### Windows library attribution example
+
+Source: https://github.com/oven-sh/bun/blob/main/scripts/verify-baseline-static/CLAUDE.md
+
+Example showing how to allowlist symbols attributed to a specific Windows library when PDB records are unavailable.
+
+```text
+<lib:lolhtml.lib>  [AVX, AVX2]
 ```
 
 --------------------------------
@@ -992,18 +1004,6 @@ const result = await Bun.build({
 if (result.success) {
   console.log("Build successful:", result.outputs[0].path);
 }
-```
-
---------------------------------
-
-### Windows library attribution example
-
-Source: https://github.com/oven-sh/bun/blob/main/scripts/verify-baseline-static/CLAUDE.md
-
-Example showing how to allowlist symbols attributed to a specific Windows library when PDB records are unavailable.
-
-```text
-<lib:lolhtml.lib>  [AVX, AVX2]
 ```
 
 --------------------------------
@@ -1288,18 +1288,6 @@ bun build ./index.tsx --outdir ./build
 
 --------------------------------
 
-### Initialize a Hono project using create-hono
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/hono.mdx
-
-Use the `create-hono` CLI tool to scaffold a new Hono project, selecting Bun as the template.
-
-```sh
-bun create hono myapp
-```
-
---------------------------------
-
 ### Example pnpm-workspace.yaml for Migration
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
@@ -1319,6 +1307,18 @@ catalogs:
   build:
     webpack: ^5.0.0
     babel: ^7.0.0
+```
+
+--------------------------------
+
+### Initialize a Hono project using create-hono
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/hono.mdx
+
+Use the `create-hono` CLI tool to scaffold a new Hono project, selecting Bun as the template.
+
+```sh
+bun create hono myapp
 ```
 
 --------------------------------
@@ -1384,21 +1384,6 @@ console.log(`Listening on ${server.url}`);
 
 --------------------------------
 
-### Example usage of onGC
-
-Source: https://github.com/oven-sh/bun/blob/main/test/napi/node-napi-tests/test/common/README.md
-
-Demonstrates how to install a garbage collection listener using the onGC function.
-
-```js
-require('../common');
-const { onGC } = require('../common/gc');
-
-onGC({}, { ongc() { console.log('collected'); } });
-```
-
---------------------------------
-
 ### bunx Command Examples
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/bunx.mdx
@@ -1432,6 +1417,33 @@ bunx --bun vite dev foo.js
 
 --------------------------------
 
+### Example usage of onGC
+
+Source: https://github.com/oven-sh/bun/blob/main/test/napi/node-napi-tests/test/common/README.md
+
+Demonstrates how to install a garbage collection listener using the onGC function.
+
+```js
+require('../common');
+const { onGC } = require('../common/gc');
+
+onGC({}, { ongc() { console.log('collected'); } });
+```
+
+--------------------------------
+
+### Run in Deno (`Deno.serve`)
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/websocket-server/README.md
+
+Command to start the websocket server using Deno.
+
+```bash
+deno run -A ./chat-server.deno.mjs
+```
+
+--------------------------------
+
 ### Basic HTML block of type 6
 
 Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
@@ -1459,18 +1471,6 @@ okay.
   </tr>
 </table>
 <p>okay.</p>
-```
-
---------------------------------
-
-### Run in Deno (`Deno.serve`)
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/websocket-server/README.md
-
-Command to start the websocket server using Deno.
-
-```bash
-deno run -A ./chat-server.deno.mjs
 ```
 
 --------------------------------
@@ -1516,26 +1516,6 @@ bun create qwik
 
 --------------------------------
 
-### Install xwin and set up Windows sysroot
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/project/building-windows.mdx
-
-Install `xwin` to download the MSVC CRT, Windows SDK, and ATL. This command sets up the necessary Windows sysroot at `/opt/winsysroot` and creates required symbolic links for `clang-cl`/`lld-link`.
-
-```bash
-cargo install xwin # or download a release binary
-xwin --accept-license --arch x86_64,aarch64 --sdk-version 10.0.26100 --crt-version 14.44.17.14 --include-atl splat \
-  --use-winsysroot-style --preserve-ms-arch-notation --include-debug-libs \
-  --output /opt/winsysroot
-# clang-cl/lld-link look up SDK paths as "Include"/"Lib"; the splat writes
-# them lowercase, so alias both spellings (needs the same privileges as the
-# splat — configure creates these itself when the directory is writable).
-ln -s include "/opt/winsysroot/Windows Kits/10/Include"
-ln -s lib "/opt/winsysroot/Windows Kits/10/Lib"
-```
-
---------------------------------
-
 ### API Server Setup and Teardown Hooks
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/test/lifecycle.mdx
@@ -1560,6 +1540,26 @@ afterAll(async () => {
   // Stop test server
   await stopServer(server);
 });
+```
+
+--------------------------------
+
+### Install xwin and set up Windows sysroot
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/building-windows.mdx
+
+Install `xwin` to download the MSVC CRT, Windows SDK, and ATL. This command sets up the necessary Windows sysroot at `/opt/winsysroot` and creates required symbolic links for `clang-cl`/`lld-link`.
+
+```bash
+cargo install xwin # or download a release binary
+xwin --accept-license --arch x86_64,aarch64 --sdk-version 10.0.26100 --crt-version 14.44.17.14 --include-atl splat \
+  --use-winsysroot-style --preserve-ms-arch-notation --include-debug-libs \
+  --output /opt/winsysroot
+# clang-cl/lld-link look up SDK paths as "Include"/"Lib"; the splat writes
+# them lowercase, so alias both spellings (needs the same privileges as the
+# splat — configure creates these itself when the directory is writable).
+ln -s include "/opt/winsysroot/Windows Kits/10/Include"
+ln -s lib "/opt/winsysroot/Windows Kits/10/Lib"
 ```
 
 --------------------------------
@@ -1681,6 +1681,29 @@ jobs:
 
 --------------------------------
 
+### Example YAML Configuration File
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/runtime/import-yaml.mdx
+
+A sample YAML file defining database, server, and feature configurations.
+
+```yaml
+database:
+  host: localhost
+  port: 5432
+  name: myapp
+
+server:
+  port: 3000
+  timeout: 30
+
+features:
+  auth: true
+  rateLimit: true
+```
+
+--------------------------------
+
 ### HTML block with div and nested markdown
 
 Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
@@ -1701,25 +1724,14 @@ An example of an HTML block starting with <div> (type 6) containing markdown con
 
 --------------------------------
 
-### Example YAML Configuration File
+### Create a SvelteKit Project with Bun
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/runtime/import-yaml.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sveltekit.mdx
 
-A sample YAML file defining database, server, and feature configurations.
+Use the SvelteKit CLI with `bunx` to initialize a new SvelteKit project, answering prompts for template, TypeScript, and package manager.
 
-```yaml
-database:
-  host: localhost
-  port: 5432
-  name: myapp
-
-server:
-  port: 3000
-  timeout: 30
-
-features:
-  auth: true
-  rateLimit: true
+```sh
+bunx sv create my-app
 ```
 
 --------------------------------
@@ -1755,16 +1767,4 @@ Restart=always
 [Install]
 # start the app automatically
 WantedBy=multi-user.target
-```
-
---------------------------------
-
-### Create a SvelteKit Project with Bun
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sveltekit.mdx
-
-Use the SvelteKit CLI with `bunx` to initialize a new SvelteKit project, answering prompts for template, TypeScript, and package manager.
-
-```sh
-bunx sv create my-app
 ```
