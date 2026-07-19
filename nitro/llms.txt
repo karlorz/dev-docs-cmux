@@ -59,6 +59,21 @@ Add a start script to package.json that points to the Nitro output server entry 
 
 --------------------------------
 
+### Run Development Server and Test Requests
+
+Source: https://github.com/nitrojs/nitro/blob/main/examples/tracing/README.md
+
+Start the development server and trigger requests to observe the generated tracing timelines.
+
+```sh
+npm run dev
+# then, in another terminal:
+curl http://localhost:3000/
+curl http://localhost:3000/users/42
+```
+
+--------------------------------
+
 ### Create Server Entry with TanStack Start
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
@@ -75,6 +90,22 @@ export default createServerEntry({
     return handler.fetch(request);
   }
 });
+```
+
+--------------------------------
+
+### Example Tracing Output
+
+Source: https://github.com/nitrojs/nitro/blob/main/examples/tracing/README.md
+
+Sample console output showing a request timeline with middleware, route, and storage operation spans.
+
+```text
+▶ GET /  4.10ms  (4 spans)
+  middleware GET /             █·······················   0.12ms h3.handler_type=middleware http.route=/
+  GET /                        ·███████████████████·····   2.49ms h3.handler_type=route http.route=/
+  getItem                      ···██····················   0.18ms db.operation=getItem db.system=memory unstorage.keys_count=1
+  setItem                      ·····██··················   0.16ms db.operation=setItem db.system=memory unstorage.keys_count=1
 ```
 
 --------------------------------
@@ -111,22 +142,6 @@ GET
 
 --------------------------------
 
-### Configure unenv Presets for Compatibility
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Set up unenv presets to ensure environment compatibility. This example shows how to alias a module for web environments.
-
-```typescript
-export default defineConfig({
-  unenv: {
-    alias: { "my-module": "my-module/web" },
-  },
-});
-```
-
---------------------------------
-
 ### CI/CD Deployment Workflow
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zephyr.md
@@ -152,6 +167,22 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
+```
+
+--------------------------------
+
+### Configure unenv Presets for Compatibility
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
+
+Set up unenv presets to ensure environment compatibility. This example shows how to alias a module for web environments.
+
+```typescript
+export default defineConfig({
+  unenv: {
+    alias: { "my-module": "my-module/web" },
+  },
+});
 ```
 
 --------------------------------
@@ -376,6 +407,27 @@ export default defineConfig({
 
 --------------------------------
 
+### Nitro Project Setup with npm
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/custom-error-handler.md
+
+This `package.json` file outlines the basic setup for a Nitro project using npm. It defines scripts for development (`nitro dev`) and building (`nitro build`), and specifies `nitro` as a development dependency. This is essential for running and building your Nitro application.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+--------------------------------
+
 ### Configure Vite for SSR
 
 Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-tss-react/README.md
@@ -396,27 +448,6 @@ export default defineConfig({
     ssr: { build: { rollupOptions: { input: "./server.ts" } } },
   },
 });
-```
-
---------------------------------
-
-### Nitro Project Setup with npm
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/custom-error-handler.md
-
-This `package.json` file outlines the basic setup for a Nitro project using npm. It defines scripts for development (`nitro dev`) and building (`nitro build`), and specifies `nitro` as a development dependency. This is essential for running and building your Nitro application.
-
-```json
-{
-  "type": "module",
-  "scripts": {
-    "dev": "nitro dev",
-    "build": "nitro build"
-  },
-  "devDependencies": {
-    "nitro": "latest"
-  }
-}
 ```
 
 --------------------------------
@@ -460,20 +491,6 @@ console.log("Hello World");
 
 --------------------------------
 
-### Customize Default Preset
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Configure `defaultPreset` to change the fallback preset when `preset` is not set and no hosting providers are auto-detected. This example sets the default to `node_cluster`.
-
-```typescript
-export default defineConfig({
-  defaultPreset: "node_cluster", // use node_cluster instead of node_server by default
-});
-```
-
---------------------------------
-
 ### Custom amplify.yml for Monorepo
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/aws-amplify.md
@@ -498,33 +515,6 @@ applications:
           - '**/*'
       buildPath: /
     appRoot: apps/website1
-```
-
---------------------------------
-
-### Nitro Project Setup
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/database.md
-
-Basic package.json and tsconfig.json for a Nitro project. The package.json includes scripts for development and building, while tsconfig.json extends Nitro's default TypeScript configuration.
-
-```json
-{
-  "type": "module",
-  "scripts": {
-    "dev": "nitro dev",
-    "build": "nitro build"
-  },
-  "devDependencies": {
-    "nitro": "latest"
-  }
-}
-```
-
-```json
-{
-  "extends": "nitro/tsconfig"
-}
 ```
 
 --------------------------------
@@ -895,6 +885,20 @@ Provide a list of directories to scan for auto-registration of files like API ro
 ```typescript
 export default defineConfig({
   scanDirs: ["./modules/auth/api", "./modules/billing/api"],
+});
+```
+
+--------------------------------
+
+### Customize Default Preset
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
+
+Configure `defaultPreset` to change the fallback preset when `preset` is not set and no hosting providers are auto-detected. This example sets the default to `node_cluster`.
+
+```typescript
+export default defineConfig({
+  defaultPreset: "node_cluster", // use node_cluster instead of node_server by default
 });
 ```
 
@@ -1285,40 +1289,6 @@ Defines the project scripts and development dependencies, including Vite, Nitro,
 
 --------------------------------
 
-### Server-Side Rendering with Highlight API
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/shiki.md
-
-Use `<script server>` to define server-side logic. The `hl` function calls an API via `serverFetch` to highlight code. Triple-brace syntax `{{{ }}}` is crucial for rendering unescaped HTML output from the highlighted code.
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Hello World Snippet</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="card" role="region" aria-label="Code snippet">
-      <div class="label">JavaScript</div>
-      <script server>
-        const hl = (code) =>
-          serverFetch("/api/highlight", {
-            method: "POST",
-            body: code,
-          });
-      </script>
-      <pre><code>{{{ hl(`console.log("💚 Simple is beautiful!");`) }}}</code></pre>
-    </div>
-  </body>
-</html>
-
-```
-
---------------------------------
-
 ### Define API Route Handlers
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
@@ -1353,6 +1323,40 @@ export default defineHandler(async (event) => {
     body,
   };
 });
+```
+
+--------------------------------
+
+### Server-Side Rendering with Highlight API
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/shiki.md
+
+Use `<script server>` to define server-side logic. The `hl` function calls an API via `serverFetch` to highlight code. Triple-brace syntax `{{{ }}}` is crucial for rendering unescaped HTML output from the highlighted code.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hello World Snippet</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="card" role="region" aria-label="Code snippet">
+      <div class="label">JavaScript</div>
+      <script server>
+        const hl = (code) =>
+          serverFetch("/api/highlight", {
+            method: "POST",
+            body: code,
+          });
+      </script>
+      <pre><code>{{{ hl(`console.log("💚 Simple is beautiful!");`) }}}</code></pre>
+    </div>
+  </body>
+</html>
+
 ```
 
 --------------------------------
@@ -1398,25 +1402,6 @@ main();
 
 --------------------------------
 
-### Elysia Server Entry with Nitro
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/elysia.md
-
-Set up the Elysia server entry point for Nitro. Call app.compile() before exporting to optimize the router for production.
-
-```typescript
-import { Elysia } from "elysia";
-
-const app = new Elysia();
-
-app.get("/", () => "Hello, Elysia with Nitro!");
-
-export default app.compile();
-
-```
-
---------------------------------
-
 ### Vite Configuration for Nitro
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/cached-handler.md
@@ -1434,6 +1419,25 @@ import {
 export default defineConfig({
   plugins: [nitro()]
 });
+
+```
+
+--------------------------------
+
+### Elysia Server Entry with Nitro
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/elysia.md
+
+Set up the Elysia server entry point for Nitro. Call app.compile() before exporting to optimize the router for production.
+
+```typescript
+import { Elysia } from "elysia";
+
+const app = new Elysia();
+
+app.get("/", () => "Hello, Elysia with Nitro!");
+
+export default app.compile();
 
 ```
 
@@ -1512,6 +1516,33 @@ export default defineConfig({});
 
 --------------------------------
 
+### Nitro Project Setup
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/database.md
+
+Basic package.json and tsconfig.json for a Nitro project. The package.json includes scripts for development and building, while tsconfig.json extends Nitro's default TypeScript configuration.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+--------------------------------
+
 ### Deploy via Nitro CLI
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zephyr.md
@@ -1547,6 +1578,55 @@ export default defineConfig({
 
 --------------------------------
 
+### Define Project Dependencies and Scripts
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/takumi.md
+
+Configures the package.json with necessary dependencies including nitro, takumi-js, and vite.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "node .output/server/index.mjs"
+  },
+  "devDependencies": {
+    "nitro": "latest",
+    "takumi-js": "^2.1.1",
+    "vite": "latest"
+  }
+}
+```
+
+--------------------------------
+
+### Implement Client Entry for Hydration
+
+Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-vue-router/README.md
+
+Initializes the Vue application on the client side using createWebHistory. It mounts the application to the DOM to enable interactivity and client-side routing.
+
+```typescript
+import { createSSRApp } from "vue";
+import { RouterView, createRouter, createWebHistory } from "vue-router";
+import { routes } from "./routes.ts";
+
+async function main() {
+  const app = createSSRApp(RouterView);
+  const router = createRouter({ history: createWebHistory(), routes });
+  app.use(router);
+
+  await router.isReady();
+  app.mount("#root");
+}
+
+main();
+```
+
+--------------------------------
+
 ### Project Configuration
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-trpc.md
@@ -1576,31 +1656,6 @@ Configuration files for the project dependencies and TypeScript settings.
   "extends": "nitro/tsconfig",
   "compilerOptions": {}
 }
-```
-
---------------------------------
-
-### Implement Client Entry for Hydration
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-vue-router/README.md
-
-Initializes the Vue application on the client side using createWebHistory. It mounts the application to the DOM to enable interactivity and client-side routing.
-
-```typescript
-import { createSSRApp } from "vue";
-import { RouterView, createRouter, createWebHistory } from "vue-router";
-import { routes } from "./routes.ts";
-
-async function main() {
-  const app = createSSRApp(RouterView);
-  const router = createRouter({ history: createWebHistory(), routes });
-  app.use(router);
-
-  await router.isReady();
-  app.mount("#root");
-}
-
-main();
 ```
 
 --------------------------------
@@ -1692,30 +1747,6 @@ nitro build --preset cloudflare_pages
 
 --------------------------------
 
-### Zerops Configuration for Static App
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zerops.md
-
-Configure your static application for Zerops deployment. This includes setting the base environment, environment variables, build commands, and specifying deployable files for a static runtime.
-
-```yaml
-zerops:
-  - setup: app
-    build:
-      base: nodejs@22
-      envVariables:
-        NITRO_PRESET: zerops-static
-      buildCommands:
-        - pnpm i
-        - pnpm build
-      deployFiles:
-        - .zerops/output/static/~
-    run:
-      base: static
-```
-
---------------------------------
-
 ### Trigger Nitro Tasks from Vercel Queue Messages
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/vercel.md
@@ -1737,6 +1768,30 @@ export default definePlugin((nitroApp) => {
     }
   });
 });
+```
+
+--------------------------------
+
+### Zerops Configuration for Static App
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zerops.md
+
+Configure your static application for Zerops deployment. This includes setting the base environment, environment variables, build commands, and specifying deployable files for a static runtime.
+
+```yaml
+zerops:
+  - setup: app
+    build:
+      base: nodejs@22
+      envVariables:
+        NITRO_PRESET: zerops-static
+      buildCommands:
+        - pnpm i
+        - pnpm build
+      deployFiles:
+        - .zerops/output/static/~
+    run:
+      base: static
 ```
 
 --------------------------------
@@ -1784,83 +1839,4 @@ nav a { color: #666; text-decoration: none; }
 nav a:hover { color: #333; }
 nav a.active { color: #646cff; }
 </style>
-```
-
---------------------------------
-
-### Handle HTTP Methods via File Suffixes
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/api-routes/README.md
-
-Restrict handlers to specific HTTP methods by appending the method name to the filename. This allows for clean separation of logic for GET, POST, and other request types.
-
-```typescript
-import { defineHandler } from "nitro";
-
-// GET handler (api/test.get.ts)
-export default defineHandler(() => "Test get handler");
-
-// POST handler (api/test.post.ts)
-export default defineHandler(async (event) => {
-  const body = await event.req.json();
-  return {
-    message: "Test post handler",
-    body
-  };
-});
-```
-
---------------------------------
-
-### Define a Server Utility
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/auto-imports.md
-
-Create utility functions in the `server/utils/` directory. These functions will be automatically available throughout your server code.
-
-```typescript
-export function makeGreeting(name: string) {
-  return `Hello, ${name}!`;
-}
-```
-
---------------------------------
-
-### Enable Static Site Generation
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Set the `static` option to `true` to enable static site generation mode, which will prerender all routes.
-
-```typescript
-export default defineConfig({
-  static: true, // prerender all routes
-});
-```
-
---------------------------------
-
-### Configure Vite for Nitro Plugin
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-trpc/README.md
-
-Configures Vite to use the Nitro plugin and routes tRPC requests to the specified handler file. This setup ensures that all requests matching the '/trpc/**' pattern are directed to './server/trpc.ts'.
-
-```typescript
-import {
-  defineConfig
-} from "vite";
-import {
-  nitro
-} from "nitro/vite";
-
-export default defineConfig({
-  plugins: [
-    nitro({
-      routes: {
-        "/trpc/**": "./server/trpc.ts",
-      },
-    }),
-  ],
-});
 ```
