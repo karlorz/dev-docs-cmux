@@ -26,25 +26,6 @@ A simple HTML file for a Vite project.
 
 --------------------------------
 
-### Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/preview-options.md
-
-Example configuration for setting server and preview ports.
-
-```js
-export default defineConfig({
-  server: {
-    port: 3030,
-  },
-  preview: {
-    port: 8080,
-  },
-})
-```
-
---------------------------------
-
 ### Install Vite CLI
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -69,6 +50,25 @@ $ bun add -D vite
 
 ```bash
 $ deno add -D npm:vite
+```
+
+--------------------------------
+
+### Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/preview-options.md
+
+Example configuration for setting server and preview ports.
+
+```js
+export default defineConfig({
+  server: {
+    port: 3030,
+  },
+  preview: {
+    port: 8080,
+  },
+})
 ```
 
 --------------------------------
@@ -252,34 +252,6 @@ $ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### Build Output Summary
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Example output displayed after running the vite build command.
-
-```text
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
-```
-
---------------------------------
-
-### CSS Styling Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Example of basic CSS styling for paragraphs and a class.
-
-```css
-p { background: rgba(0, 0, 0, 0.1); }
-.classname { color: green; }
-```
-
---------------------------------
-
 ### listen(port, isRestart)
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -329,24 +301,6 @@ $ npm add -D @vitejs/plugin-legacy
 
 --------------------------------
 
-### Multi-Page App Directory Structure
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Example file organization for a project with nested HTML entry points.
-
-```text
-├── package.json
-├── vite.config.js
-├── index.html
-├── main.js
-└── nested
-    ├── index.html
-    └── nested.js
-```
-
---------------------------------
-
 ### Example of generated license markdown file
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -373,11 +327,11 @@ MIT License
 
 --------------------------------
 
-### Install SWC Plugin for Decorator Lowering
+### Install SWC dependencies for native decorators
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Install the necessary SWC plugin and core package to enable lowering of native decorators as a workaround for Oxc's current lack of support.
+Install the required SWC core and Rollup plugin to support lowering native decorators.
 
 ```bash
 $ npm install -D @rollup/plugin-swc @swc/core
@@ -401,21 +355,30 @@ $ deno add -D npm:@rollup/plugin-swc npm:@swc/core
 
 --------------------------------
 
-### Install CSS pre-processors
+### Install Babel dependencies for native decorators
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Vite supports Sass, Less, and Stylus out of the box. You only need to install the pre-processor package itself to enable support.
+Install the required Babel plugin and Rolldown integration to support lowering native decorators.
 
 ```bash
-# .scss and .sass
-npm add -D sass-embedded # or sass
+$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
 
-# .less
-npm add -D less
+```bash
+$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
 
-# .styl and .stylus
-npm add -D stylus
+```bash
+$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 ```
 
 --------------------------------
@@ -441,6 +404,25 @@ export default {
     }),
   },
 }
+```
+
+--------------------------------
+
+### Install CSS pre-processors
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Vite supports Sass, Less, and Stylus out of the box. You only need to install the pre-processor package itself to enable support.
+
+```bash
+# .scss and .sass
+npm add -D sass-embedded # or sass
+
+# .less
+npm add -D less
+
+# .styl and .stylus
+npm add -D stylus
 ```
 
 --------------------------------
@@ -583,6 +565,31 @@ createServer()
 
 --------------------------------
 
+### CSS Styling Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Example of basic CSS styling for paragraphs and a class.
+
+```css
+p { background: rgba(0, 0, 0, 0.1); }
+.classname { color: green; }
+```
+
+--------------------------------
+
+### WebAssembly Loading and Interaction Examples
+
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+
+Demonstrates various Wasm loading techniques including ?init, ?url, and ?worker, as well as handling shared globals and string builtins.
+
+```javascript
+import light from './light.wasm?init' import heavy from './heavy.wasm?init' import myWorker from './worker?worker' import { add } from './add.wasm' import { exported\_func } from './light-with-imports.wasm' import { getResult } from './imports.js' import { answer } from './global.wasm' import { getAnswerPlusOne, readCounter } from './global-consumer.wasm' import { bumpCounter } from './global.wasm' import { helloLength } from './string-constants.wasm' const w = new myWorker() w.addEventListener('message', (ev) => { text('.worker-wasm .result', ev.data.result) }) text('.direct-wasm .result', add(1, 2)) exported\_func() text('.direct-wasm-with-imports .result', getResult()) text('.direct-wasm-global .result', `\${answer} ${typeof answer}\`) text('.direct-wasm-global-import .result', getAnswerPlusOne()) // The mutable global is a single live cell shared between the two wasm // modules: mutating it from one is observed by the other (7 + 2 = 9). bumpCounter() bumpCounter() text('.direct-wasm-mutable-global-import .result', readCounter()) // 'hello'.length, where 'hello' is an engine-provided imported string constant // and \`length\` is a js-string builtin. text('.direct-wasm-string-builtins .result', helloLength()) async function testWasm(init, resultElement) { const { exported\_func } = await init({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }).then((i) => i.exports) exported\_func() } function text(el, text) { document.querySelector(el).textContent = text } document .querySelector('.inline-wasm .run') .addEventListener('click', async () => testWasm(light, document.querySelector('.inline-wasm .result')), ) document .querySelector('.output-wasm .run') .addEventListener('click', async () => testWasm(heavy, document.querySelector('.output-wasm .result')), ) document .querySelector('.init-returns-instance .run') .addEventListener('click', async () => { const res = await light({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }) text( '.init-returns-instance .result', res instanceof WebAssembly.Instance, ) }) import lightUrl from './light.wasm?url' text('.url', lightUrl)
+```
+
+--------------------------------
+
 ### Install esbuild and Terser minifiers
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
@@ -609,18 +616,6 @@ DB_PASSWORD=foobar
 
 --------------------------------
 
-### WebAssembly Loading and Interaction Examples
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Demonstrates various Wasm loading techniques including ?init, ?url, and ?worker, as well as handling shared globals and string builtins.
-
-```javascript
-import light from './light.wasm?init' import heavy from './heavy.wasm?init' import myWorker from './worker?worker' import { add } from './add.wasm' import { exported\_func } from './light-with-imports.wasm' import { getResult } from './imports.js' import { answer } from './global.wasm' import { getAnswerPlusOne, readCounter } from './global-consumer.wasm' import { bumpCounter } from './global.wasm' import { helloLength } from './string-constants.wasm' const w = new myWorker() w.addEventListener('message', (ev) => { text('.worker-wasm .result', ev.data.result) }) text('.direct-wasm .result', add(1, 2)) exported\_func() text('.direct-wasm-with-imports .result', getResult()) text('.direct-wasm-global .result', `\${answer} ${typeof answer}\`) text('.direct-wasm-global-import .result', getAnswerPlusOne()) // The mutable global is a single live cell shared between the two wasm // modules: mutating it from one is observed by the other (7 + 2 = 9). bumpCounter() bumpCounter() text('.direct-wasm-mutable-global-import .result', readCounter()) // 'hello'.length, where 'hello' is an engine-provided imported string constant // and \`length\` is a js-string builtin. text('.direct-wasm-string-builtins .result', helloLength()) async function testWasm(init, resultElement) { const { exported\_func } = await init({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }).then((i) => i.exports) exported\_func() } function text(el, text) { document.querySelector(el).textContent = text } document .querySelector('.inline-wasm .run') .addEventListener('click', async () => testWasm(light, document.querySelector('.inline-wasm .result')), ) document .querySelector('.output-wasm .run') .addEventListener('click', async () => testWasm(heavy, document.querySelector('.output-wasm .result')), ) document .querySelector('.init-returns-instance .run') .addEventListener('click', async () => { const res = await light({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }) text( '.init-returns-instance .result', res instanceof WebAssembly.Instance, ) }) import lightUrl from './light.wasm?url' text('.url', lightUrl)
-```
-
---------------------------------
-
 ### Start Vite Documentation Development Server
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -629,18 +624,6 @@ Execute this command in Vite's root folder to run the documentation site locally
 
 ```shell
 pnpm run docs
-```
-
---------------------------------
-
-### Install Cloudflare Vite Plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Installs the official Cloudflare Vite plugin as a development dependency to enable integration with Cloudflare Workers.
-
-```bash
-$ npm install --save-dev @cloudflare/vite-plugin
 ```
 
 --------------------------------
@@ -669,14 +652,14 @@ npm run dev
 
 --------------------------------
 
-### Install Terser for Minification
+### Install Cloudflare Vite Plugin
 
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Install terser as a development dependency if using Vite versions older than 8.1.4 or when build.minify is explicitly set to 'terser'.
+Installs the official Cloudflare Vite plugin as a development dependency to enable integration with Cloudflare Workers.
 
-```shell
-npm add -D terser
+```bash
+$ npm install --save-dev @cloudflare/vite-plugin
 ```
 
 --------------------------------
@@ -694,21 +677,6 @@ const server = await createServer(/* options */)
 const clientEnvironment = server.environments.client
 clientEnvironment.transformRequest(url)
 console.log(server.environments.ssr.moduleGraph)
-```
-
---------------------------------
-
-### External Svelte Store Example
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-svelte/README.md
-
-An example of a simple external Svelte store that can be used to retain state across HMR updates.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
 ```
 
 --------------------------------
@@ -735,20 +703,29 @@ export default defineConfig({
 
 --------------------------------
 
-### Dependency Notation and Example
+### Install Terser for Minification
 
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
 
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
+Install terser as a development dependency if using Vite versions older than 8.1.4 or when build.minify is explicitly set to 'terser'.
 
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
+```shell
+npm add -D terser
+```
 
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
+--------------------------------
+
+### External Svelte Store Example
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-svelte/README.md
+
+An example of a simple external Svelte store that can be used to retain state across HMR updates.
+
+```js
+// store.js
+// An extremely simple external store
+import { writable } from 'svelte/store'
+export default writable(0)
 ```
 
 --------------------------------
@@ -790,30 +767,34 @@ pnpm build
 
 --------------------------------
 
-### Install Babel Plugin for Decorator Lowering
+### Dependency Notation and Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
 
-Install the necessary Babel plugin and Rolldown Babel plugin to enable lowering of native decorators as a workaround for Oxc's current lack of support.
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
 
-```bash
-$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
+
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
 ```
 
-```bash
-$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
+--------------------------------
 
-```bash
-$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
+### Create a basic Vite configuration file
 
-```bash
-$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
+Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
 
-```bash
-$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
+The simplest configuration file using ES modules. Ensure the file is treated as ESM by Node.js.
+
+```js
+export default {
+  // config options
+}
 ```
 
 --------------------------------
@@ -838,20 +819,6 @@ Install a self-signed SSL certificate as trusted on macOS using the security com
 
 ```shell
 security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
-```
-
---------------------------------
-
-### Create a basic Vite configuration file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
-
-The simplest configuration file using ES modules. Ensure the file is treated as ESM by Node.js.
-
-```js
-export default {
-  // config options
-}
 ```
 
 --------------------------------
@@ -887,6 +854,26 @@ An example of inline CSS styling.
 
 ```css
 .inline { color: red; }
+```
+
+--------------------------------
+
+### Configure Multi-Page App Entry Points in Vite
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Specify multiple HTML files as entry points using absolute paths. Adjust path resolution if using a custom root directory.
+
+```javascript
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  input: {
+    main: resolve(import.meta.dirname, 'index.html'),
+    nested: resolve(import.meta.dirname, 'nested/index.html'),
+  },
+})
 ```
 
 --------------------------------
@@ -929,6 +916,21 @@ POST
 {
   "result": { "code": "..." }
 }
+```
+
+--------------------------------
+
+### Run the Library Build Command
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Execute the build command to generate ES and UMD/CJS bundles in the output directory.
+
+```bash
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 ```
 
 --------------------------------
@@ -992,6 +994,18 @@ app.use('*', async (req, res, next) => {
 
 --------------------------------
 
+### Initialize a Vite app
+
+Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
+
+Command to quickly set up a new Vite project, requiring Node.js >=12.
+
+```bash
+npm init @vitejs/app
+```
+
+--------------------------------
+
 ### Basic HTML Transformation
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -1014,14 +1028,24 @@ const htmlPlugin = () => {
 
 --------------------------------
 
-### Initialize a Vite app
+### Conditional Application
 
-Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
 
-Command to quickly set up a new Vite project, requiring Node.js >=12.
+Example of using the 'apply' property to conditionally apply a plugin only during build.
 
-```bash
-npm init @vitejs/app
+```js
+import typescript2 from 'rollup-plugin-typescript2'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    {
+      ...typescript2(),
+      apply: 'build',
+    },
+  ],
+})
 ```
 
 --------------------------------
@@ -1049,116 +1073,6 @@ const moduleRunner = new ModuleRunner(
 )
 
 await moduleRunner.import('/src/entry-point.js')
-```
-
---------------------------------
-
-### Conditional Application
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
-
-Example of using the 'apply' property to conditionally apply a plugin only during build.
-
-```js
-import typescript2 from 'rollup-plugin-typescript2'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  plugins: [
-    {
-      ...typescript2(),
-      apply: 'build',
-    },
-  ],
-})
-```
-
---------------------------------
-
-### Configure Library Build in vite.config.js
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Use the build.lib option to define entry points and externalize dependencies. The configuration differs slightly between single and multiple entry point setups.
-
-```javascript
-import { dirname, resolve } from 'node:path'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  build: {
-    lib: {
-      entry: resolve(import.meta.dirname, 'lib/main.js'),
-      name: 'MyLib',
-      // the proper extensions will be added
-      fileName: 'my-lib',
-    },
-    rolldownOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      external: ['vue'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          vue: 'Vue',
-        },
-      },
-    },
-  },
-})
-```
-
-```javascript
-import { dirname, resolve } from 'node:path'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  build: {
-    lib: {
-      entry: {
-        'my-lib': resolve(import.meta.dirname, 'lib/main.js'),
-        secondary: resolve(import.meta.dirname, 'lib/secondary.js'),
-      },
-      name: 'MyLib',
-    },
-    rolldownOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      external: ['vue'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          vue: 'Vue',
-        },
-      },
-    },
-  },
-})
-```
-
---------------------------------
-
-### `hot.accept(cb)` for Self-Acceptance
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-hmr.md
-
-Example of a module using `import.meta.hot.accept` with a callback to self-accept updates.
-
-```javascript
-import 'vite/client'
-// ---cut---
-export const count = 1
-
-if (import.meta.hot) {
-  import.meta.hot.accept((newModule) => {
-    if (newModule) {
-      // newModule is undefined when SyntaxError happened
-      console.log('updated: count is now ', newModule.count)
-    }
-  })
-}
 ```
 
 --------------------------------
@@ -1208,62 +1122,6 @@ Example of using import.meta.env properties in HTML files.
 ```html
 <h1>Vite is running in %MODE%</h1>
 <p>Using data from %VITE_API_URL%</p>
-```
-
---------------------------------
-
-### Define Library Entry Point
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Export components or modules from the entry file to make them available to package consumers.
-
-```javascript
-import Foo from './Foo.vue'
-import Bar from './Bar.vue'
-export { Foo, Bar }
-```
-
---------------------------------
-
-### License Metadata JSON Format
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Example of the raw JSON metadata generated when `build.license.fileName` is configured with a `.json` extension.
-
-```json
-[
-  {
-    "name": "dep-1",
-    "version": "1.2.3",
-    "identifier": "CC0-1.0",
-    "text": "CC0 1.0 Universal\n\n..."
-  },
-  {
-    "name": "dep-2",
-    "version": "4.5.6",
-    "identifier": "MIT",
-    "text": "MIT License\n\n..."
-  }
-]
-```
-
---------------------------------
-
-### Eager Glob Import
-
-Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
-
-This example shows how to use the `eager: true` option with `import.meta.glob` to immediately load all matching modules. The result is a map of module paths to their already-resolved module objects.
-
-```javascript
-const eagerModules = import.meta.glob('/dir/**', { eager: true })
-document.querySelector('.result-eager').textContent = JSON.stringify(
-  eagerModules,
-  null,
-  2,
-)
 ```
 
 --------------------------------
@@ -1400,6 +1258,75 @@ for (const { testId, path } of paths) {
 
 --------------------------------
 
+### License Metadata JSON Format
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Example of the raw JSON metadata generated when `build.license.fileName` is configured with a `.json` extension.
+
+```json
+[
+  {
+    "name": "dep-1",
+    "version": "1.2.3",
+    "identifier": "CC0-1.0",
+    "text": "CC0 1.0 Universal\n\n..."
+  },
+  {
+    "name": "dep-2",
+    "version": "4.5.6",
+    "identifier": "MIT",
+    "text": "MIT License\n\n..."
+  }
+]
+```
+
+--------------------------------
+
+### Eager Glob Import
+
+Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
+
+This example shows how to use the `eager: true` option with `import.meta.glob` to immediately load all matching modules. The result is a map of module paths to their already-resolved module objects.
+
+```javascript
+const eagerModules = import.meta.glob('/dir/**', { eager: true })
+document.querySelector('.result-eager').textContent = JSON.stringify(
+  eagerModules,
+  null,
+  2,
+)
+```
+
+--------------------------------
+
+### Importing Asset as URL
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+
+Example of importing an image asset, which returns its public URL.
+
+```js
+import 'vite/client'
+// ---cut---
+import imgUrl from './img.png'
+document.getElementById('hero-img').src = imgUrl
+```
+
+--------------------------------
+
+### Vite Build Usage
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+
+Basic usage for building the project for production.
+
+```bash
+vite build [root]
+```
+
+--------------------------------
+
 ### Example of forwarded unhandled error log
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
@@ -1420,15 +1347,35 @@ Shows how unhandled errors from the client are formatted and displayed in the se
 
 --------------------------------
 
-### Importing Asset as URL
+### Install esbuild for CSS minification
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Example of importing an image asset, which returns its public URL.
+Required when setting build.cssMinify to 'esbuild' to override the default Lightning CSS minifier.
 
-```js
-import 'vite/client'
-// ---cut---
-import imgUrl from './img.png'
-document.getElementById('hero-img').src = imgUrl
+```sh
+npm add -D esbuild
+```
+
+--------------------------------
+
+### Generate HTML tags for specific entry points
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+
+Examples of generated HTML tags for different entry points in production. Follow the recommended order of stylesheets, scripts, and preloads for optimal performance.
+
+```html
+<link rel="stylesheet" href="assets/foo-5UjPuW-k.css" />
+<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
+<script type="module" src="assets/foo-BRBmoGS9.js"></script>
+<!-- optional -->
+<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
+```
+
+```html
+<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
+<script type="module" src="assets/bar-gkvgaI9m.js"></script>
+<!-- optional -->
+<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
 ```
