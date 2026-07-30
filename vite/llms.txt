@@ -52,19 +52,6 @@ $ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### CSS Styling Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Example of basic CSS styling for paragraphs and a class.
-
-```css
-p { background: rgba(0, 0, 0, 0.1); }
-.classname { color: green; }
-```
-
---------------------------------
-
 ### Install a Vite plugin
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
@@ -102,6 +89,18 @@ Promise<ViteDevServer> - A promise that resolves to the `ViteDevServer` instance
 
 --------------------------------
 
+### Run Development Server
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Command to start the development server within a playground directory.
+
+```bash
+pnpm run dev
+```
+
+--------------------------------
+
 ### Installing CSS Pre-processors
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -121,30 +120,30 @@ npm add -D stylus
 
 --------------------------------
 
-### Run the Vite development server
+### Install Vite CLI
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-Start the local development server using your preferred package manager's runner.
+Install Vite as a development dependency using your preferred package manager.
 
-```bash
-$ npx vite
+```npm
+$ npm install -D vite
 ```
 
-```bash
-$ yarn vite
+```Yarn
+$ yarn add -D vite
 ```
 
-```bash
-$ pnpm vite
+```pnpm
+$ pnpm add -D vite
 ```
 
-```bash
-$ bunx vite
+```Bun
+$ bun add -D vite
 ```
 
-```bash
-$ deno run -A npm:vite
+```Deno
+$ deno add -D npm:vite
 ```
 
 --------------------------------
@@ -187,18 +186,6 @@ vite [root]
 
 --------------------------------
 
-### Run Playground in Development Mode
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Start the development server for a specific playground package during debugging.
-
-```bash
-pnpm run dev
-```
-
---------------------------------
-
 ### Install SWC dependencies for native decorators
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
@@ -227,15 +214,27 @@ $ deno add -D npm:@rollup/plugin-swc npm:@swc/core
 
 --------------------------------
 
-### Example .env file
+### Custom Environment Instance Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
 
-An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
 
-```env
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
+```js
+import { customEnvironment } from 'vite-environment-provider'
+
+export default {
+  build: {
+    outDir: '/dist/client',
+  },
+  environments: {
+    ssr: customEnvironment({
+      build: {
+        outDir: '/dist/ssr',
+      },
+    }),
+  },
+}
 ```
 
 --------------------------------
@@ -268,48 +267,6 @@ $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 
 --------------------------------
 
-### Custom Environment Instance Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
-
-An example demonstrating how to use `customEnvironment` from `vite-environment-provider` to define a custom SSR environment with specific build output directories.
-
-```js
-import { customEnvironment } from 'vite-environment-provider'
-
-export default {
-  build: {
-    outDir: '/dist/client',
-  },
-  environments: {
-    ssr: customEnvironment({
-      build: {
-        outDir: '/dist/ssr',
-      },
-    }),
-  },
-}
-```
-
---------------------------------
-
-### Build and link Vite locally from source
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Clone the Vite repository, install dependencies, build the package, and link it globally using pnpm.
-
-```bash
-git clone https://github.com/vitejs/vite.git
-cd vite
-pnpm install
-cd packages/vite
-pnpm run build
-pnpm link # use your preferred package manager for this step
-```
-
---------------------------------
-
 ### Accessing Environments from the Server
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
@@ -327,77 +284,27 @@ console.log(server.environments.ssr.moduleGraph)
 
 --------------------------------
 
-### Scaffold a project using tiged
+### Implement a global module counter plugin
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+Source: https://github.com/vitejs/vite/blob/main/docs/changes/shared-plugins-during-build.md
 
-Use tiged to clone a community template locally and start the development server.
+A plugin example that tracks transformed modules globally across all environments.
 
-```bash
-npx tiged user/project my-project
-cd my-project
-
-npm install
-npm run dev
-```
-
---------------------------------
-
-### Manual WebAssembly Initialization with ?init
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Import a `.wasm` file with the `?init` suffix to get an initialization function that returns a Promise of the WebAssembly instance.
-
-```javascript
-import 'vite/client'
-// ---cut---
-import init from './example.wasm?init'
-
-init().then((instance) => {
-  instance.exports.test()
-})
-```
-
---------------------------------
-
-### POST /invoke
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
-
-Example HTTP endpoint implementation for communication between a ModuleRunner and the Vite server.
-
-```APIDOC
-## POST /invoke
-
-### Description
-An example endpoint used when implementing an HTTP-based transport for the Module Runner. It receives a payload and delegates processing to the environment's hot channel.
-
-### Method
-POST
-
-### Endpoint
-/invoke
-
-### Parameters
-#### Request Body
-- **payload** (HotPayload) - Required - The RPC data to be processed by the server.
-
-### Request Example
-{
-  "type": "custom",
-  "event": "vite:import",
-  "data": { "id": "/src/main.ts" }
-}
-
-### Response
-#### Success Response (200)
-- **result** (any) - The result of the invocation.
-- **error** (any) - Error details if the invocation failed.
-
-### Response Example
-{
-  "result": { "code": "..." }
+```js
+function CountTransformedModulesPlugin() {
+  let transformedModules
+  return {
+    name: 'count-transformed-modules',
+    buildStart() {
+      transformedModules = 0
+    },
+    transform(id) {
+      transformedModules++
+    },
+    buildEnd() {
+      console.log(transformedModules)
+    },
+  }
 }
 ```
 
@@ -429,27 +336,18 @@ MIT License
 
 --------------------------------
 
-### License Metadata JSON Format
+### Enable Debug Logging
 
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Example of the raw JSON metadata generated when `build.license.fileName` is configured with a `.json` extension.
+Examples of using the --debug flag to inspect specific or all Vite debug scopes.
 
-```json
-[
-  {
-    "name": "dep-1",
-    "version": "1.2.3",
-    "identifier": "CC0-1.0",
-    "text": "CC0 1.0 Universal\n\n..."
-  },
-  {
-    "name": "dep-2",
-    "version": "4.5.6",
-    "identifier": "MIT",
-    "text": "MIT License\n\n..."
-  }
-]
+```bash
+vite --debug resolve
+```
+
+```bash
+vite --debug *
 ```
 
 --------------------------------
@@ -523,18 +421,6 @@ init().then((instance) => {
 
 --------------------------------
 
-### Create a basic index.html
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Create an index.html file in your project root to serve as the entry point.
-
-```html
-<p>Hello Vite!</p>
-```
-
---------------------------------
-
 ### Express server setup
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -590,6 +476,19 @@ $ npm run preview
 
 --------------------------------
 
+### CSS Styling Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Example of basic CSS styling for paragraphs and a class.
+
+```css
+p { background: rgba(0, 0, 0, 0.1); }
+.classname { color: green; }
+```
+
+--------------------------------
+
 ### Deploying with Netlify CLI
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -614,54 +513,14 @@ netlify deploy --prod
 
 --------------------------------
 
-### Bare Module Import
+### Preview production build locally
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
 
-An example of a bare module import. Native browsers do not support this syntax directly, but Vite detects and rewrites these imports to valid URLs.
-
-```javascript
-import { someMethod } from 'my-dep'
-```
-
---------------------------------
-
-### Install Vite CLI manually
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Install the Vite CLI as a development dependency using your preferred package manager.
+Run this command to start a local web server serving the build directory. Ensure you run 'vite build' first.
 
 ```bash
-$ npm install -D vite
-```
-
-```bash
-$ yarn add -D vite
-```
-
-```bash
-$ pnpm add -D vite
-```
-
-```bash
-$ bun add -D vite
-```
-
-```bash
-$ deno add -D npm:vite
-```
-
---------------------------------
-
-### Dynamic Import with Variables
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Vite supports dynamic imports with variables, provided they start with `./` or `../`, end with an extension, and represent files only one level deep.
-
-```typescript
-const module = await import(`./dir/${file}.js`)
+vite preview [root]
 ```
 
 --------------------------------
@@ -691,6 +550,30 @@ npm add -D terser
 
 --------------------------------
 
+### Install unreleased Vite commits
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Commands to install a specific Vite commit using pkg.pr.new for testing latest features.
+
+```bash
+$ npm install -D https://pkg.pr.new/vite@SHA
+```
+
+```bash
+$ yarn add -D https://pkg.pr.new/vite@SHA
+```
+
+```bash
+$ pnpm add -D https://pkg.pr.new/vite@SHA
+```
+
+```bash
+$ bun add -D https://pkg.pr.new/vite@SHA
+```
+
+--------------------------------
+
 ### Build for production
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
@@ -699,6 +582,19 @@ Run the build process for production. An optional root directory can be specifie
 
 ```bash
 vite build [root]
+```
+
+--------------------------------
+
+### Example .env file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+
+```env
+VITE_SOME_KEY=123
+DB_PASSWORD=foobar
 ```
 
 --------------------------------
@@ -739,6 +635,18 @@ npm run dev
 
 --------------------------------
 
+### Create index.html entry point
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Define the basic HTML structure for the Vite application.
+
+```html
+<p>Hello Vite!</p>
+```
+
+--------------------------------
+
 ### Install Terser for Minification
 
 Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
@@ -762,30 +670,6 @@ An example of a simple external Svelte store that can be used to retain state ac
 // An extremely simple external store
 import { writable } from 'svelte/store'
 export default writable(0)
-```
-
---------------------------------
-
-### Install unreleased Vite commits
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Install a specific commit of Vite using pkg.pr.new. Replace SHA with a valid commit SHA from the last month.
-
-```bash
-$ npm install -D https://pkg.pr.new/vite@SHA
-```
-
-```bash
-$ yarn add -D https://pkg.pr.new/vite@SHA
-```
-
-```bash
-$ pnpm add -D https://pkg.pr.new/vite@SHA
-```
-
-```bash
-$ bun add -D https://pkg.pr.new/vite@SHA
 ```
 
 --------------------------------
@@ -847,6 +731,18 @@ Set up npm scripts for building and locally previewing your Vite project. The `p
 
 --------------------------------
 
+### SSR Dependencies Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```
+
+--------------------------------
+
 ### Programmatic Vite Build Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -870,18 +766,6 @@ await build({
 
 --------------------------------
 
-### SSR Dependencies Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
-
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
-```
-
---------------------------------
-
 ### Install Trusted SSL Certificate via CLI on macOS
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
@@ -890,6 +774,24 @@ Install a self-signed SSL certificate as trusted on macOS using the security com
 
 ```shell
 security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
+### Manual WebAssembly Initialization with ?init
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Import a `.wasm` file with the `?init` suffix to get an initialization function that returns a Promise of the WebAssembly instance.
+
+```javascript
+import 'vite/client'
+// ---cut---
+import init from './example.wasm?init'
+
+init().then((instance) => {
+  instance.exports.test()
+})
 ```
 
 --------------------------------
@@ -937,6 +839,48 @@ $ vite build
 building for production...
 dist/my-lib.js      0.08 kB / gzip: 0.07 kB
 dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```
+
+--------------------------------
+
+### POST /invoke
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
+
+Example HTTP endpoint implementation for communication between a ModuleRunner and the Vite server.
+
+```APIDOC
+## POST /invoke
+
+### Description
+An example endpoint used when implementing an HTTP-based transport for the Module Runner. It receives a payload and delegates processing to the environment's hot channel.
+
+### Method
+POST
+
+### Endpoint
+/invoke
+
+### Parameters
+#### Request Body
+- **payload** (HotPayload) - Required - The RPC data to be processed by the server.
+
+### Request Example
+{
+  "type": "custom",
+  "event": "vite:import",
+  "data": { "id": "/src/main.ts" }
+}
+
+### Response
+#### Success Response (200)
+- **result** (any) - The result of the invocation.
+- **error** (any) - Error details if the invocation failed.
+
+### Response Example
+{
+  "result": { "code": "..." }
+}
 ```
 
 --------------------------------
@@ -1000,6 +944,18 @@ app.use('*', async (req, res, next) => {
 
 --------------------------------
 
+### Initialize a Vite app
+
+Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
+
+Command to quickly set up a new Vite project, requiring Node.js >=12.
+
+```bash
+npm init @vitejs/app
+```
+
+--------------------------------
+
 ### Basic HTML Transformation
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -1022,39 +978,18 @@ const htmlPlugin = () => {
 
 --------------------------------
 
-### Initialize a Vite app
+### Scaffold a project with tiged
 
-Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-Command to quickly set up a new Vite project, requiring Node.js >=12.
+Use tiged to clone a GitHub repository template and install dependencies.
 
 ```bash
-npm init @vitejs/app
-```
+npx tiged user/project my-project
+cd my-project
 
---------------------------------
-
-### Classic Worker Instantiation
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a classic worker, for the .classic-worker test case.
-
-```javascript
-new Worker(new URL('./classic-worker.js', import.meta.url))
-```
-
---------------------------------
-
-### HTML Constant Replacement Syntax
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-Example of using import.meta.env properties in HTML files.
-
-```html
-<h1>Vite is running in %MODE%</h1>
-<p>Using data from %VITE_API_URL%</p>
+npm install
+npm run dev
 ```
 
 --------------------------------
@@ -1086,26 +1021,6 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
-### Example of forwarded unhandled error log
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-Shows how unhandled errors from the client are formatted and displayed in the server terminal.
-
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
-```
-
---------------------------------
-
 ### Create a basic Vite configuration file
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
@@ -1116,6 +1031,72 @@ The most basic configuration file using ES modules syntax. Ensure the file is de
 export default {
   // config options
 }
+```
+
+--------------------------------
+
+### Build Vite Application with npm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Runs the build command to compile the Vite application, placing the output in the `dist` folder by default.
+
+```bash
+$ npm run build
+```
+
+--------------------------------
+
+### Classic Worker Instantiation
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Instantiating a classic worker, for the .classic-worker test case.
+
+```javascript
+new Worker(new URL('./classic-worker.js', import.meta.url))
+```
+
+--------------------------------
+
+### Pre-bundle dependencies with Vite CLI
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+
+Run the pre-bundle process manually. Note that this command is deprecated as Vite now handles pre-bundling automatically.
+
+```bash
+vite optimize [root]
+```
+
+--------------------------------
+
+### HTML Constant Replacement Syntax
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+Example of using import.meta.env properties in HTML files.
+
+```html
+<h1>Vite is running in %MODE%</h1>
+<p>Using data from %VITE_API_URL%</p>
+```
+
+--------------------------------
+
+### Build and link Vite locally
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Steps to clone, build, and link the Vite repository locally for development purposes.
+
+```bash
+git clone https://github.com/vitejs/vite.git
+cd vite
+pnpm install
+cd packages/vite
+pnpm run build
+pnpm link # use your preferred package manager for this step
 ```
 
 --------------------------------
@@ -1135,38 +1116,27 @@ document.getElementById('hero-img').src = imgUrl
 
 --------------------------------
 
-### Build Vite Application with npm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Runs the build command to compile the Vite application, placing the output in the `dist` folder by default.
-
-```bash
-$ npm run build
-```
-
---------------------------------
-
-### Install esbuild for CSS minification
+### License Metadata JSON Format
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Required when setting build.cssMinify to 'esbuild' to override the default Lightning CSS minifier.
+Example of the raw JSON metadata generated when `build.license.fileName` is configured with a `.json` extension.
 
-```sh
-npm add -D esbuild
-```
-
---------------------------------
-
-### Pre-bundle dependencies with Vite CLI
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
-
-Run the pre-bundle process manually. Note that this command is deprecated as Vite now handles pre-bundling automatically.
-
-```bash
-vite optimize [root]
+```json
+[
+  {
+    "name": "dep-1",
+    "version": "1.2.3",
+    "identifier": "CC0-1.0",
+    "text": "CC0 1.0 Universal\n\n..."
+  },
+  {
+    "name": "dep-2",
+    "version": "4.5.6",
+    "identifier": "MIT",
+    "text": "MIT License\n\n..."
+  }
+]
 ```
 
 --------------------------------
@@ -1320,56 +1290,90 @@ for (const { testId, path } of paths) {
 
 --------------------------------
 
-### Importing an Inline Worker
+### Example of forwarded unhandled error log
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
 
-Importing an inline worker module for the .pong-inline test case.
+Shows how unhandled errors from the client are formatted and displayed in the server terminal.
 
-```javascript
-import InlineWorker from '../my-worker?worker&inline'
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
 
-### Implement HTTP Request Transport
+### Generate HTML tags for specific entry points
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
 
-Example of using HTTP requests for communication, requiring the handleInvoke method on the server side.
+Examples of generated HTML tags for different entry points in production. Follow the recommended order of stylesheets, scripts, and preloads for optimal performance.
 
-```ts
-import { ESModulesEvaluator, ModuleRunner } from 'vite/module-runner'
-
-export const runner = new ModuleRunner(
-  {
-    transport: {
-      async invoke(data) {
-        const response = await fetch(`http://my-vite-server/invoke`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-        })
-        return response.json()
-      },
-    },
-    hmr: false, // disable HMR as HMR requires transport.connect
-  },
-  new ESModulesEvaluator(),
-)
-
-await runner.import('/entry.js')
+```html
+<link rel="stylesheet" href="assets/foo-5UjPuW-k.css" />
+<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
+<script type="module" src="assets/foo-BRBmoGS9.js"></script>
+<!-- optional -->
+<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
 ```
 
-```ts
-const customEnvironment = new DevEnvironment(name, config, context)
+```html
+<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
+<script type="module" src="assets/bar-gkvgaI9m.js"></script>
+<!-- optional -->
+<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
+```
 
-server.onRequest((request: Request) => {
-  const url = new URL(request.url)
-  if (url.pathname === '/invoke') {
-    const payload = (await request.json()) as HotPayload
-    const result = customEnvironment.hot.handleInvoke(payload)
-    return new Response(JSON.stringify(result))
-  }
-  return Response.error()
+--------------------------------
+
+### Install esbuild for CSS minification
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Required when setting build.cssMinify to 'esbuild' to override the default Lightning CSS minifier.
+
+```sh
+npm add -D esbuild
+```
+
+--------------------------------
+
+### Instantiate per-environment plugins
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
+
+Use the applyToEnvironment hook or the perEnvironmentPlugin helper to create unique plugin instances for each environment, especially for plugins with non-shareable state.
+
+```js
+import { nonShareablePlugin } from 'non-shareable-plugin'
+
+export default defineConfig({
+  plugins: [
+    {
+      name: 'per-environment-plugin',
+      applyToEnvironment(environment) {
+        return nonShareablePlugin({ outputName: environment.name })
+      },
+    },
+  ],
+})
+```
+
+```js
+import { nonShareablePlugin } from 'non-shareable-plugin'
+
+export default defineConfig({
+  plugins: [
+    perEnvironmentPlugin('per-environment-plugin', (environment) =>
+      nonShareablePlugin({ outputName: environment.name }),
+    ),
+  ],
 })
 ```
