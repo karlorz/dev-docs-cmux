@@ -876,20 +876,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Configure Directories to Scan
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Provide a list of directories to scan for auto-registration of files like API routes. Defaults to the source directory if empty.
-
-```typescript
-export default defineConfig({
-  scanDirs: ["./modules/auth/api", "./modules/billing/api"],
-});
-```
-
---------------------------------
-
 ### Customize Default Preset
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
@@ -899,6 +885,20 @@ Configure `defaultPreset` to change the fallback preset when `preset` is not set
 ```typescript
 export default defineConfig({
   defaultPreset: "node_cluster", // use node_cluster instead of node_server by default
+});
+```
+
+--------------------------------
+
+### Configure Directories to Scan
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
+
+Provide a list of directories to scan for auto-registration of files like API routes. Defaults to the source directory if empty.
+
+```typescript
+export default defineConfig({
+  scanDirs: ["./modules/auth/api", "./modules/billing/api"],
 });
 ```
 
@@ -994,6 +994,22 @@ function htmlTemplate(body: string): string {
 export default {
   fetch: handler,
 };
+```
+
+--------------------------------
+
+### Configure Rollup Output Chunks
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
+
+Provide additional configuration for Rollup, specifically for managing output chunks. This example demonstrates how to create a 'vendor' chunk for 'lodash-es'.
+
+```typescript
+export default defineConfig({
+  rollupConfig: {
+    output: { manualChunks: { vendor: ["lodash-es"] } },
+  },
+});
 ```
 
 --------------------------------
@@ -1114,22 +1130,6 @@ function listenNavigation(onNavigation: () => void) {
 
   function onClick(e: MouseEvent) {
 
-```
-
---------------------------------
-
-### Configure Rollup Output Chunks
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Provide additional configuration for Rollup, specifically for managing output chunks. This example demonstrates how to create a 'vendor' chunk for 'lodash-es'.
-
-```typescript
-export default defineConfig({
-  rollupConfig: {
-    output: { manualChunks: { vendor: ["lodash-es"] } },
-  },
-});
 ```
 
 --------------------------------
@@ -1289,6 +1289,40 @@ Defines the project scripts and development dependencies, including Vite, Nitro,
 
 --------------------------------
 
+### Server-Side Rendering with Highlight API
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/shiki.md
+
+Use `<script server>` to define server-side logic. The `hl` function calls an API via `serverFetch` to highlight code. Triple-brace syntax `{{{ }}}` is crucial for rendering unescaped HTML output from the highlighted code.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hello World Snippet</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="card" role="region" aria-label="Code snippet">
+      <div class="label">JavaScript</div>
+      <script server>
+        const hl = (code) =>
+          serverFetch("/api/highlight", {
+            method: "POST",
+            body: code,
+          });
+      </script>
+      <pre><code>{{{ hl(`console.log("💚 Simple is beautiful!");`) }}}</code></pre>
+    </div>
+  </body>
+</html>
+
+```
+
+--------------------------------
+
 ### Define API Route Handlers
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
@@ -1327,55 +1361,6 @@ export default defineHandler(async (event) => {
 
 --------------------------------
 
-### Server-Side Rendering with Highlight API
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/shiki.md
-
-Use `<script server>` to define server-side logic. The `hl` function calls an API via `serverFetch` to highlight code. Triple-brace syntax `{{{ }}}` is crucial for rendering unescaped HTML output from the highlighted code.
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Hello World Snippet</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="card" role="region" aria-label="Code snippet">
-      <div class="label">JavaScript</div>
-      <script server>
-        const hl = (code) =>
-          serverFetch("/api/highlight", {
-            method: "POST",
-            body: code,
-          });
-      </script>
-      <pre><code>{{{ hl(`console.log("💚 Simple is beautiful!");`) }}}</code></pre>
-    </div>
-  </body>
-</html>
-
-```
-
---------------------------------
-
-### Configure Vite with Nitro and TypeScript Paths
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/import-alias.md
-
-Integrates Nitro.js into a Vite build process and enables TypeScript path resolution. This setup is for projects using Vite as their build tool.
-
-```typescript
-import { defineConfig } from "vite";
-import { nitro } from "nitro/vite";
-
-export default defineConfig({ plugins: [nitro()], resolve: { tsconfigPaths: true } });
-```
-
---------------------------------
-
 ### Create Client Entry for Hydration
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-vue-router.md
@@ -1402,24 +1387,17 @@ main();
 
 --------------------------------
 
-### Vite Configuration for Nitro
+### Configure Vite with Nitro and TypeScript Paths
 
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/cached-handler.md
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/import-alias.md
 
-Configures Vite to work with Nitro.js. This setup allows for seamless integration of Nitro's features within a Vite-based build process.
+Integrates Nitro.js into a Vite build process and enables TypeScript path resolution. This setup is for projects using Vite as their build tool.
 
 ```typescript
-import {
-  defineConfig
-} from "vite";
-import {
-  nitro
-} from "nitro/vite";
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
 
-export default defineConfig({
-  plugins: [nitro()]
-});
-
+export default defineConfig({ plugins: [nitro()], resolve: { tsconfigPaths: true } });
 ```
 
 --------------------------------
@@ -1438,6 +1416,28 @@ const app = new Elysia();
 app.get("/", () => "Hello, Elysia with Nitro!");
 
 export default app.compile();
+
+```
+
+--------------------------------
+
+### Vite Configuration for Nitro
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/cached-handler.md
+
+Configures Vite to work with Nitro.js. This setup allows for seamless integration of Nitro's features within a Vite-based build process.
+
+```typescript
+import {
+  defineConfig
+} from "vite";
+import {
+  nitro
+} from "nitro/vite";
+
+export default defineConfig({
+  plugins: [nitro()]
+});
 
 ```
 
@@ -1555,29 +1555,6 @@ npx nitro deploy --preset zephyr
 
 --------------------------------
 
-### Configure Nitro for Server Fetch
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/server-fetch.md
-
-Configures Nitro to use server fetch within its hooks. The `dev:start` hook demonstrates fetching a route internally. This requires the 'nitro' package.
-
-```typescript
-import { defineConfig, serverFetch } from "nitro";
-
-export default defineConfig({
-  serverDir: "./",
-  hooks: {
-    "dev:start": async () => {
-      const res = await serverFetch("/hello");
-      const text = await res.text();
-      console.log("Fetched /hello in nitro module:", res.status, text);
-    },
-  },
-});
-```
-
---------------------------------
-
 ### Define Project Dependencies and Scripts
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/takumi.md
@@ -1598,6 +1575,29 @@ Configures the package.json with necessary dependencies including nitro, takumi-
     "vite": "latest"
   }
 }
+```
+
+--------------------------------
+
+### Configure Nitro for Server Fetch
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/server-fetch.md
+
+Configures Nitro to use server fetch within its hooks. The `dev:start` hook demonstrates fetching a route internally. This requires the 'nitro' package.
+
+```typescript
+import { defineConfig, serverFetch } from "nitro";
+
+export default defineConfig({
+  serverDir: "./",
+  hooks: {
+    "dev:start": async () => {
+      const res = await serverFetch("/hello");
+      const text = await res.text();
+      console.log("Fetched /hello in nitro module:", res.status, text);
+    },
+  },
+});
 ```
 
 --------------------------------
@@ -1660,19 +1660,6 @@ Configuration files for the project dependencies and TypeScript settings.
 
 --------------------------------
 
-### Build and Run Nitro Node.js Server
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/1.node.md
-
-Commands to compile a Nitro project for the Node.js runtime and execute the resulting production server entry point.
-
-```bash
-nitro build
-node .output/server/index.mjs
-```
-
---------------------------------
-
 ### Manage Data with Nitro Primitives
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/9.blog/1.v3-beta.md
@@ -1699,6 +1686,19 @@ import { useDatabase } from "nitro/database";
 
 const db = useDatabase();
 const users = await db.sql`SELECT * FROM users`;
+```
+
+--------------------------------
+
+### Build and Run Nitro Node.js Server
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/1.node.md
+
+Commands to compile a Nitro project for the Node.js runtime and execute the resulting production server entry point.
+
+```bash
+nitro build
+node .output/server/index.mjs
 ```
 
 --------------------------------
@@ -1735,18 +1735,6 @@ export default defineHandler(() => "Nitro is amazing!");
 
 --------------------------------
 
-### Set Deployment Preset via CLI
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/0.index.md
-
-Use the --preset flag to specify the target deployment environment during the build process.
-
-```bash
-nitro build --preset cloudflare_pages
-```
-
---------------------------------
-
 ### Trigger Nitro Tasks from Vercel Queue Messages
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/vercel.md
@@ -1768,6 +1756,18 @@ export default definePlugin((nitroApp) => {
     }
   });
 });
+```
+
+--------------------------------
+
+### Set Deployment Preset via CLI
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/0.index.md
+
+Use the --preset flag to specify the target deployment environment during the build process.
+
+```bash
+nitro build --preset cloudflare_pages
 ```
 
 --------------------------------
