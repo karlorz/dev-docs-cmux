@@ -1,26 +1,3 @@
-### Programmatic Vite Preview Server Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
-
-Shows how to programmatically start a Vite preview server, configure its port and auto-opening, and interact with the `PreviewServer` instance to print URLs and bind CLI shortcuts.
-
-```typescript
-import { preview } from 'vite'
-
-const previewServer = await preview({
-  // any valid user config options, plus `mode` and `configFile`
-  preview: {
-    port: 8080,
-    open: true,
-  },
-})
-
-previewServer.printUrls()
-previewServer.bindCLIShortcuts({ print: true })
-```
-
---------------------------------
-
 ### Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/preview-options.md
@@ -40,6 +17,21 @@ export default defineConfig({
 
 --------------------------------
 
+### Build Output Example
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Example output generated after running the vite build command.
+
+```bash
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```
+
+--------------------------------
+
 ### Install dependencies
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
@@ -52,39 +44,51 @@ $ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### listen(port, isRestart)
+### CSS Styling Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
 
-Start the server.
+Example of basic CSS styling for paragraphs and a class.
 
-```APIDOC
-## Method: listen(port?: number, isRestart?: boolean)
-
-### Description
-Start the server.
-
-### Signature
-listen(port?: number, isRestart?: boolean): Promise<ViteDevServer>
-
-### Parameters
-- **port** (number) - Optional - The port number for the server to listen on.
-- **isRestart** (boolean) - Optional - Indicates if the server is being restarted.
-
-### Returns
-Promise<ViteDevServer> - A promise that resolves to the `ViteDevServer` instance once the server is listening.
+```css
+p { background: rgba(0, 0, 0, 0.1); }
+.classname { color: green; }
 ```
 
 --------------------------------
 
-### Preview the Build Locally
+### Install Minification Dependencies
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Starts a local server to serve the production build from the dist folder for verification.
+Required installation commands when using esbuild or Terser as the minifier.
 
-```bash
-$ npm run preview
+```sh
+npm add -D esbuild
+npm add -D terser
+```
+
+--------------------------------
+
+### Start preview server programmatically
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+The preview function starts a local server for previewing production builds. It returns a PreviewServer instance to manage the server lifecycle.
+
+```ts
+import { preview } from 'vite'
+
+const previewServer = await preview({
+  // any valid user config options, plus `mode` and `configFile`
+  preview: {
+    port: 8080,
+    open: true,
+  },
+})
+
+previewServer.printUrls()
+previewServer.bindCLIShortcuts({ print: true })
 ```
 
 --------------------------------
@@ -97,6 +101,51 @@ Install the official legacy browser support plugin as a development dependency.
 
 ```bash
 $ npm add -D @vitejs/plugin-legacy
+```
+
+--------------------------------
+
+### Preview the Production Build
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Starts a local static server to verify the production build before deployment.
+
+```bash
+$ npm run preview
+```
+
+--------------------------------
+
+### preview(inlineConfig?: InlineConfig)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+The preview function starts a local preview server for the project.
+
+```APIDOC
+## preview(inlineConfig?: InlineConfig)
+
+### Description
+Starts a local preview server based on the provided configuration. Returns a promise that resolves to a PreviewServer instance.
+
+### Parameters
+- **inlineConfig** (InlineConfig) - Optional - Configuration object to override default settings.
+
+### Example
+```javascript
+import { preview } from 'vite'
+
+const previewServer = await preview({
+  preview: {
+    port: 8080,
+    open: true,
+  },
+})
+
+previewServer.printUrls()
+previewServer.bindCLIShortcuts({ print: true })
+```
 ```
 
 --------------------------------
@@ -132,42 +181,30 @@ npm add -D stylus
 
 --------------------------------
 
-### Start the Vite development server
+### Install SWC dependencies for decorator lowering
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Launch the Vite dev server using the appropriate command for your environment.
+Install the required SWC plugins to handle native decorators as a workaround.
 
 ```npm
-$ npx vite
+$ npm install -D @rollup/plugin-swc @swc/core
 ```
 
 ```Yarn
-$ yarn vite
+$ yarn add -D @rollup/plugin-swc @swc/core
 ```
 
 ```pnpm
-$ pnpm vite
+$ pnpm add -D @rollup/plugin-swc @swc/core
 ```
 
 ```Bun
-$ bunx vite
+$ bun add -D @rollup/plugin-swc @swc/core
 ```
 
 ```Deno
-$ deno run -A npm:vite
-```
-
---------------------------------
-
-### Miscellaneous Asset URL Helpers
-
-Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
-
-Additional examples for resolving JS and general asset paths.
-
-```javascript
-{ const name = 'test' const js = new URL(`./nested/${name}.js`, import.meta.url).href text('.dynamic-import-meta-url-js', js) } { const name = './nested/icon' const metaUrl = new URL(`${name}.png`, import.meta.url) text(`.dynamic-import-meta-url-all`, metaUrl) } text('.import-meta-url-multiline', multilineUrl) function text(el, text) { document.querySelector(el).textContent = text }
+$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
 ```
 
 --------------------------------
@@ -200,14 +237,51 @@ $ deno add -D npm:vite
 
 --------------------------------
 
-### Install Cloudflare Vite Plugin
+### Create a Vite development server
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
 
-Install the required dependency for Cloudflare Workers integration.
+Initializes and starts a Vite development server with custom configuration options.
 
-```bash
-$ npm install --save-dev @cloudflare/vite-plugin
+```ts
+import { createServer } from 'vite'
+
+const server = await createServer({
+  // any valid user config options, plus `mode` and `configFile`
+  configFile: false,
+  root: import.meta.dirname,
+  server: {
+    port: 1337,
+  },
+})
+await server.listen()
+
+server.printUrls()
+server.bindCLIShortcuts({ print: true })
+```
+
+--------------------------------
+
+### Install esbuild for CSS minification
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Required dependency installation when configuring build.cssMinify to use the esbuild engine.
+
+```sh
+npm add -D esbuild
+```
+
+--------------------------------
+
+### Miscellaneous Asset URL Helpers
+
+Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
+
+Additional examples for resolving JS and general asset paths.
+
+```javascript
+{ const name = 'test' const js = new URL(`./nested/${name}.js`, import.meta.url).href text('.dynamic-import-meta-url-js', js) } { const name = './nested/icon' const metaUrl = new URL(`${name}.png`, import.meta.url) text(`.dynamic-import-meta-url-all`, metaUrl) } text('.import-meta-url-multiline', multilineUrl) function text(el, text) { document.querySelector(el).textContent = text }
 ```
 
 --------------------------------
@@ -224,58 +298,30 @@ vite [root]
 
 --------------------------------
 
-### Install SWC dependencies for native decorators
+### Install Babel dependencies for decorator lowering
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Install the required SWC core and Rollup plugin to support lowering native decorators.
+Install the required Babel plugins to handle native decorators as a workaround.
 
-```bash
-$ npm install -D @rollup/plugin-swc @swc/core
+```npm
+$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 ```
 
-```bash
-$ yarn add -D @rollup/plugin-swc @swc/core
+```Yarn
+$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 ```
 
-```bash
-$ pnpm add -D @rollup/plugin-swc @swc/core
+```pnpm
+$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 ```
 
-```bash
-$ bun add -D @rollup/plugin-swc @swc/core
+```Bun
+$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
 ```
 
-```bash
-$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
-```
-
---------------------------------
-
-### Scaffold a new Vite project
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Use these commands to start the interactive project creation process with your preferred package manager.
-
-```bash
-$ npm create vite@latest
-```
-
-```bash
-$ yarn create vite
-```
-
-```bash
-$ pnpm create vite
-```
-
-```bash
-$ bun create vite
-```
-
-```bash
-$ deno init --npm vite
+```Deno
+$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 ```
 
 --------------------------------
@@ -301,51 +347,6 @@ export default {
     }),
   },
 }
-```
-
---------------------------------
-
-### Install Babel dependencies for native decorators
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Install the required Babel plugin and Rolldown integration to support lowering native decorators.
-
-```bash
-$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```bash
-$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
-```
-
---------------------------------
-
-### Accessing Environments from the Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
-
-Example demonstrating how to access client and SSR environments from a Vite dev server instance.
-
-```js
-// create the server, or get it from the configureServer hook
-const server = await createServer(/* options */)
-
-const clientEnvironment = server.environments.client
-clientEnvironment.transformRequest(url)
-console.log(server.environments.ssr.moduleGraph)
 ```
 
 --------------------------------
@@ -377,28 +378,27 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
-### Implement a global module counter plugin
+### License Metadata Format
 
-Source: https://github.com/vitejs/vite/blob/main/docs/changes/shared-plugins-during-build.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-A plugin example that tracks transformed modules globally across all environments.
+Example of the raw JSON structure generated when build.license.fileName ends with .json.
 
-```js
-function CountTransformedModulesPlugin() {
-  let transformedModules
-  return {
-    name: 'count-transformed-modules',
-    buildStart() {
-      transformedModules = 0
-    },
-    transform(id) {
-      transformedModules++
-    },
-    buildEnd() {
-      console.log(transformedModules)
-    },
+```json
+[
+  {
+    "name": "dep-1",
+    "version": "1.2.3",
+    "identifier": "CC0-1.0",
+    "text": "CC0 1.0 Universal\n\n..."
+  },
+  {
+    "name": "dep-2",
+    "version": "4.5.6",
+    "identifier": "MIT",
+    "text": "MIT License\n\n..."
   }
-}
+]
 ```
 
 --------------------------------
@@ -429,6 +429,32 @@ MIT License
 
 --------------------------------
 
+### Implement a global module counter plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/changes/shared-plugins-during-build.md
+
+A plugin example that tracks transformed modules globally across all environments.
+
+```js
+function CountTransformedModulesPlugin() {
+  let transformedModules
+  return {
+    name: 'count-transformed-modules',
+    buildStart() {
+      transformedModules = 0
+    },
+    transform(id) {
+      transformedModules++
+    },
+    buildEnd() {
+      console.log(transformedModules)
+    },
+  }
+}
+```
+
+--------------------------------
+
 ### Enable Debug Logging
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -441,75 +467,6 @@ vite --debug resolve
 
 ```bash
 vite --debug *
-```
-
---------------------------------
-
-### vite
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
-
-Starts the Vite development server in the current directory. Aliases include 'vite dev' and 'vite serve'.
-
-```APIDOC
-## vite [root]
-
-### Description
-Start Vite dev server in the current directory. `vite dev` and `vite serve` are aliases for `vite`.
-
-### Usage
-```bash
-vite [root]
-```
-
-### Options
-- **--host [host]** (string) - Specify hostname
-- **--port <port>** (number) - Specify port
-- **--open [path]** (boolean | string) - Open browser on startup
-- **--cors** (boolean) - Enable CORS
-- **--strictPort** (boolean) - Exit if specified port is already in use
-- **--force** (boolean) - Force the optimizer to ignore the cache and re-bundle
-- **-c, --config <file>** (string) - Use specified config file
-- **--base <path>** (string) - Public base path (default: `/`)
-- **-l, --logLevel <level>** (string) - info | warn | error | silent
-- **--clearScreen** (boolean) - Allow/disable clear screen when logging
-- **--configLoader <loader>** (string) - Use `bundle` to bundle the config with Rolldown, or `runner` (experimental) to process it on the fly, or `native` (experimental) to load using the native runtime (default: `bundle`)
-- **--profile** - Start built-in Node.js inspector
-- **-d, --debug [feat]** (string | boolean) - Show debug logs
-- **-f, --filter <filter>** (string) - Filter debug logs
-- **-m, --mode <mode>** (string) - Set env mode
-- **-h, --help** - Display available CLI options
-- **-v, --version** - Display version number
-```
-
---------------------------------
-
-### Importing Asset as String
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
-
-Example of importing an asset as a raw string using the `?raw` suffix.
-
-```js
-import 'vite/client'
-// ---cut---
-import shaderString from './shader.glsl?raw'
-```
-
---------------------------------
-
-### WASM Import API Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite3.md
-
-The WebAssembly import API has been revised to avoid collisions with future standards and to make it more flexible.
-
-```js
-import init from './example.wasm?init'
-
-init().then((instance) => {
-  instance.exports.test()
-})
 ```
 
 --------------------------------
@@ -557,19 +514,6 @@ createServer()
 
 --------------------------------
 
-### CSS Styling Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Example of basic CSS styling for paragraphs and a class.
-
-```css
-p { background: rgba(0, 0, 0, 0.1); }
-.classname { color: green; }
-```
-
---------------------------------
-
 ### Preview production build locally
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
@@ -578,32 +522,6 @@ Run this command to start a local web server serving the build directory. Ensure
 
 ```bash
 vite preview [root]
-```
-
---------------------------------
-
-### preview
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
-
-The `preview` function starts a local server to preview the built application. It accepts an optional inline configuration to customize the server behavior.
-
-```APIDOC
-## preview(inlineConfig?: InlineConfig)
-
-### Description
-The `preview` function starts a local server to preview the built application. It accepts an optional inline configuration to customize the server behavior.
-
-### Method
-function
-
-### Parameters
-#### Function Parameters
-- **inlineConfig** (InlineConfig) - Optional - Configuration options for the preview server, including `mode` and `configFile`.
-
-### Response
-#### Success Response
-- **Promise<PreviewServer>** - A promise that resolves to a `PreviewServer` instance.
 ```
 
 --------------------------------
@@ -620,6 +538,18 @@ import light from './light.wasm?init' import heavy from './heavy.wasm?init' impo
 
 --------------------------------
 
+### Install Cloudflare Vite Plugin
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Install the required development dependency for Cloudflare Workers integration.
+
+```bash
+$ npm install --save-dev @cloudflare/vite-plugin
+```
+
+--------------------------------
+
 ### Build for production
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
@@ -632,19 +562,6 @@ vite build [root]
 
 --------------------------------
 
-### Install esbuild and Terser minifiers
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Install these packages as development dependencies when setting the build.minify option to 'esbuild' or 'terser'.
-
-```sh
-npm add -D esbuild
-npm add -D terser
-```
-
---------------------------------
-
 ### Build for production
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
@@ -653,6 +570,47 @@ Command to build the application for production.
 
 ```bash
 npm run build
+```
+
+--------------------------------
+
+### Build the Application
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Executes the production build process, which outputs files to the dist directory by default.
+
+```bash
+$ npm run build
+```
+
+--------------------------------
+
+### Run development server
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to run the application in development mode.
+
+```bash
+npm run dev
+```
+
+--------------------------------
+
+### Accessing Environments from the Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+
+Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+
+```js
+// create the server, or get it from the configureServer hook
+const server = await createServer(/* options */)
+
+const clientEnvironment = server.environments.client
+clientEnvironment.transformRequest(url)
+console.log(server.environments.ssr.moduleGraph)
 ```
 
 --------------------------------
@@ -694,42 +652,6 @@ DB_PASSWORD=foobar
 
 --------------------------------
 
-### Build the Application
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Executes the production build process, generating static files in the dist directory.
-
-```bash
-$ npm run build
-```
-
---------------------------------
-
-### Run development server
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
-
-Command to run the application in development mode.
-
-```bash
-npm run dev
-```
-
---------------------------------
-
-### Create index.html entry point
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Define the basic HTML structure for the Vite application.
-
-```html
-<p>Hello Vite!</p>
-```
-
---------------------------------
-
 ### Install Terser for Minification
 
 Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
@@ -742,92 +664,14 @@ npm add -D terser
 
 --------------------------------
 
-### External Svelte Store Example
+### Create index.html entry point
 
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-svelte/README.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-An example of a simple external Svelte store that can be used to retain state across HMR updates.
+Define the basic HTML entry point for the Vite application.
 
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
-
---------------------------------
-
-### Dependency Notation and Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
-
-Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
-
-```text
-A -> B means: B is imported by A and B has A in its stack
-A ... B means: A is waiting for B to ssrLoadModule()
-
-H -> X ... Y
-H -> X -> Y ... B
-H -> A ... B
-H -> A -> B ... X
-```
-
---------------------------------
-
-### Configure Library Mode in Vite
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Use `build.lib` to bundle your project as a library. This example demonstrates setting entry points and dynamic filenames for different output formats.
-
-```javascript
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  build: {
-    lib: {
-      entry: ['src/main.js'],
-      fileName: (format, entryName) => `my-lib-${entryName}.${format}.js`,
-      cssFileName: 'my-lib-style',
-    },
-  },
-})
-```
-
---------------------------------
-
-### Programmatic Vite Build Example
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
-
-Demonstrates how to programmatically trigger a Vite build using `build()`, specifying the project root, base path, and build options.
-
-```typescript
-import path from 'node:path'
-import { build } from 'vite'
-
-await build({
-  root: path.resolve(import.meta.dirname, './project'),
-  base: '/foo/',
-  build: {
-    rolldownOptions: {
-      // ...
-    },
-  },
-})
-```
-
---------------------------------
-
-### SSR Dependencies Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
-
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```html
+<p>Hello Vite!</p>
 ```
 
 --------------------------------
@@ -850,46 +694,57 @@ init().then((instance) => {
 
 --------------------------------
 
-### Install Trusted SSL Certificate via CLI on macOS
+### External Svelte Store Example
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-svelte/README.md
 
-Install a self-signed SSL certificate as trusted on macOS using the security command-line tool to prevent network requests from stopping due to caching issues.
+An example of a simple external Svelte store that can be used to retain state across HMR updates.
 
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```js
+// store.js
+// An extremely simple external store
+import { writable } from 'svelte/store'
+export default writable(0)
 ```
 
 --------------------------------
 
-### Configure Multi-Page App Entry Points in Vite
+### Configure Library Build
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Specify multiple HTML files as entry points using absolute paths. Adjust path resolution if using a custom root directory.
+Defines entry points and output naming conventions for library builds.
 
-```javascript
-import { resolve } from 'node:path'
+```js
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  input: {
-    main: resolve(import.meta.dirname, 'index.html'),
-    nested: resolve(import.meta.dirname, 'nested/index.html'),
+  build: {
+    lib: {
+      entry: ['src/main.js'],
+      fileName: (format, entryName) => `my-lib-${entryName}.${format}.js`,
+      cssFileName: 'my-lib-style',
+    },
   },
 })
 ```
 
 --------------------------------
 
-### Inline CSS
+### Dependency Notation and Example
 
-Source: https://github.com/vitejs/vite/blob/main/playground/css-sourcemap/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr/src/forked-deadlock/README.md
 
-An example of inline CSS styling.
+Defines the notation for module dependencies and waiting states, followed by an example illustrating a forked deadlock scenario.
 
-```css
-.inline { color: red; }
+```text
+A -> B means: B is imported by A and B has A in its stack
+A ... B means: A is waiting for B to ssrLoadModule()
+
+H -> X ... Y
+H -> X -> Y ... B
+H -> A ... B
+H -> A -> B ... X
 ```
 
 --------------------------------
@@ -906,83 +761,55 @@ Demonstrates various import patterns including raw files, URLs, and dynamic fetc
 
 --------------------------------
 
-### CSS URL asset reference
+### SSR Dependencies Example
 
-Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
 
-Example of referencing an asset within a CSS style block.
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```
+
+--------------------------------
+
+### Install Trusted SSL Certificate via CLI on macOS
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Install a self-signed SSL certificate as trusted on macOS using the security command-line tool to prevent network requests from stopping due to caching issues.
+
+```shell
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
+### Inline CSS
+
+Source: https://github.com/vitejs/vite/blob/main/playground/css-sourcemap/index.html
+
+An example of inline CSS styling.
 
 ```css
-.style-url-assets { background: url('./nested/asset.png'); background-size: 10px 10px; }
+.inline { color: red; }
 ```
 
 --------------------------------
 
-### Run the Library Build Command
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Execute the build command to generate ES and UMD/CJS bundles in the output directory.
-
-```bash
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
-```
-
---------------------------------
-
-### Configure Render Static Site Build Settings
+### Configure build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
 
-Required build command and publish directory settings for Render deployment.
+Define the standard build and preview commands within the scripts section of your project's package.json file.
 
-```text
-npm install && npm run build
-```
-
-```text
-dist
-```
-
---------------------------------
-
-### Basic HTML Transformation
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-A simple example of the transformIndexHtml hook used to replace the document title.
-
-```javascript
-const htmlPlugin = () => {
-  return {
-    name: 'html-transform',
-    transformIndexHtml(html) {
-      return html.replace(
-        /<title>(.*?)<\/title>/,
-        `<title>Title replaced!</title>`,
-      )
-    },
+```json
+{
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview"
   }
 }
-```
-
---------------------------------
-
-### Scaffold a project with tiged
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Use tiged to clone a GitHub repository template and install dependencies.
-
-```bash
-npx tiged user/project my-project
-cd my-project
-
-npm install
-npm run dev
 ```
 
 --------------------------------
@@ -1046,6 +873,71 @@ app.use('*', async (req, res, next) => {
 
 --------------------------------
 
+### Configure Vite for Library Mode
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Use the build.lib option to define library entry points and externalize dependencies. These examples show configurations for single and multiple entry points.
+
+```js
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: resolve(import.meta.dirname, 'lib/main.js'),
+      name: 'MyLib',
+      // the proper extensions will be added
+      fileName: 'my-lib',
+    },
+    rolldownOptions: {
+      // make sure to externalize deps that shouldn't be bundled
+      // into your library
+      external: ['vue'],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          vue: 'Vue',
+        },
+      },
+    },
+  },
+})
+```
+
+```js
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: {
+        'my-lib': resolve(import.meta.dirname, 'lib/main.js'),
+        secondary: resolve(import.meta.dirname, 'lib/secondary.js'),
+      },
+      name: 'MyLib',
+    },
+    rolldownOptions: {
+      // make sure to externalize deps that shouldn't be bundled
+      // into your library
+      external: ['vue'],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          vue: 'Vue',
+        },
+      },
+    },
+  },
+})
+```
+
+--------------------------------
+
 ### Initialize a Vite app
 
 Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
@@ -1058,27 +950,69 @@ npm init @vitejs/app
 
 --------------------------------
 
-### Classic Worker Instantiation
+### CSS URL asset reference
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
 
-Instantiating a classic worker, for the .classic-worker test case.
+Example of referencing an asset within a CSS style block.
 
-```javascript
-new Worker(new URL('./classic-worker.js', import.meta.url))
+```css
+.style-url-assets { background: url('./nested/asset.png'); background-size: 10px 10px; }
 ```
 
 --------------------------------
 
-### HTML Constant Replacement Syntax
+### Basic HTML Transformation
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
 
-Example of using import.meta.env properties in HTML files.
+A simple example of the transformIndexHtml hook used to replace the document title.
 
-```html
-<h1>Vite is running in %MODE%</h1>
-<p>Using data from %VITE_API_URL%</p>
+```javascript
+const htmlPlugin = () => {
+  return {
+    name: 'html-transform',
+    transformIndexHtml(html) {
+      return html.replace(
+        /<title>(.*?)<\/title>/,
+        `<title>Title replaced!</title>`,
+      )
+    },
+  }
+}
+```
+
+--------------------------------
+
+### Build and link Vite locally
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Steps to clone, build, and link the Vite repository for local development.
+
+```bash
+git clone https://github.com/vitejs/vite.git
+cd vite
+pnpm install
+cd packages/vite
+pnpm run build
+pnpm link # use your preferred package manager for this step
+```
+
+--------------------------------
+
+### Scaffold a project with tiged
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Use tiged to clone a GitHub repository template and install dependencies.
+
+```bash
+npx tiged user/project my-project
+cd my-project
+
+npm install
+npm run dev
 ```
 
 --------------------------------
@@ -1097,25 +1031,133 @@ export default {
 
 --------------------------------
 
-### License Metadata JSON Format
+### Configure resolveDependencies in Vite config
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
 
-Example of the raw JSON metadata generated when `build.license.fileName` is configured with a `.json` extension.
+Example implementation of the resolveDependencies function within the Vite configuration object.
 
-```json
-[
-  {
-    "name": "dep-1",
-    "version": "1.2.3",
-    "identifier": "CC0-1.0",
-    "text": "CC0 1.0 Universal\n\n..."
+```js
+/** @type {import('vite').UserConfig} */
+const config = {
+  // prettier-ignore
+  build: {
+modulePreload: {
+  resolveDependencies: (filename, deps, { hostId, hostType }) => {
+    return deps.filter(condition)
   },
-  {
-    "name": "dep-2",
-    "version": "4.5.6",
-    "identifier": "MIT",
-    "text": "MIT License\n\n..."
-  }
-]
+},
+  },
+}
+```
+
+--------------------------------
+
+### Handling Assets with import.meta.url
+
+Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
+
+Demonstrates resolving data URIs and fetching files relative to the current module using import.meta.url.
+
+```javascript
+'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA0CAYAAADWr1sfAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NTAyNkI1RkE4N0VCMTFFQUFBQzJENzUzNDFGRjc1N0UiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTAyNkI1Rjk4N0VCMTFFQUFBQzJENzUzNDFGRjc1N0UiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QTc3NzA2Q0Y4N0FCMTFFM0I3MERFRTAzNzcwNkMxMjMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QTc3NzA2RDA4N0FCMTFFM0I3MERFRTAzNzcwNkMxMjMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6nwnGxAAAJtklEQVR42txZ6W9c1RU/970373nsJHgZ27FThahSV8BCqGQTlIQ2EiUBReqHVpT8Af0r+NA/ogpqqWiDKrZuKYQPLGEpAlEFiqOgICSUBOKQhDjxeGY885bb37n3TGKPZ+4bx0uWK53Ec+cu53fPfkbtfu13B4noF6AQVAEpah0ak3cUSBU8qh46RfWj50ltKJDXXyBKdMtibI+TXlLqm2C87y/+eO/vlVIVnWbUcShFyld8T19ypvLbZKpyALOjVPCqrUcT1mWXYtIzMUV7Rqn315tJJyk+J51OZwb7QA3QkQD/fAL6JWiIXKMOhkOPwp1DFE/OkJ6NAQxn+fhuPhaFOc8DE9loern+hD9SfJVCdaLdOy5gif9rpHfyHp3pCX5cs6X1PfnORkr+SA9FO4bsgkZm1ykngm8ZK06ll0EvgWY6SwDn1fGKcykVfriewh2D5oKskhhw5KmFzLO0MJdO1yfS87UD2Uxc0tXErM+qLYQ5XUspK8el9JvagXSmPmH2W4lfG3wHNMHciXnmIfj+OvCVga8sD+yMYHyZAZ8H/Qk06dySaiNljf/DB0vklWAB1RQqnS0WA18eQE0Dz0++rjyRluOJDHuzWkwZNAPgLPHfPIeHTK/EEzHWKt/zDdh2asBmUUnJg3TDB0rQIuYptby5x6RgPO/JxIes304p44V1DMAzKQUbe4xqa62h2vbFyWuxeUie1RKqvVmXG/sxOaYKPqliQKp3HmEOB43pWaxJaTPvUV6rdK3Z6FloGUt35yD54EGXEwvaU3nSPSIYF7D5T/mio1rzS7Jaa1we4YWDzb1GUpptqJ1OGUl7BJX+jS7HP/OKEPlgRH5/SP5AZMjrCTz+jtdQQckxauEZ/IZ4bKyhYEsv7h6GpmGuhnsznafORwQbtQKGY6F/gy64pMxPnF2JSQ33UM/ecWNX/PJG3RbYsn15qCiYTQdhr49j9m4jQd8zXlkFZv3d/B087SBM4OodC+5kJYIX5r09+8ZIDYYAn4gqOdFeEEwn2gFmMb0BesEpZeOxARAOJ4SXjLbDlljKcbaQ0ebwrRNLy409oH1Xz1H2xrRc3wfaYx1dm/sgQTyYMZ1wZ4nC+4es76gnC3lqP14QTFk7wDymQH8DnXKCZibKiQHY89gY+aUeGwcT66xaw40JMUnWn52t7NWVeKt5GNaUarw1naruxXn9Rrrz9jRjLsd5PtsfZY3aaBZo9tT5qnxKsExRizto59EOccRzJQomHAC0DzsOHxwy3lvXk8VxU1u1VJFPaSW5B177SRtfNaVnq08izNyjQl9UefFe4zNwdoTI4I8XTfznu3NUORYMiyKP10HvD4neZy7VzqBaHEOjnw5TsKnXfgaDRjKqxWuzzRKtTy/Wt2W1ZAukuyX9tr4Ns+vZpheAVfKoOCuDKrNzDB8Ysp9Znd2qnAnvh9r5I8+hDs86HRhfCIlyQqGgbuHDI0Sz9gHaZj0sQXhhpJhbktOVp5Kvak/x31Sg9rarRXVxXvjwKJxk0Z7N/sOjPEf1bCez7LS1Ji/0iduBAUAD6JDpRFsHqfDjDZRdTqyU26gn2ykkXUovzf2KCV66ZGxXL9YeVtsMMb9w1x0U/WTAADWqnGO4wvMhwdA14PmqfbLjClZdTkaqCFPrAor2byIvUsZrd5Syp4BaFYW8RUmDeG8+wwsVRY+Pk7c+MJpkChXfCfhkJ1XuBjCPV0Bvt0nhFwoPiQfbVjixgaKHho3qGSlbgIu9ti/VEdHifJkdVc2aRoizwnv7kT+nNuy5hxZeX3EtygM8DfoX6FPnCcxL1Yap6NGNCCFFk5x0ETra2i7v9TcWqbh3zIbASmzvcHP7qfA6vRzAJIH7JWeYktRPz2a2bHuoZKpEdjgWdBeoWboMTpwea4o3GiF1lXzZPWLh8Y3ca7oAPAd6E/RubjLCkgBz4fYhCu6cl2d73UmX13KSUcDecNugqX2Np9a5mvKu8Di3EoB5HAP9WboGnZMRFiiXb0MhhYjNOrbeVsc5DPPexEqXz+C9HufLHHPT3PyxIbwd6wZIt4DnxCG81lG1JT9miZiaGeVj8L0+m3I2UrdaezY/z65Auj9ab0vPNLOlp+fEGwtPb3cj3aUA5nEWdDA3GTGMpqT6AupFmLLpYWaL9Hag2XZZdVHqcR1cfGzchDhdyWwFpnKTjIPCG600YFad96S+rHeOzZ5tB7Et3jeItLNk8+Fa2j6jYnU2YSyhaNcwFe4dMHv5DD7L1WUTXt5zmtoyADe7Bwfn15cdHZix3cxIzB+ObC+q2Z1Q6pq0E6gynF0A715ErasbqQWbH9JOCC8zSwGwVMA8Phb3X3a2g5BnZ5cRT78Dj7trxMRR7liY+lhdu5ntVnFDFLm4N1a0nr2e5rVtysLDx0tl/noAc9X7TLNH5KxZuC1Tg6puH0SYKtoaumFrYWPbsS0xg+/2UbjVVkNXW67u8aHwkKwFYB6fgQ47nYXXBBSbEBPtGjUtnWy6YcEm/F1q5sLdkO5AQTonuap8Vu7+7HoYv17APF4Fve6KrabEkzhcuH+AAuTFGmmjkeScbdsU7hswxGtMkqJzM7PX5W5aa8BfSDdwyt30I9Nw44qn+MgYef1IKC42SLN9D4TU8+iYCWGmKSfdEceYkju/uBGAebwvDW53KcOeFxlYcBeqqd3DBiznyCHCUPCDdUTsweM0765M7np/OQwvF/A5aYOedDcKmo23zP5qsalovTfny9wL4xQyP18+KXedu5GAmx0G9pizrsrAJCOQsuovUPTIKIU/HzG/SPKczks97dnPODswXY5gBQDXxK72g3a0fURT5yoTY7nw5w6ksVcAzZq/C7mbcv+TO2rLZXYlJMzjtNjXBedN7IlBXuibtq3ph8W5vw1dkLNPrwSjKwWY89oXQf9xNgqaXruaWLulXK8cy5kvOvP3GwC4mWc/50wImj+xaLrmpFRugvPcUvPltQJMUr0cXcHzjpLrF82bAHBN1O+dFTjrHTmrdjMD5vER6B/LZLQmZ3y00sytBuC65LtvLeOMt+SM+q0AmMekNNbK17G3LHsnV4Ox1QLM4wNRy3gJe2LZ88FqMbWagL8CPe2sptpXQ0/L3lsOMGcW3Cv+O+hyF+svy9pjsveWA9z0tn8Afd7F2s9lbW01GVptwJxTHZfE3/Uj17SsOU7ddLRuYsDN8decDOyorFn1sVaAvyT7k8iZNt+dke++vJ0A8+CfMw+3mT8s39HtBviSgDs+b+64zF26HQHz+C/o+Xmfn5c5ul0BXyT7w/U5oTdlbs1GQGs/vgb9cd7fazr+L8AAD0zRYMSYHQAAAAAASUVORK5CYII=', import.meta.url, ) text('.import-meta-url-data-uri', metaUrlDataUri) document.querySelector('.import-meta-url-data-uri-img').src = metaUrlDataUri const metaUrlWithoutExtension = new URL('./nested/test', import.meta.url) text('.import-meta-url-without-extension', metaUrlWithoutExtension) ;(async () => { const res = await fetch(metaUrlWithoutExtension) text('.import-meta-url-content-without-extension', await res.text())
+```
+
+--------------------------------
+
+### Preprocess CSS with preprocessCSS
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
+
+Processes CSS-like files into plain CSS. Requires the corresponding pre-processor to be installed.
+
+```ts
+async function preprocessCSS(
+  code: string,
+  filename: string,
+  config: ResolvedConfig,
+): Promise<PreprocessCSSResult>
+
+interface PreprocessCSSResult {
+  code: string
+  map?: SourceMapInput
+  modules?: Record<string, string>
+  deps?: Set<string>
+}
+```
+
+--------------------------------
+
+### Importing dynamic URLs with import.meta.url
+
+Source: https://github.com/vitejs/vite/blob/main/playground/assets/index.html
+
+Demonstrates various patterns for resolving asset paths dynamically using the URL constructor and import.meta.url.
+
+```javascript
+new URL('...', import.meta.url)
+```
+
+```javascript
+new URL('@/...', import.meta.url)
+```
+
+```javascript
+new URL('/...', import.meta.url)
+```
+
+```javascript
+new URL('data:...', import.meta.url)
+```
+
+```javascript
+new URL('...', import.meta.url (without extension))
+```
+
+```javascript
+new URL('...', import.meta.url,) (with comma)
+```
+
+```javascript
+new URL('...', import.meta.url,) (with comma + new line)
+```
+
+```javascript
+new URL(`./${dynamic}`, import.meta.url)
+```
+
+```javascript
+new URL(`./${dynamic}`, import.meta.url,) (with comma)
+```
+
+```javascript
+new URL(`./${dynamic}?abc`, import.meta.url)
+```
+
+```javascript
+new URL(`./${1 === 0 ? static : dynamic}?abc`, import.meta.url)
+```
+
+```javascript
+new URL(/* @vite-ignore */ 'non-existent', import.meta.url)
+```
+
+```javascript
+new URL(`${dynamic}`, import.meta.url)
+```
+
+```javascript
+Multiline new URL(..., import.meta.url)
+```
+
+--------------------------------
+
+### Pre-bundle dependencies with Vite CLI
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+
+Run the pre-bundle process manually. Note that this command is deprecated as Vite now handles pre-bundling automatically.
+
+```bash
+vite optimize [root]
 ```
