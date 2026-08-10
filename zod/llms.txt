@@ -226,23 +226,6 @@ new URL("HTTP://ExAmPle.com:80/./a/../b?X=1#f oo").href
 
 --------------------------------
 
-### Coercion example
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Demonstrates how z.coerce.string() converts various input types to strings.
-
-```ts
-const schema = z.coerce.string();
-
-schema.parse("tuna");    // => "tuna"
-schema.parse(42);        // => "42"
-schema.parse(true);      // => "true"
-schema.parse(null);      // => "null"
-```
-
---------------------------------
-
 ### Simple String Transforms
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -261,6 +244,23 @@ z.string().check(z.trim()); // trim whitespace
 z.string().check(z.toLowerCase()); // toLowerCase
 z.string().check(z.toUpperCase()); // toUpperCase
 z.string().check(z.normalize()); // normalize unicode characters
+```
+
+--------------------------------
+
+### Coercion example
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Demonstrates how z.coerce.string() converts various input types to strings.
+
+```ts
+const schema = z.coerce.string();
+
+schema.parse("tuna");    // => "tuna"
+schema.parse(42);        // => "42"
+schema.parse(true);      // => "true"
+schema.parse(null);      // => "null"
 ```
 
 --------------------------------
@@ -321,26 +321,6 @@ const test = z
     .transform((val) => val * 2);
 
 test.parse("12characters"); // => 24
-```
-
---------------------------------
-
-### File schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
-
-Example of `z.file()` with size and MIME checks represented in the JSON Schema.
-
-```ts
-z.file().min(1).max(1024 * 1024).mime("image/png");
-// => {
-//   type: "string",
-//   format: "binary",
-//   contentEncoding: "binary",
-//   contentMediaType: "image/png",
-//   minLength: 1,
-//   maxLength: 1048576,
-// }
 ```
 
 --------------------------------
@@ -612,6 +592,24 @@ z.set(z.string()).size(5); // must contain 5 items exactly
 
 --------------------------------
 
+### Object Schema Parse
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
+
+Example of parsing an object schema with Zod Mini to demonstrate bundle size for more complex types.
+
+```ts
+const schema = z.object({ a: z.string(), b: z.number(), c: z.boolean() });
+
+schema.parse({
+  a: "asdf",
+  b: 123,
+  c: true
+});
+```
+
+--------------------------------
+
 ### Circularity error example
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -628,24 +626,6 @@ const Activity = z.object({
 
     return z.nullable(z.array(Activity));
   }
-});
-```
-
---------------------------------
-
-### Object Schema Parse
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Example of parsing an object schema with Zod Mini to demonstrate bundle size for more complex types.
-
-```ts
-const schema = z.object({ a: z.string(), b: z.number(), c: z.boolean() });
-
-schema.parse({
-  a: "asdf",
-  b: 123,
-  c: true
 });
 ```
 
@@ -669,6 +649,23 @@ function handleResult(result: MyResult){
     result.error; // string
   }
 }
+```
+
+--------------------------------
+
+### Define an object with optional properties (Zod Mini)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Example of making object properties optional using Zod Mini.
+
+```ts
+const Dog = z.object({
+  name: z.string(),
+  age: z.optional(z.number())
+});
+
+Dog.parse({ name: "Yeller" }); // ✅
 ```
 
 --------------------------------
@@ -710,19 +707,17 @@ console.log(data.name);
 
 --------------------------------
 
-### Define an object with optional properties (Zod Mini)
+### Using .register() method
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
 
-Example of making object properties optional using Zod Mini.
+Shows how to use the .register() method on a schema to add it to a registry.
 
 ```ts
-const Dog = z.object({
-  name: z.string(),
-  age: z.optional(z.number())
-});
+const mySchema = z.string();
 
-Dog.parse({ name: "Yeller" }); // ✅
+mySchema.register(myRegistry, { description: "A cool schema!" });
+// => mySchema
 ```
 
 --------------------------------
@@ -741,17 +736,18 @@ z.config({
 
 --------------------------------
 
-### Using .register() method
+### Exclusive Union (XOR) Basic Example
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Shows how to use the .register() method on a schema to add it to a registry.
+Demonstrates an exclusive union where exactly one option must match for validation to succeed.
 
 ```ts
-const mySchema = z.string();
+const schema = z.xor([z.string(), z.number()]);
 
-mySchema.register(myRegistry, { description: "A cool schema!" });
-// => mySchema
+schema.parse("hello"); // ✅ passes
+schema.parse(42);      // ✅ passes
+schema.parse(true);    // ❌ fails (zero matches)
 ```
 
 --------------------------------
@@ -982,6 +978,26 @@ emailSchema.meta({ description: "An email address" });
 
 --------------------------------
 
+### File schemas
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
+
+Example of `z.file()` with size and MIME checks represented in the JSON Schema.
+
+```ts
+z.file().min(1).max(1024 * 1024).mime("image/png");
+// => {
+//   type: "string",
+//   format: "binary",
+//   contentEncoding: "binary",
+//   contentMediaType: "image/png",
+//   minLength: 1,
+//   maxLength: 1048576,
+// }
+```
+
+--------------------------------
+
 ### Object schemas
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1031,6 +1047,18 @@ pnpm run --filter=@zod/docs build
 
 --------------------------------
 
+### z.prettifyError() usage
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-formatting.mdx
+
+Shows how to use z.prettifyError() to get a human-readable string representation of the error.
+
+```ts
+const pretty = z.prettifyError(result.error);
+```
+
+--------------------------------
+
 ### Password confirmation with 'when' (Zod Mini)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1066,14 +1094,18 @@ schema.parse({
 
 --------------------------------
 
-### z.prettifyError() usage
+### Prefault vs Default with mutating refinements
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-formatting.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Shows how to use z.prettifyError() to get a human-readable string representation of the error.
+Compares the behavior of prefault and default when a schema includes mutating refinements like trim and toUpperCase, showing how prefault values are processed through the schema.
 
 ```ts
-const pretty = z.prettifyError(result.error);
+const a = z.string().trim().toUpperCase().prefault("  tuna  ");
+a.parse(undefined); // => "TUNA"
+
+const b = z.string().trim().toUpperCase().default("  tuna  ");
+b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -1091,22 +1123,6 @@ const LooseDog = z.looseObject({
 
 LooseDog.parse({ name: "Yeller", extraKey: true });
 // => { name: "Yeller", extraKey: true }
-```
-
---------------------------------
-
-### Prefault vs Default with mutating refinements
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Compares the behavior of prefault and default when a schema includes mutating refinements like trim and toUpperCase, showing how prefault values are processed through the schema.
-
-```ts
-const a = z.string().trim().toUpperCase().prefault("  tuna  ");
-a.parse(undefined); // => "TUNA"
-
-const b = z.string().trim().toUpperCase().default("  tuna  ");
-b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -1299,34 +1315,6 @@ z.parse(schema, null); // => null
 
 --------------------------------
 
-### Inverting a Codec
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
-
-Example of using `z.invertCodec()` to create a codec that reverses the input and output schemas and transformations.
-
-```typescript
-const dateToString = z.invertCodec(stringToDate);
-
-dateToString.decode(new Date("2024-01-15T10:30:00.000Z"));
-// => string
-
-dateToString.encode("2024-01-15T10:30:00.000Z");
-// => Date
-```
-
-```typescript
-const dateToString = z.invertCodec(stringToDate);
-
-z.decode(dateToString, new Date("2024-01-15T10:30:00.000Z"));
-// => string
-
-z.encode(dateToString, "2024-01-15T10:30:00.000Z");
-// => Date
-```
-
---------------------------------
-
 ### Commands
 
 Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
@@ -1359,21 +1347,30 @@ pnpm dev:play
 
 --------------------------------
 
-### Defining a Codec
+### Inverting a Codec
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
 
-Example of defining a codec to transform an ISO date string to a Date object and vice-versa.
+Example of using `z.invertCodec()` to create a codec that reverses the input and output schemas and transformations.
 
 ```typescript
-const stringToDate = z.codec(
-  z.iso.datetime(),  // input schema: ISO date string
-  z.date(),          // output schema: Date object
-  {
-    decode: (isoString) => new Date(isoString), // ISO string → Date
-    encode: (date) => date.toISOString(),       // Date → ISO string
-  }
-);
+const dateToString = z.invertCodec(stringToDate);
+
+dateToString.decode(new Date("2024-01-15T10:30:00.000Z"));
+// => string
+
+dateToString.encode("2024-01-15T10:30:00.000Z");
+// => Date
+```
+
+```typescript
+const dateToString = z.invertCodec(stringToDate);
+
+z.decode(dateToString, new Date("2024-01-15T10:30:00.000Z"));
+// => string
+
+z.encode(dateToString, "2024-01-15T10:30:00.000Z");
+// => Date
 ```
 
 --------------------------------
@@ -1390,6 +1387,25 @@ z.string().min(5).max(10).trim()
 
 // Zod Mini
 z.string().check(z.minLength(5), z.maxLength(10), z.trim());
+```
+
+--------------------------------
+
+### Defining a Codec
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
+
+Example of defining a codec to transform an ISO date string to a Date object and vice-versa.
+
+```typescript
+const stringToDate = z.codec(
+  z.iso.datetime(),  // input schema: ISO date string
+  z.date(),          // output schema: Date object
+  {
+    decode: (isoString) => new Date(isoString), // ISO string → Date
+    encode: (date) => date.toISOString(),       // Date → ISO string
+  }
+);
 ```
 
 --------------------------------
@@ -1569,18 +1585,6 @@ const UniqueStringArray = z.array(z.string()).superRefine((val, ctx) => {
 
 --------------------------------
 
-### Extract inner schema from ZodNullable (Zod)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Example of extracting the inner schema from a ZodNullable instance in Zod.
-
-```ts
-nullableYoda.unwrap(); // ZodLiteral<"yoda">
-```
-
---------------------------------
-
 ### Using Zod's Exported Email Regexes
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1601,6 +1605,36 @@ z.email({ pattern: z.regexes.rfc5322Email });
 
 // a loose regex that allows Unicode (good for intl emails)
 z.email({ pattern: z.regexes.unicodeEmail });
+```
+
+--------------------------------
+
+### Extract inner schema from ZodNullable (Zod)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Example of extracting the inner schema from a ZodNullable instance in Zod.
+
+```ts
+nullableYoda.unwrap(); // ZodLiteral<"yoda">
+```
+
+--------------------------------
+
+### Enum with String TypeScript Enum
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Example of using `z.enum` with an externally declared TypeScript string enum.
+
+```ts
+enum Fish {
+  Salmon = "Salmon",
+  Tuna = "Tuna",
+  Trout = "Trout",
+}
+
+const FishEnum = z.enum(Fish);
 ```
 
 --------------------------------
@@ -1629,24 +1663,6 @@ z.encode(stringToDate, new Date("2024-01-15T10:30:00.000Z"))
 
 --------------------------------
 
-### Enum with String TypeScript Enum
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Example of using `z.enum` with an externally declared TypeScript string enum.
-
-```ts
-enum Fish {
-  Salmon = "Salmon",
-  Tuna = "Tuna",
-  Trout = "Trout",
-}
-
-const FishEnum = z.enum(Fish);
-```
-
---------------------------------
-
 ### Making a Schema Optional (Zod Mini)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1655,30 +1671,6 @@ Demonstrates how to make a schema optional using `z.optional()` in Zod Mini.
 
 ```ts
 z.optional(z.literal("yoda"));
-```
-
---------------------------------
-
-### Setting a default value with a function
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Shows how to provide a function to generate a default value dynamically whenever a default value is needed.
-
-```ts
-const randomDefault = z.number().default(Math.random);
-
-randomDefault.parse(undefined);    // => 0.4413456736055323
-randomDefault.parse(undefined);    // => 0.1871840107401901
-randomDefault.parse(undefined);    // => 0.7223408162401552
-```
-
-```ts
-const randomDefault = z._default(z.number(), Math.random);
-
-z.parse(randomDefault, undefined); // => 0.4413456736055323
-z.parse(randomDefault, undefined); // => 0.1871840107401901
-z.parse(randomDefault, undefined); // => 0.7223408162401552
 ```
 
 --------------------------------
@@ -1708,6 +1700,30 @@ z.toJSONSchema(User);
 
 --------------------------------
 
+### Setting a default value with a function
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Shows how to provide a function to generate a default value dynamically whenever a default value is needed.
+
+```ts
+const randomDefault = z.number().default(Math.random);
+
+randomDefault.parse(undefined);    // => 0.4413456736055323
+randomDefault.parse(undefined);    // => 0.1871840107401901
+randomDefault.parse(undefined);    // => 0.7223408162401552
+```
+
+```ts
+const randomDefault = z._default(z.number(), Math.random);
+
+z.parse(randomDefault, undefined); // => 0.4413456736055323
+z.parse(randomDefault, undefined); // => 0.1871840107401901
+z.parse(randomDefault, undefined); // => 0.7223408162401552
+```
+
+--------------------------------
+
 ### Unrepresentable Zod Types
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1726,26 +1742,6 @@ z.set(); // ❌
 z.transform(); // ❌
 z.nan(); // ❌
 z.custom(); // ❌
-```
-
---------------------------------
-
-### Array-specific validations
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Examples of array-specific validations like min, max, and length using Zod and Zod Mini.
-
-```ts
-z.array(z.string()).min(5); // must contain 5 or more items
-z.array(z.string()).max(5); // must contain 5 or fewer items
-z.array(z.string()).length(5); // must contain 5 items exactly
-```
-
-```ts
-z.array(z.string()).check(z.minLength(5)); // must contain 5 or more items
-z.array(z.string()).check(z.maxLength(5)); // must contain 5 or fewer items
-z.array(z.string()).check(z.length(5)); // must contain 5 items exactly
 ```
 
 --------------------------------
