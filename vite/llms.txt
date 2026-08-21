@@ -17,18 +17,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Install dependencies
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
-
-Command to install project dependencies using npm, pnpm, or yarn.
-
-```bash
-$ npm install # or pnpm install or yarn install
-```
-
---------------------------------
-
 ### CSS Styling Example
 
 Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
@@ -38,6 +26,18 @@ Example of basic CSS styling for paragraphs and a class.
 ```css
 p { background: rgba(0, 0, 0, 0.1); }
 .classname { color: green; }
+```
+
+--------------------------------
+
+### Install dependencies
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
+
+Command to install project dependencies using npm, pnpm, or yarn.
+
+```bash
+$ npm install # or pnpm install or yarn install
 ```
 
 --------------------------------
@@ -354,19 +354,6 @@ $ deno init --npm vite
 
 --------------------------------
 
-### Example .env file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
-
-```env
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
-```
-
---------------------------------
-
 ### Accessing Environments from the Server
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
@@ -530,33 +517,6 @@ import shaderString from './shader.glsl?raw'
 
 --------------------------------
 
-### Implement an environment-aware module counter plugin
-
-Source: https://github.com/vitejs/vite/blob/main/docs/changes/shared-plugins-during-build.md
-
-A plugin example that uses a Map to track transformed modules separately for each environment.
-
-```ts
-function PerEnvironmentCountTransformedModulesPlugin() {
-  const state = new Map<Environment, { count: number }>()
-  return {
-    name: 'count-transformed-modules',
-    perEnvironmentStartEndDuringDev: true,
-    buildStart() {
-      state.set(this.environment, { count: 0 })
-    },
-    transform(id) {
-      state.get(this.environment).count++
-    },
-    buildEnd() {
-      console.log(this.environment.name, state.get(this.environment).count)
-    },
-  }
-}
-```
-
---------------------------------
-
 ### WASM Import API Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite3.md
@@ -597,18 +557,6 @@ import light from './light.wasm?init' import heavy from './heavy.wasm?init' impo
 
 --------------------------------
 
-### Build for production
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
-
-Command to build the application for production.
-
-```bash
-npm run build
-```
-
---------------------------------
-
 ### Install unreleased Vite commits
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -633,22 +581,27 @@ $ bun add -D https://pkg.pr.new/vite@SHA
 
 --------------------------------
 
-### View forwarded unhandled error output in server log
+### Build for production
 
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik/README.md
 
-Example terminal log output showing enhanced formatting for client-side unhandled errors forwarded to the server.
+Command to build the application for production.
 
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
+```bash
+npm run build
+```
+
+--------------------------------
+
+### Example .env file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+An example `.env` file showing a `VITE_` prefixed variable and a non-prefixed variable.
+
+```env
+VITE_SOME_KEY=123
+DB_PASSWORD=foobar
 ```
 
 --------------------------------
@@ -759,18 +712,6 @@ H -> A -> B ... X
 
 --------------------------------
 
-### SSR Dependencies Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
-
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
-```
-
---------------------------------
-
 ### Configure build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -784,6 +725,30 @@ Define the standard build and preview commands within the scripts section of you
     "preview": "vite preview"
   }
 }
+```
+
+--------------------------------
+
+### SSR Dependencies Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```
+
+--------------------------------
+
+### Install Trusted SSL Certificate via CLI on macOS
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Install a self-signed SSL certificate as trusted on macOS using the security command-line tool to prevent network requests from stopping due to caching issues.
+
+```shell
+security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
 ```
 
 --------------------------------
@@ -843,18 +808,6 @@ app.use('*', async (req, res, next) => {
   // 6. Send the rendered HTML back.
   res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
 })
-```
-
---------------------------------
-
-### Install Trusted SSL Certificate via CLI on macOS
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Install a self-signed SSL certificate as trusted on macOS using the security command-line tool to prevent network requests from stopping due to caching issues.
-
-```shell
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
 ```
 
 --------------------------------
@@ -1092,4 +1045,16 @@ document.querySelector('.result-eager').textContent = JSON.stringify(
   null,
   2,
 )
+```
+
+--------------------------------
+
+### Classic Worker Instantiation
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Instantiating a classic worker, for the .classic-worker test case.
+
+```javascript
+new Worker(new URL('./classic-worker.js', import.meta.url))
 ```
