@@ -64,6 +64,31 @@ $ npm add -D @vitejs/plugin-legacy
 
 --------------------------------
 
+### CSS Styling Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Example of basic CSS styling for paragraphs and a class.
+
+```css
+p { background: rgba(0, 0, 0, 0.1); }
+.classname { color: green; }
+```
+
+--------------------------------
+
+### Preview the Production Build
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Starts a local static server to verify the production build before deployment.
+
+```bash
+$ npm run preview
+```
+
+--------------------------------
+
 ### preview(inlineConfig?: InlineConfig)
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -93,18 +118,6 @@ const previewServer = await preview({
 previewServer.printUrls()
 previewServer.bindCLIShortcuts({ print: true })
 ```
-```
-
---------------------------------
-
-### Preview the Production Build
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Starts a local static server to verify the production build before deployment.
-
-```bash
-$ npm run preview
 ```
 
 --------------------------------
@@ -249,34 +262,6 @@ server.bindCLIShortcuts({ print: true })
 
 --------------------------------
 
-### Install Babel dependencies for decorator lowering
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Install the required Babel plugins to handle native decorators as a workaround.
-
-```npm
-$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```Yarn
-$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```pnpm
-$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```Bun
-$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
-```Deno
-$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
-```
-
---------------------------------
-
 ### Scaffold a new Vite project
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -301,6 +286,34 @@ $ bun create vite
 
 ```bash
 $ deno init --npm vite
+```
+
+--------------------------------
+
+### Install Babel dependencies for decorator lowering
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+
+Install the required Babel plugins to handle native decorators as a workaround.
+
+```npm
+$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```Yarn
+$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```pnpm
+$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```Bun
+$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```Deno
+$ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 ```
 
 --------------------------------
@@ -498,15 +511,14 @@ export default defineConfig({
 
 --------------------------------
 
-### CSS Styling Example
+### WebAssembly Loading and Interaction Examples
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
 
-Example of basic CSS styling for paragraphs and a class.
+Demonstrates various Wasm loading techniques including ?init, ?url, and ?worker, as well as handling shared globals and string builtins.
 
-```css
-p { background: rgba(0, 0, 0, 0.1); }
-.classname { color: green; }
+```javascript
+import light from './light.wasm?init' import heavy from './heavy.wasm?init' import myWorker from './worker?worker' import { add } from './add.wasm' import { exported\_func } from './light-with-imports.wasm' import { getResult } from './imports.js' import { answer } from './global.wasm' import { getAnswerPlusOne, readCounter } from './global-consumer.wasm' import { bumpCounter } from './global.wasm' import { helloLength } from './string-constants.wasm' const w = new myWorker() w.addEventListener('message', (ev) => { text('.worker-wasm .result', ev.data.result) }) text('.direct-wasm .result', add(1, 2)) exported\_func() text('.direct-wasm-with-imports .result', getResult()) text('.direct-wasm-global .result', `\${answer} ${typeof answer}\`) text('.direct-wasm-global-import .result', getAnswerPlusOne()) // The mutable global is a single live cell shared between the two wasm // modules: mutating it from one is observed by the other (7 + 2 = 9). bumpCounter() bumpCounter() text('.direct-wasm-mutable-global-import .result', readCounter()) // 'hello'.length, where 'hello' is an engine-provided imported string constant // and \`length\` is a js-string builtin. text('.direct-wasm-string-builtins .result', helloLength()) async function testWasm(init, resultElement) { const { exported\_func } = await init({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }).then((i) => i.exports) exported\_func() } function text(el, text) { document.querySelector(el).textContent = text } document .querySelector('.inline-wasm .run') .addEventListener('click', async () => testWasm(light, document.querySelector('.inline-wasm .result')), ) document .querySelector('.output-wasm .run') .addEventListener('click', async () => testWasm(heavy, document.querySelector('.output-wasm .result')), ) document .querySelector('.init-returns-instance .run') .addEventListener('click', async () => { const res = await light({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }) text( '.init-returns-instance .result', res instanceof WebAssembly.Instance, ) }) import lightUrl from './light.wasm?url' text('.url', lightUrl)
 ```
 
 --------------------------------
@@ -519,18 +531,6 @@ Install the required development dependency for Cloudflare Workers integration.
 
 ```bash
 $ npm install --save-dev @cloudflare/vite-plugin
-```
-
---------------------------------
-
-### WebAssembly Loading and Interaction Examples
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Demonstrates various Wasm loading techniques including ?init, ?url, and ?worker, as well as handling shared globals and string builtins.
-
-```javascript
-import light from './light.wasm?init' import heavy from './heavy.wasm?init' import myWorker from './worker?worker' import { add } from './add.wasm' import { exported\_func } from './light-with-imports.wasm' import { getResult } from './imports.js' import { answer } from './global.wasm' import { getAnswerPlusOne, readCounter } from './global-consumer.wasm' import { bumpCounter } from './global.wasm' import { helloLength } from './string-constants.wasm' const w = new myWorker() w.addEventListener('message', (ev) => { text('.worker-wasm .result', ev.data.result) }) text('.direct-wasm .result', add(1, 2)) exported\_func() text('.direct-wasm-with-imports .result', getResult()) text('.direct-wasm-global .result', `\${answer} ${typeof answer}\`) text('.direct-wasm-global-import .result', getAnswerPlusOne()) // The mutable global is a single live cell shared between the two wasm // modules: mutating it from one is observed by the other (7 + 2 = 9). bumpCounter() bumpCounter() text('.direct-wasm-mutable-global-import .result', readCounter()) // 'hello'.length, where 'hello' is an engine-provided imported string constant // and \`length\` is a js-string builtin. text('.direct-wasm-string-builtins .result', helloLength()) async function testWasm(init, resultElement) { const { exported\_func } = await init({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }).then((i) => i.exports) exported\_func() } function text(el, text) { document.querySelector(el).textContent = text } document .querySelector('.inline-wasm .run') .addEventListener('click', async () => testWasm(light, document.querySelector('.inline-wasm .result')), ) document .querySelector('.output-wasm .run') .addEventListener('click', async () => testWasm(heavy, document.querySelector('.output-wasm .result')), ) document .querySelector('.init-returns-instance .run') .addEventListener('click', async () => { const res = await light({ imports: { imported\_func: (res) => (resultElement.textContent = res), }, }) text( '.init-returns-instance .result', res instanceof WebAssembly.Instance, ) }) import lightUrl from './light.wasm?url' text('.url', lightUrl)
 ```
 
 --------------------------------
@@ -791,18 +791,6 @@ Example demonstrating hydration scripts and dynamic module imports, including a 
 
 --------------------------------
 
-### Initialize a Vite app
-
-Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
-
-Command to quickly set up a new Vite project, requiring Node.js >=12.
-
-```bash
-npm init @vitejs/app
-```
-
---------------------------------
-
 ### Configure Dev Server URL Pathname to Open on Start
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
@@ -831,19 +819,14 @@ An example of inline CSS styling.
 
 --------------------------------
 
-### Build and link Vite locally
+### Initialize a Vite app
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
 
-Steps to clone, build, and link the Vite repository for local development.
+Command to quickly set up a new Vite project, requiring Node.js >=12.
 
 ```bash
-git clone https://github.com/vitejs/vite.git
-cd vite
-pnpm install
-cd packages/vite
-pnpm run build
-pnpm link # use your preferred package manager for this step
+npm init @vitejs/app
 ```
 
 --------------------------------
@@ -860,6 +843,23 @@ cd my-project
 
 npm install
 npm run dev
+```
+
+--------------------------------
+
+### Build and link Vite locally
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Steps to clone, build, and link the Vite repository for local development.
+
+```bash
+git clone https://github.com/vitejs/vite.git
+cd vite
+pnpm install
+cd packages/vite
+pnpm run build
+pnpm link # use your preferred package manager for this step
 ```
 
 --------------------------------
@@ -948,6 +948,35 @@ npm install && npm run build
 
 ```text
 dist
+```
+
+--------------------------------
+
+### Classic Worker Instantiation
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Instantiating a classic worker, for the .classic-worker test case.
+
+```javascript
+new Worker(new URL('./classic-worker.js', import.meta.url))
+```
+
+--------------------------------
+
+### Eager Glob Import
+
+Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
+
+This example shows how to use the `eager: true` option with `import.meta.glob` to immediately load all matching modules. The result is a map of module paths to their already-resolved module objects.
+
+```javascript
+const eagerModules = import.meta.glob('/dir/**', { eager: true })
+document.querySelector('.result-eager').textContent = JSON.stringify(
+  eagerModules,
+  null,
+  2,
+)
 ```
 
 --------------------------------
@@ -1084,35 +1113,6 @@ for (const { testId, path } of paths) {
 
 --------------------------------
 
-### Eager Glob Import
-
-Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
-
-This example shows how to use the `eager: true` option with `import.meta.glob` to immediately load all matching modules. The result is a map of module paths to their already-resolved module objects.
-
-```javascript
-const eagerModules = import.meta.glob('/dir/**', { eager: true })
-document.querySelector('.result-eager').textContent = JSON.stringify(
-  eagerModules,
-  null,
-  2,
-)
-```
-
---------------------------------
-
-### Classic Worker Instantiation
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a classic worker, for the .classic-worker test case.
-
-```javascript
-new Worker(new URL('./classic-worker.js', import.meta.url))
-```
-
---------------------------------
-
 ### HTML Constant Replacement Syntax
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
@@ -1165,6 +1165,21 @@ Examples of generated HTML tags for different entry points in production. Follow
 
 --------------------------------
 
+### Importing Asset as URL
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+
+Example of importing an image asset, which returns its public URL.
+
+```js
+import 'vite/client'
+// ---cut---
+import imgUrl from './img.png'
+document.getElementById('hero-img').src = imgUrl
+```
+
+--------------------------------
+
 ### Configure Multi-Page App Entry Points in Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1185,17 +1200,25 @@ export default defineConfig({
 
 --------------------------------
 
-### Importing Asset as URL
+### Inject Post-Middleware with configureServer
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
 
-Example of importing an image asset, which returns its public URL.
+Return a callback function from configureServer to install middleware after internal Vite middlewares have executed.
 
-```js
-import 'vite/client'
-// ---cut---
-import imgUrl from './img.png'
-document.getElementById('hero-img').src = imgUrl
+```javascript
+const myPlugin = () => ({
+  name: 'configure-server',
+  configureServer(server) {
+    // return a post hook that is called after internal middlewares are
+    // installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
+  },
+})
 ```
 
 --------------------------------
@@ -1225,6 +1248,18 @@ Shows the structure of raw license metadata generated when fileName ends with .j
 
 --------------------------------
 
+### Importing an Inline Worker
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Importing an inline worker module for the .pong-inline test case.
+
+```javascript
+import InlineWorker from '../my-worker?worker&inline'
+```
+
+--------------------------------
+
 ### Instantiate per-environment plugins with helper in Vite (JavaScript)
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
@@ -1241,41 +1276,6 @@ export default defineConfig({
     ),
   ],
 })
-```
-
---------------------------------
-
-### Inject Post-Middleware with configureServer
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Return a callback function from configureServer to install middleware after internal Vite middlewares have executed.
-
-```javascript
-const myPlugin = () => ({
-  name: 'configure-server',
-  configureServer(server) {
-    // return a post hook that is called after internal middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
-```
-
---------------------------------
-
-### Importing an Inline Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing an inline worker module for the .pong-inline test case.
-
-```javascript
-import InlineWorker from '../my-worker?worker&inline'
 ```
 
 --------------------------------
@@ -1317,24 +1317,6 @@ const keys =
 
 --------------------------------
 
-### Manually instantiate WebAssembly using the ?init query in JavaScript
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Use `?init` when explicit control over instantiation timing is required. The default export returns a Promise resolving to a `WebAssembly.Instance`.
-
-```js
-import 'vite/client'
-// ---cut---
-import init from './example.wasm?init'
-
-init().then((instance) => {
-  instance.exports.test()
-})
-```
-
---------------------------------
-
 ### Conditional Exports in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
@@ -1354,27 +1336,20 @@ Example of an exports field in package.json used to define entry points for diff
 
 --------------------------------
 
-### Raw Glob Import for JSON Files
+### Manually instantiate WebAssembly using the ?init query in JavaScript
 
-Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
 
-This example uses `import.meta.glob` with `query: '?raw'` to import JSON files as raw strings. The `eager: true` and `import: 'default'` options ensure immediate loading and direct access to the raw content.
+Use `?init` when explicit control over instantiation timing is required. The default export returns a Promise resolving to a `WebAssembly.Instance`.
 
-```javascript
-const rawModules = import.meta.glob('/dir/*.json', {
-  query: '?raw',
-  eager: true,
-  import: 'default',
+```js
+import 'vite/client'
+// ---cut---
+import init from './example.wasm?init'
+
+init().then((instance) => {
+  instance.exports.test()
 })
-const globraw = {}
-Object.keys(rawModules).forEach((key) => {
-  globraw[key] = JSON.parse(rawModules[key])
-})
-document.querySelector('.globraw').textContent = JSON.stringify(
-  globraw,
-  null,
-  2,
-)
 ```
 
 --------------------------------
@@ -1398,6 +1373,31 @@ Object.keys(baseModules).forEach((key) => {
 })
 document.querySelector('.result-base').textContent = JSON.stringify(
   globBase,
+  null,
+  2,
+)
+```
+
+--------------------------------
+
+### Raw Glob Import for JSON Files
+
+Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
+
+This example uses `import.meta.glob` with `query: '?raw'` to import JSON files as raw strings. The `eager: true` and `import: 'default'` options ensure immediate loading and direct access to the raw content.
+
+```javascript
+const rawModules = import.meta.glob('/dir/*.json', {
+  query: '?raw',
+  eager: true,
+  import: 'default',
+})
+const globraw = {}
+Object.keys(rawModules).forEach((key) => {
+  globraw[key] = JSON.parse(rawModules[key])
+})
+document.querySelector('.globraw').textContent = JSON.stringify(
+  globraw,
   null,
   2,
 )
