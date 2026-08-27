@@ -70,18 +70,6 @@ z.string().register(myReg, { title: "My cool string schema" });
 
 --------------------------------
 
-### Install Zod using npm
-
-Source: https://github.com/colinhacks/zod/blob/main/README.md
-
-Installs the Zod package into your project dependencies via npm.
-
-```sh
-npm install zod
-```
-
---------------------------------
-
 ### Dev Server
 
 Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
@@ -116,6 +104,18 @@ Example of importing the Zod 4 core package using its permalink subpath.
 
 ```ts
 import * as z4 from "zod/v4/core";
+```
+
+--------------------------------
+
+### Install Zod using npm
+
+Source: https://github.com/colinhacks/zod/blob/main/README.md
+
+Installs the Zod package into your project dependencies via npm.
+
+```sh
+npm install zod
 ```
 
 --------------------------------
@@ -295,6 +295,30 @@ Example of parsing a boolean schema with Zod Mini to demonstrate bundle size.
 
 ```ts
 z.boolean().parse(true)
+```
+
+--------------------------------
+
+### import "zod/compile"
+
+Source: https://github.com/colinhacks/zod/blob/main/wiki/compile.md
+
+Side-effect import that installs a global post-processor wrapping every newly constructed schema with a one-shot lazy compile shim.
+
+```APIDOC
+### Module: `zod/compile`
+
+### Description
+Installs a global post-processor that automatically wraps every newly-constructed schema with a one-shot lazy compile shim. Enables project-wide opt-in for AOT compilation.
+
+### Usage
+```ts
+import "zod/compile";
+```
+
+### Behavior
+- Executes on import as a side-effect.
+- Applies a one-shot lazy compile shim to all subsequently constructed Zod schemas.
 ```
 
 --------------------------------
@@ -544,6 +568,20 @@ pnpm vitest run
 
 --------------------------------
 
+### Old transformer syntax (not available)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/MIGRATION.md
+
+Examples of the old transformer syntax that is no longer available in Zod 3.
+
+```typescript
+# not available
+z.transformer(A, B, func);
+A.transform(B, func)
+```
+
+--------------------------------
+
 ### Run prototype and codec test suites with Vitest
 
 Source: https://github.com/colinhacks/zod/blob/main/wiki/compiled-constructor-graph.md
@@ -561,16 +599,18 @@ pnpm vitest run \
 
 --------------------------------
 
-### Old transformer syntax (not available)
+### Compare prefault and default with mutating refinements
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/MIGRATION.md
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Examples of the old transformer syntax that is no longer available in Zod 3.
+Demonstrates the behavioral difference where prefault applies string transformations to undefined inputs while default bypasses them.
 
-```typescript
-# not available
-z.transformer(A, B, func);
-A.transform(B, func)
+```ts
+const a = z.string().trim().toUpperCase().prefault("  tuna  ");
+a.parse(undefined); // => "TUNA"
+
+const b = z.string().trim().toUpperCase().default("  tuna  ");
+b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -703,19 +743,6 @@ const stringToDate = z.codec(
 
 --------------------------------
 
-### Normalize URLs with Native JavaScript URL
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Demonstrates native WHATWG URL normalization behavior for casing, paths, and default ports.
-
-```ts
-new URL("HTTP://ExAmPle.com:80/./a/../b?X=1#f oo").href
-// => "http://example.com/b?X=1#f%20oo"
-```
-
---------------------------------
-
 ### z.flattenError() usage
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-formatting.mdx
@@ -733,6 +760,19 @@ const flattened = z.flattenError(result.error);
     favoriteNumbers: [ 'Invalid input: expected number, received string' ]
   }
 }
+```
+
+--------------------------------
+
+### Normalize URL with native URL constructor in JavaScript
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Demonstrates how URL normalization cleans and standardizes paths, query parameters, and casing.
+
+```typescript
+new URL("HTTP://ExAmPle.com:80/./a/../b?X=1#f oo").href
+// => "http://example.com/b?X=1#f%20oo"
 ```
 
 --------------------------------
@@ -831,55 +871,6 @@ emailSchema.meta({ description: "An email address" });
 
 --------------------------------
 
-### Production Build
-
-Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
-
-Commands to build Zod documentation for production, requiring a GITHUB_TOKEN.
-
-```sh
-export GITHUB_TOKEN=your_token_here # persists in shell session
-pnpm run --filter=@zod/docs build
-```
-
---------------------------------
-
-### Validate UUID-Like Identifiers (GUID) in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Validates UUID-like identifiers without requiring the RFC-specific bit constraints on byte 8.
-
-```ts
-z.guid();
-```
-
---------------------------------
-
-### z.input(schema)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Runtime counterpart to z.input<T> that replaces every pipe in a schema with its input side.
-
-```APIDOC
-## z.input(schema)
-
-### Description
-Runtime counterpart to the type-level `z.input<T>`. Replaces every pipe in a schema with its input side. Useful for reaching codecs nested inside objects, records, or maps.
-
-### Parameters
-- **schema** (ZodSchema) - Required - The source schema containing pipes or nested codecs.
-
-### Example
-```ts
-const Event = z.object({ name: z.string(), at: stringToDate });
-z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
-```
-```
-
---------------------------------
-
 ### Define Base User Zod Object Schema (TypeScript)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
@@ -896,34 +887,15 @@ const user = z.object({
 
 --------------------------------
 
-### Constraining input schema to a specific subclass
+### Production Build
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
 
-Example of how to constrain the accepted schema type to a specific Zod subclass, such as `ZodObject`.
+Commands to build Zod documentation for production, requiring a GITHUB_TOKEN.
 
-```ts
-
-import * as z4 from "zod/v4/core";
-
-// only accepts object schemas
-function inferSchema<T extends z4.$ZodObject>(schema: T) {
-  return schema;
-}
-```
-
---------------------------------
-
-### Creating a simple registry
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Demonstrates how to create a Zod registry with a specific metadata type.
-
-```ts
-import * as z from "zod";
-
-const myRegistry = z.registry<{ description: string }>();
+```sh
+export GITHUB_TOKEN=your_token_here # persists in shell session
+pnpm run --filter=@zod/docs build
 ```
 
 --------------------------------
@@ -959,26 +931,42 @@ switch (def.check) {
 
 --------------------------------
 
-### z.output(schema)
+### Apply size constraints to Set schemas in Zod and Zod Mini
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Runtime counterpart to z.output<T> that replaces every pipe in a schema with its output side.
+Applies minimum, maximum, exact size, and nonempty constraints to Set schemas.
 
-```APIDOC
-## z.output(schema)
-
-### Description
-Runtime counterpart to the type-level `z.output<T>`. Replaces every pipe in a schema with its output side. Only codecs have two real sides; calling `z.output()` on a one-way transform returns the transform.
-
-### Parameters
-- **schema** (ZodSchema) - Required - The source schema containing pipes or nested codecs.
-
-### Example
 ```ts
-const Event = z.object({ name: z.string(), at: stringToDate });
-z.output(Event).parse({ name: "launch", at: new Date() }); // ✅
+z.set(z.string()).nonempty(); // must contain at least 1 item
+z.set(z.string()).min(5); // must contain 5 or more items
+z.set(z.string()).max(5); // must contain 5 or fewer items
+z.set(z.string()).size(5); // must contain 5 items exactly
 ```
+
+```ts
+z.set(z.string()).check(z.minSize(1)); // alias for .nonempty()
+z.set(z.string()).check(z.minSize(5)); // must contain 5 or more items
+z.set(z.string()).check(z.maxSize(5)); // must contain 5 or fewer items
+z.set(z.string()).check(z.size(5)); // must contain 5 items exactly
+```
+
+--------------------------------
+
+### Constraining input schema to a specific subclass
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Example of how to constrain the accepted schema type to a specific Zod subclass, such as `ZodObject`.
+
+```ts
+
+import * as z4 from "zod/v4/core";
+
+// only accepts object schemas
+function inferSchema<T extends z4.$ZodObject>(schema: T) {
+  return schema;
+}
 ```
 
 --------------------------------
@@ -1003,6 +991,32 @@ export {}
 
 --------------------------------
 
+### Creating a simple registry
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Demonstrates how to create a Zod registry with a specific metadata type.
+
+```ts
+import * as z from "zod";
+
+const myRegistry = z.registry<{ description: string }>();
+```
+
+--------------------------------
+
+### Validate generic GUID identifiers in TypeScript with Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Validates any UUID-like identifier without enforcing RFC 9562/4122 variant bit constraints.
+
+```typescript
+z.guid();
+```
+
+--------------------------------
+
 ### Define Base Recipe Zod Object Schema (TypeScript)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
@@ -1019,32 +1033,18 @@ const Recipe = z.object({
 
 --------------------------------
 
-### z.url(options?)
+### Use .transform() method shortcut
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Validates WHATWG-compatible URLs using the runtime new URL() constructor. Supports custom protocol and hostname constraints as well as URL normalization.
+Convenience method to pipe a schema directly into a transform function. Note that Zod Mini has no direct equivalent method syntax.
 
-```APIDOC
-### z.url(options?)
-
-Creates a schema to validate any WHATWG-compatible URL string.
-
-#### Parameters
-- `options` (object, optional)
-  - `hostname` (RegExp, optional) - Regular expression to validate the hostname.
-  - `protocol` (RegExp, optional) - Regular expression to validate the protocol scheme.
-  - `normalize` (boolean, optional) - If true, replaces input value with the normalized URL from `new URL()`.
-
-#### Usage Example
-```ts
-const schema = z.url({
-  hostname: /^example\.com$/,
-  protocol: /^https$/
-});
-
-schema.parse("https://example.com"); // ✅
+```typescript
+const stringToLength = z.string().transform(val => val.length); 
 ```
+
+```typescript
+// no equivalent
 ```
 
 --------------------------------
@@ -1239,6 +1239,41 @@ Shows the structure of the error issues generated by Zod for the improperly form
 
 --------------------------------
 
+### .catchall(schema)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Specifies a catchall schema on an object to validate any unrecognized keys instead of stripping or ignoring them.
+
+```APIDOC
+### Method: `.catchall(schema)` / `z.catchall(objectSchema, schema)`
+
+#### Description
+Defines a catchall schema applied to any unrecognized keys encountered during object parsing.
+
+#### Syntax
+- Zod: `objectSchema.catchall(schema)`
+- Zod Mini: `z.catchall(objectSchema, schema)`
+
+#### Parameters
+- `schema` (ZodType) - Schema used to validate unrecognized property values
+
+#### Usage Example
+```ts
+const DogWithStrings = z
+  .object({
+    name: z.string(),
+    age: z.number().optional(),
+  })
+  .catchall(z.string());
+
+DogWithStrings.parse({ name: "Yeller", extraKey: "extraValue" }); // ✅
+DogWithStrings.parse({ name: "Yeller", extraKey: 42 }); // ❌ throws
+```
+```
+
+--------------------------------
+
 ### Evaluate optionality and defaults in Zod
 
 Source: https://github.com/colinhacks/zod/blob/main/wiki/optionality.md
@@ -1340,43 +1375,6 @@ z.object({ a: z.string().transform((s) => s + "!") }).parse({})
 
 --------------------------------
 
-### z.xor(options)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Creates an exclusive union (XOR) schema where exactly one option must match. Fails if zero options match or if multiple options match.
-
-```APIDOC
-## z.xor(options)
-
-### Description
-An exclusive union (XOR) schema where exactly one option must match. Fails if zero options match OR if multiple options match.
-
-### Parameters
-- **options** (`ZodType[]`) - Required - An array of schemas where exactly one branch must successfully validate the input.
-
-### Error Details
-If input matches multiple options, validation fails with an issue containing `inclusive: false` and a `matches` array containing the indices of matched options.
-
-### Example
-```ts
-const schema = z.xor([z.string(), z.number()]);
-
-schema.parse("hello"); // ✅ passes
-schema.parse(42);      // ✅ passes
-schema.parse(true);    // ❌ fails (zero matches)
-
-const payment = z.xor([
-  z.object({ type: z.literal("card"), cardNumber: z.string() }),
-  z.object({ type: z.literal("bank"), accountNumber: z.string() }),
-]);
-
-payment.parse({ type: "card", cardNumber: "1234" }); // ✅ passes
-```
-```
-
---------------------------------
-
 ### React Form with Zod Error Display
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/ERROR_HANDLING.md
@@ -1403,6 +1401,48 @@ function MyForm(){
     <Errors errors={errors?.name?._errors} />
   </div>
 }
+```
+
+--------------------------------
+
+### z.xor(options)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Creates an exclusive union (XOR) schema where exactly one option must match. Fails if zero options match or if multiple options match.
+
+```APIDOC
+## z.xor(options)
+
+### Description
+Defines an exclusive union (XOR) schema where exactly one option must match. Unlike `z.union`, validation fails if zero options match or if more than one option matches.
+
+### Syntax
+```ts
+z.xor(options: [ZodTypeAny, ...ZodTypeAny[]])
+```
+
+### Parameters
+- **options** (`ZodType[]`) - Required. An array of schemas where exactly one must validate the input.
+
+### Error Behavior
+- Fails with an issue containing `inclusive: false` and a `matches` array listing matching option indices if more than one option matches.
+
+### Example
+```ts
+const schema = z.xor([z.string(), z.number()]);
+
+schema.parse("hello"); // ✅ passes
+schema.parse(42);      // ✅ passes
+schema.parse(true);    // ❌ fails (zero matches)
+
+const payment = z.xor([
+  z.object({ type: z.literal("card"), cardNumber: z.string() }),
+  z.object({ type: z.literal("bank"), accountNumber: z.string() }),
+]);
+
+payment.parse({ type: "card", cardNumber: "1234" }); // ✅ passes
+```
 ```
 
 --------------------------------
@@ -1440,6 +1480,79 @@ categorySchema.parse({
     },
   ],
 }); // passes
+```
+
+--------------------------------
+
+### Validate File instances with size and MIME constraints
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Configure size thresholds (in bytes) and allowed MIME types for File validation across Zod and Zod Mini.
+
+```ts
+const fileSchema = z.file();
+
+fileSchema.min(10_000); // minimum .size (bytes)
+fileSchema.max(1_000_000); // maximum .size (bytes)
+fileSchema.mime("image/png"); // MIME type
+fileSchema.mime(["image/png", "image/jpeg"]); // multiple MIME types
+```
+
+```ts
+const fileSchema = z.file();
+
+fileSchema.check(z.minSize(10_000)); // minimum .size (bytes)
+fileSchema.check(z.maxSize(1_000_000)); // maximum .size (bytes)
+fileSchema.check(z.mime("image/png")); // MIME type
+fileSchema.check(z.mime(["image/png", "image/jpeg"])); // multiple MIME types
+```
+
+--------------------------------
+
+### Incorrect Zod Enum Definition without `as const`
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
+
+This example shows an incorrect way to define a Zod enum using a mutable array, as Zod cannot infer the exact literal values, leading to a type error.
+
+```ts
+const fish = ["Salmon", "Tuna", "Trout"];
+const FishEnum = z.enum(fish);
+```
+
+--------------------------------
+
+### z.url([options])
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Validates WHATWG-compatible URLs using the JS engine's URL constructor, with optional hostname and protocol regex validation and URL normalization.
+
+```APIDOC
+## z.url([options])
+
+### Description
+Validates any WHATWG-compatible URL using the `new URL()` constructor. Supports pattern matching on hostname and protocol, as well as automatic URL normalization.
+
+### Signature
+`z.url(options?: { hostname?: RegExp, protocol?: RegExp, normalize?: boolean }): ZodSchema<string>`
+
+### Parameters
+- **options** (object) - Optional
+  - **hostname** (RegExp) - Optional - Regular expression to validate the hostname.
+  - **protocol** (RegExp) - Optional - Regular expression to validate the protocol scheme.
+  - **normalize** (boolean) - Optional - When enabled, overwrites the input value with the normalized URL from `new URL()`.
+
+### Usage Example
+```ts
+const schema = z.url({
+  protocol: /^https$/,
+  hostname: /^example\.com$/
+});
+
+schema.parse("https://example.com"); // ✅
+```
 ```
 
 --------------------------------
@@ -1484,57 +1597,6 @@ function toggleDarkTheme(isDark) {
 
 --------------------------------
 
-### Incorrect Zod Enum Definition without `as const`
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
-
-This example shows an incorrect way to define a Zod enum using a mutable array, as Zod cannot infer the exact literal values, leading to a type error.
-
-```ts
-const fish = ["Salmon", "Tuna", "Trout"];
-const FishEnum = z.enum(fish);
-```
-
---------------------------------
-
-### Customize input and output types for coercion schemas in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Demonstrates the difference in inferred input and output types between default coercion schemas and those with generic input types specified.
-
-```typescript
-const regularCoerce = z.coerce.string();
-type RegularInput = z.input<typeof regularCoerce>; // => unknown
-type RegularOutput = z.output<typeof regularCoerce>; // => string
-
-const customInput = z.coerce.string<string>();
-type CustomInput = z.input<typeof customInput>; // => string
-type CustomOutput = z.output<typeof customInput>; // => string
-```
-
---------------------------------
-
-### Configure Locales via z.locales
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-customization.mdx
-
-Uses the pre-exported z.locales object for quick configuration. Prefer 'import * as z' when using esbuild to avoid bundling all locales.
-
-```typescript
-import * as z from "zod";
-
-z.config(z.locales.en());
-```
-
-```typescript
-import * as z from "zod/mini"
-
-z.config(z.locales.en());
-```
-
---------------------------------
-
 ### Run benchmark build
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/resolution/README.md
@@ -1543,6 +1605,40 @@ Command to run `tsc` with `extendedDiagnostics` for performance testing.
 
 ```shell
 npm run build-bench
+```
+
+--------------------------------
+
+### .apply()
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Incorporates external functions into Zod's method chaining pipeline, passing the current schema and optional arguments to the target function.
+
+```APIDOC
+## .apply(fn, ...args)
+
+### Description
+Allows external functions to be seamlessly called within Zod's method chain. The schema instance is passed as the first argument, and any additional arguments passed to `.apply()` are forwarded directly.
+
+### Signature
+`schema.apply<T, Args extends any[], R>(fn: (schema: T, ...args: Args) => R, ...args: Args): R`
+
+### Parameters
+- **fn** `(schema: T, ...args: any[]) => R` *(Required)* - The function to apply to the current schema.
+- **...args** `any[]` *(Optional)* - Additional arguments forwarded to `fn`.
+
+### Example
+```ts
+function withDefault<T extends z.ZodType>(schema: T, value: z.output<T>) {
+  return schema.nullish().transform((val) => val ?? value);
+}
+
+const schema = z.string().apply(withDefault, "anonymous");
+
+schema.parse(undefined); // => "anonymous"
+schema.parse("sandwich"); // => "sandwich"
+```
 ```
 
 --------------------------------
@@ -1604,6 +1700,65 @@ emailSchema.meta();
 
 --------------------------------
 
+### z.codec(inputSchema, outputSchema, { decode, encode })
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Creates a codec schema representing a bidirectional transformation between an input schema and an output schema.
+
+```APIDOC
+## z.codec(inputSchema, outputSchema, { decode, encode })
+
+### Description
+Defines a codec schema that implements bidirectional transformations between two schemas using provided `decode` and `encode` functions.
+
+### Signature
+`z.codec(inputSchema: ZodSchema, outputSchema: ZodSchema, transforms: { decode: (input: any) => any, encode: (output: any) => any }): ZodCodec`
+
+### Parameters
+- **inputSchema** (`ZodSchema`) - Required - The schema validating the input format.
+- **outputSchema** (`ZodSchema`) - Required - The schema validating the output format.
+- **transforms** (`object`) - Required - An object containing transformation functions:
+  - **decode** (`(input: any) => any`) - Required - Function transforming the input value to the output type.
+  - **encode** (`(output: any) => any`) - Required - Function transforming the output value back to the input type.
+
+### Example
+```ts
+const stringToDate = z.codec(
+  z.iso.datetime(),
+  z.date(),
+  {
+    decode: (isoString) => new Date(isoString),
+    encode: (date) => date.toISOString(),
+  }
+);
+```
+```
+
+--------------------------------
+
+### Apply size constraints to Map schemas in Zod and Zod Mini
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Applies minimum, maximum, exact size, and nonempty constraints to Map schemas.
+
+```ts
+z.map(z.string(), z.number()).nonempty(); // must contain at least 1 item
+z.map(z.string(), z.number()).min(5); // must contain 5 or more items
+z.map(z.string(), z.number()).max(5); // must contain 5 or fewer items
+z.map(z.string(), z.number()).size(5); // must contain 5 items exactly
+```
+
+```ts
+z.map(z.string(), z.number()).check(z.minSize(1)); // alias for .nonempty()
+z.map(z.string(), z.number()).check(z.minSize(5)); // must contain 5 or more items
+z.map(z.string(), z.number()).check(z.maxSize(5)); // must contain 5 or fewer items
+z.map(z.string(), z.number()).check(z.size(5)); // must contain 5 items exactly
+```
+
+--------------------------------
+
 ### Use a Zod record schema for type-safe assignments
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
@@ -1620,212 +1775,4 @@ userStore["77d2586b-9e8e-4ecf-8b21-ea7e0530eadd"] = {
 userStore["77d2586b-9e8e-4ecf-8b21-ea7e0530eadd"] = {
   whatever: "Ice cream sundae",
 }; // TypeError
-```
-
---------------------------------
-
-### z.union(options)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Creates a union schema representing a logical OR between multiple schemas. Checks input against each option in order and returns the first successful validation.
-
-```APIDOC
-## z.union(options)
-
-### Description
-Union types (`A | B`) represent a logical "OR". Zod union schemas check the input against each option in order, returning the first value that validates successfully.
-
-### Parameters
-- **options** (`ZodType[]`) - Required - An array of schemas to test against in sequential order.
-
-### Properties
-- **options** (`ZodType[]`) - Array of underlying option schemas (accessed via `.options` in standard Zod or `.def.options` in Zod Mini).
-
-### Example
-```ts
-const stringOrNumber = z.union([z.string(), z.number()]);
-
-stringOrNumber.parse("foo"); // passes
-stringOrNumber.parse(14); // passes
-
-// Access options
-stringOrNumber.options; // [ZodString, ZodNumber]
-```
-```
-
---------------------------------
-
-### Using String Format Classes as Types and Checks
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
-
-Demonstrates how certain string format classes can be used both as standalone types and as checks applied to other schemas.
-
-```ts
-// as a type
-z.email().parse("user@example.com");
-
-// as a check
-z.string().check(z.email()).parse("user@example.com")
-```
-
---------------------------------
-
-### Verify new branch push output in Git
-
-Source: https://github.com/colinhacks/zod/blob/main/CLAUDE.md
-
-Check the push command output to verify that a new branch was created rather than updating main.
-
-```text
-* [new branch]      <branch> -> <branch>
-```
-
---------------------------------
-
-### Import and Configure Locale from zod/locales
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-customization.mdx
-
-Imports locale configurations directly from zod/locales. Zod Mini does not load any locale by default, whereas standard Zod loads English automatically.
-
-```typescript
-import * as z from "zod";
-import { en } from "zod/locales"
-
-z.config(en());
-```
-
-```typescript
-import * as z from "zod/mini"
-import { en } from "zod/locales";
-
-z.config(en());
-```
-
---------------------------------
-
-### z.object().keyof() / z.keyof(schema)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Creates a ZodEnum schema matching the keys of an object schema.
-
-```APIDOC
-### Method / Function
-- `schema.keyof()` (Zod)
-- `z.keyof(schema)` (Zod Mini)
-
-### Return Value
-Returns a `ZodEnum` schema matching the object's keys.
-
-### Usage Example
-```ts
-// Zod
-const keySchema = Dog.keyof();
-// => ZodEnum<{ name: "name"; age: "age" }>
-
-// Zod Mini
-const keySchema = z.keyof(Dog);
-// => ZodEnum<{ name: "name"; age: "age" }>
-```
-```
-
---------------------------------
-
-### Refinements with Encoding
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
-
-Shows how `.refine()` checks are executed during the encoding process, including how Zod handles errors from refinement logic.
-
-```ts
-const schema = stringToDate.refine((date) => date.getFullYear() >= 2000, "Must be this millennium");
-
-schema.encode(new Date("2000-01-01"));
-// => Date
-
-schema.encode(new Date("1999-01-01"));
-// => 
-//   {
-//     "code": "custom",
-//     "path": [],
-//     "message": "Must be this millennium"
-//   }
-// ]
-```
-
---------------------------------
-
-### Validate unknown keys with a catchall schema
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
-
-Configures an object schema with `.catchall()` to validate all unrecognized keys against a specified schema, allowing or failing based on the catchall type.
-
-```ts
-const person = z
-  .object({
-    name: z.string(),
-  })
-  .catchall(z.number());
-
-person.parse({
-  name: "bob dylan",
-  validExtraKey: 61, // works fine
-});
-
-person.parse({
-  name: "bob dylan",
-  validExtraKey: false, // fails
-});
-// => throws ZodError
-```
-
---------------------------------
-
-### Default Schema Behavior
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
-
-Demonstrates that for simple schemas, input and output types are identical, and parse, decode, and encode behave the same.
-
-```typescript
-const schema = z.string();
-
-type Input = z.input<typeof schema>;    // string
-type Output = z.output<typeof schema>;  // string
-
-schema.parse("asdf");   // => "asdf"
-schema.decode("asdf");  // => "asdf"
-schema.encode("asdf");  // => "asdf"
-```
-
-```typescript
-const schema = z.string();
-
-type Input = z.input<typeof schema>;    // string
-type Output = z.output<typeof schema>;  // string
-
-z.parse(schema, "asdf");   // => "asdf"
-z.decode(schema, "asdf");  // => "asdf"
-z.encode(schema, "asdf");  // => "asdf"
-```
-
---------------------------------
-
-### Correct approach for accepting Zod schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-This snippet shows the correct way to define a function that accepts a Zod schema, preserving type information by extending the core Zod schema interface.
-
-```ts
-function inferSchema<T extends z4.$ZodType>(schema: T) {
-  return schema;
-}
-
-inferSchema(z.string());
-// => ZodString ✅
 ```
