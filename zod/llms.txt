@@ -530,31 +530,6 @@ jsonToObject.decode('~~invalid~~');
 
 --------------------------------
 
-### Implement postProcess JIT compilation shim in TypeScript
-
-Source: https://github.com/colinhacks/zod/blob/main/wiki/compile-plan.md
-
-Installs a one-shot shim on a schema instance that executes compilation on first parse and updates the run method. Uses a compiling flag to prevent reentrant infinite loops.
-
-```ts
-function postProcess(inst: SomeType) {
-  if (compiling) return;
-  const originalRun = inst._zod.run;
-  inst._zod.run = (payload, ctx) => {
-    compiling = true;
-    try {
-      const compiled = compile(inst);
-      inst._zod.run = compiled._zod.run; // overwrite self
-    } finally {
-      compiling = false;
-    }
-    return inst._zod.run(payload, ctx);
-  };
-}
-```
-
---------------------------------
-
 ### Run full repository verification gates
 
 Source: https://github.com/colinhacks/zod/blob/main/wiki/compiled-constructor-graph.md
@@ -564,6 +539,23 @@ Build all packages and execute the complete test suite. Run these gates before l
 ```sh
 pnpm build
 pnpm vitest run
+```
+
+--------------------------------
+
+### Run prototype and codec test suites with Vitest
+
+Source: https://github.com/colinhacks/zod/blob/main/wiki/compiled-constructor-graph.md
+
+Execute existing prototype, codec, and footprint tests for both classic and mini variants. All specified test suites should pass without modifications.
+
+```sh
+pnpm vitest run \
+  packages/zod/src/v4/classic/tests/prototypes.test.ts \
+  packages/zod/src/v4/mini/tests/prototypes.test.ts \
+  packages/zod/src/v4/classic/tests/codec.test.ts \
+  packages/zod/src/v4/mini/tests/codec.test.ts \
+  packages/zod/src/v4/classic/tests/instance-footprint.test.ts
 ```
 
 --------------------------------
@@ -582,19 +574,25 @@ A.transform(B, func)
 
 --------------------------------
 
-### Run prototype and codec test suites with Vitest
+### Unrepresentable Zod Types in JSON Schema
 
-Source: https://github.com/colinhacks/zod/blob/main/wiki/compiled-constructor-graph.md
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
 
-Execute existing prototype, codec, and footprint tests for both classic and mini variants. All specified test suites should pass without modifications.
+Examples of Zod types and checks that have no direct JSON Schema analog and will cause errors unless configured otherwise.
 
-```sh
-pnpm vitest run \
-  packages/zod/src/v4/classic/tests/prototypes.test.ts \
-  packages/zod/src/v4/mini/tests/prototypes.test.ts \
-  packages/zod/src/v4/classic/tests/codec.test.ts \
-  packages/zod/src/v4/mini/tests/codec.test.ts \
-  packages/zod/src/v4/classic/tests/instance-footprint.test.ts
+```ts
+z.bigint(); // ❌
+z.int64(); // ❌
+z.symbol(); // ❌
+z.undefined(); // ❌
+z.void(); // ❌
+z.date(); // ❌
+z.map(); // ❌
+z.set(); // ❌
+z.transform(); // ❌
+z.nan(); // ❌
+z.custom(); // ❌
+z.number().multipleOf(0); // ❌ the divisor must be finite and non-zero
 ```
 
 --------------------------------
@@ -823,6 +821,21 @@ z.email().check(z.meta({ description: "An email address" }));
 
 --------------------------------
 
+### Generic registry without metadata type
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Example of using a registry as a generic collection when no metadata type is defined.
+
+```ts
+const myRegistry = z.registry();
+
+myRegistry.add(z.string());
+myRegistry.add(z.number());
+```
+
+--------------------------------
+
 ### Parsing data with Zod Core functions
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
@@ -836,21 +849,6 @@ function parseData<T extends z4.$ZodType>(data: unknown, schema: T): z4.output<T
 
 parseData("sup", z.string());
 // => string
-```
-
---------------------------------
-
-### Generic registry without metadata type
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Example of using a registry as a generic collection when no metadata type is defined.
-
-```ts
-const myRegistry = z.registry();
-
-myRegistry.add(z.string());
-myRegistry.add(z.number());
 ```
 
 --------------------------------
@@ -1033,6 +1031,28 @@ const Recipe = z.object({
 
 --------------------------------
 
+### .exactPartial() / z.exactPartial()
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Wraps each property of an object schema in exactOptional instead of regular optional.
+
+```APIDOC
+### `.exactPartial()` / `z.exactPartial(schema)`
+
+#### Description
+Identical to `.partial()`, but wraps each field in `exactOptional()` instead of standard `optional()`.
+
+#### Examples
+```ts
+const PartialRecipe = Recipe.exactPartial();
+// Or with Zod Mini:
+const PartialRecipe = z.exactPartial(Recipe);
+```
+```
+
+--------------------------------
+
 ### Use .transform() method shortcut
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1181,30 +1201,6 @@ window.$docsify = {
 
 --------------------------------
 
-### Using a Codec for Decoding and Encoding
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
-
-Demonstrates how `decode` and `encode` behave differently when using a codec that diverges input and output types.
-
-```typescript
-stringToDate.decode("2024-01-15T10:30:00.000Z")
-// => Date
-
-stringToDate.encode(new Date("2024-01-15T10:30:00.000Z"))
-// => string
-```
-
-```typescript
-z.decode(stringToDate, "2024-01-15T10:30:00.000Z")
-// => Date
-
-z.encode(stringToDate, new Date("2024-01-15T10:30:00.000Z"))
-// => string
-```
-
---------------------------------
-
 ### Example ZodError Issues
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/ERROR_HANDLING.md
@@ -1239,37 +1235,26 @@ Shows the structure of the error issues generated by Zod for the improperly form
 
 --------------------------------
 
-### .catchall(schema)
+### Using a Codec for Decoding and Encoding
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
 
-Specifies a catchall schema on an object to validate any unrecognized keys instead of stripping or ignoring them.
+Demonstrates how `decode` and `encode` behave differently when using a codec that diverges input and output types.
 
-```APIDOC
-### Method: `.catchall(schema)` / `z.catchall(objectSchema, schema)`
+```typescript
+stringToDate.decode("2024-01-15T10:30:00.000Z")
+// => Date
 
-#### Description
-Defines a catchall schema applied to any unrecognized keys encountered during object parsing.
-
-#### Syntax
-- Zod: `objectSchema.catchall(schema)`
-- Zod Mini: `z.catchall(objectSchema, schema)`
-
-#### Parameters
-- `schema` (ZodType) - Schema used to validate unrecognized property values
-
-#### Usage Example
-```ts
-const DogWithStrings = z
-  .object({
-    name: z.string(),
-    age: z.number().optional(),
-  })
-  .catchall(z.string());
-
-DogWithStrings.parse({ name: "Yeller", extraKey: "extraValue" }); // ✅
-DogWithStrings.parse({ name: "Yeller", extraKey: 42 }); // ❌ throws
+stringToDate.encode(new Date("2024-01-15T10:30:00.000Z"))
+// => string
 ```
+
+```typescript
+z.decode(stringToDate, "2024-01-15T10:30:00.000Z")
+// => Date
+
+z.encode(stringToDate, new Date("2024-01-15T10:30:00.000Z"))
+// => string
 ```
 
 --------------------------------
@@ -1371,6 +1356,41 @@ z.object({ a: z.transform((v) => v ?? "X") }).parse({})
 
 z.object({ a: z.string().transform((s) => s + "!") }).parse({})
 // → THROW  (pipe.optin = string.optin = undefined — transform on OUT side doesn't drive optin)
+```
+
+--------------------------------
+
+### .catchall(schema)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Specifies a catchall schema on an object to validate any unrecognized keys instead of stripping or ignoring them.
+
+```APIDOC
+### Method: `.catchall(schema)` / `z.catchall(objectSchema, schema)`
+
+#### Description
+Defines a catchall schema applied to any unrecognized keys encountered during object parsing.
+
+#### Syntax
+- Zod: `objectSchema.catchall(schema)`
+- Zod Mini: `z.catchall(objectSchema, schema)`
+
+#### Parameters
+- `schema` (ZodType) - Schema used to validate unrecognized property values
+
+#### Usage Example
+```ts
+const DogWithStrings = z
+  .object({
+    name: z.string(),
+    age: z.number().optional(),
+  })
+  .catchall(z.string());
+
+DogWithStrings.parse({ name: "Yeller", extraKey: "extraValue" }); // ✅
+DogWithStrings.parse({ name: "Yeller", extraKey: 42 }); // ❌ throws
+```
 ```
 
 --------------------------------
@@ -1557,6 +1577,31 @@ schema.parse("https://example.com"); // ✅
 
 --------------------------------
 
+### Implement postProcess JIT compilation shim in TypeScript
+
+Source: https://github.com/colinhacks/zod/blob/main/wiki/compile-plan.md
+
+Installs a one-shot shim on a schema instance that executes compilation on first parse and updates the run method. Uses a compiling flag to prevent reentrant infinite loops.
+
+```ts
+function postProcess(inst: SomeType) {
+  if (compiling) return;
+  const originalRun = inst._zod.run;
+  inst._zod.run = (payload, ctx) => {
+    compiling = true;
+    try {
+      const compiled = compile(inst);
+      inst._zod.run = compiled._zod.run; // overwrite self
+    } finally {
+      compiling = false;
+    }
+    return inst._zod.run(payload, ctx);
+  };
+}
+```
+
+--------------------------------
+
 ### Implement Dark Theme Toggling with System Preference
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/index.html
@@ -1687,19 +1732,6 @@ otherwise                    →  clobber (yield undefined, don't run it)
 
 --------------------------------
 
-### Retrieving metadata with .meta()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Shows how to retrieve metadata associated with a schema instance using .meta() without arguments.
-
-```ts
-emailSchema.meta();
-// => { id: "email_address", title: "Email address", ... }
-```
-
---------------------------------
-
 ### z.codec(inputSchema, outputSchema, { decode, encode })
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1755,24 +1787,4 @@ z.map(z.string(), z.number()).check(z.minSize(1)); // alias for .nonempty()
 z.map(z.string(), z.number()).check(z.minSize(5)); // must contain 5 or more items
 z.map(z.string(), z.number()).check(z.maxSize(5)); // must contain 5 or fewer items
 z.map(z.string(), z.number()).check(z.size(5)); // must contain 5 items exactly
-```
-
---------------------------------
-
-### Use a Zod record schema for type-safe assignments
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
-
-Demonstrates how to assign values to a record defined by a Zod schema, showing type checking in action.
-
-```ts
-const userStore: UserStore = {};
-
-userStore["77d2586b-9e8e-4ecf-8b21-ea7e0530eadd"] = {
-  name: "Carlotta",
-}; // passes
-
-userStore["77d2586b-9e8e-4ecf-8b21-ea7e0530eadd"] = {
-  whatever: "Ice cream sundae",
-}; // TypeError
 ```
