@@ -847,30 +847,14 @@ npm run astro -- --help
 
 --------------------------------
 
-### Install React Query via Package Managers
+### Get mutation defaults on QueryClient in TSX
 
-Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
 
-Use these commands to add React Query to your project using various package managers like npm, pnpm, yarn, bun, or deno.
+Returns the default options configured for specific mutation keys.
 
-```bash
-npm i @tanstack/react-query
-```
-
-```bash
-pnpm add @tanstack/react-query
-```
-
-```bash
-yarn add @tanstack/react-query
-```
-
-```bash
-bun add @tanstack/react-query
-```
-
-```bash
-deno add @tanstack/react-query
+```tsx
+const defaultOptions = queryClient.getMutationDefaults(['addPost'])
 ```
 
 --------------------------------
@@ -899,18 +883,6 @@ bun add @tanstack/svelte-query
 
 --------------------------------
 
-### Get mutation defaults on QueryClient in TSX
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Returns the default options configured for specific mutation keys.
-
-```tsx
-const defaultOptions = queryClient.getMutationDefaults(['addPost'])
-```
-
---------------------------------
-
 ### Invalidate Queries by Prefix in TanStack Query
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/query-invalidation.md
@@ -933,33 +905,6 @@ const todoListQuery = useQuery({
 const todoListQuery = useQuery({
   queryKey: ['todos', { page: 1 }],
   queryFn: fetchTodoList,
-})
-```
-
---------------------------------
-
-### Configure Query Persistence with experimental_createQueryPersister
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/plugins/createPersister.md
-
-Initialize the persister with a storage engine and apply it to the QueryClient default options. This setup ensures queries are persisted individually and restored lazily when first used.
-
-```tsx
-import { QueryClient } from '@tanstack/vue-query'
-import { experimental_createQueryPersister } from '@tanstack/query-persist-client-core'
-
-const persister = experimental_createQueryPersister({
-  storage: AsyncStorage,
-  maxAge: 1000 * 60 * 60 * 12, // 12 hours
-})
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      gcTime: 1000 * 30, // 30 seconds
-      persister: persister.persisterFn,
-    },
-  },
 })
 ```
 
@@ -1003,30 +948,6 @@ npm init solid@latest
 ```bash
 # create a new project in my-app
 npm init solid@latest my-app
-```
-
---------------------------------
-
-### Fetch Data with useQuery in a Component
-
-Source: https://github.com/tanstack/query/blob/main/packages/vue-query/README.md
-
-Call useQuery inside the component setup hook with a unique queryKey and an asynchronous queryFn.
-
-```tsx
-import { defineComponent } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-
-export default defineComponent({
-  name: 'MyComponent',
-  setup() {
-    const query = useQuery({ queryKey: ['todos'], queryFn: getTodos })
-
-    return {
-      query,
-    }
-  },
-})
 ```
 
 --------------------------------
@@ -1168,6 +1089,19 @@ function Post(props) {
 
 --------------------------------
 
+### Get query state with queryClient.getQueryState
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Synchronously retrieves an existing query's state object. Returns undefined if the query does not exist in the cache.
+
+```tsx
+const state = queryClient.getQueryState(queryKey)
+console.log(state.dataUpdatedAt)
+```
+
+--------------------------------
+
 ### Implementing Dependent Queries with useQueries
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/dependent-queries.md
@@ -1193,19 +1127,6 @@ const usersMessages = useQueries({
       })
     : [], // if userIds is undefined, an empty array will be returned
 })
-```
-
---------------------------------
-
-### Get query state with queryClient.getQueryState
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Synchronously retrieves an existing query's state object. Returns undefined if the query does not exist in the cache.
-
-```tsx
-const state = queryClient.getQueryState(queryKey)
-console.log(state.dataUpdatedAt)
 ```
 
 --------------------------------
@@ -1347,6 +1268,18 @@ npm create svelte@latest my-app
 
 --------------------------------
 
+### Get cached data for multiple queries with QueryClient
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Synchronously retrieves cached data tuples for all queries matching the specified filters. Returns an empty array if no matching queries are found.
+
+```tsx
+const data = queryClient.getQueriesData(filters)
+```
+
+--------------------------------
+
 ### Implement Lit Query with Queries and Mutations in LitElement
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/quick-start.md
@@ -1422,18 +1355,6 @@ Execute this command to build the Nuxt 3 application for production deployment.
 
 ```bash
 pnpm build
-```
-
---------------------------------
-
-### Get cached data for multiple queries with QueryClient
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Synchronously retrieves cached data tuples for all queries matching the specified filters. Returns an empty array if no matching queries are found.
-
-```tsx
-const data = queryClient.getQueriesData(filters)
 ```
 
 --------------------------------
@@ -1576,6 +1497,34 @@ Retrieves an array of all mutation instances currently stored in the cache.
 
 ```tsx
 const mutations = mutationCache.getAll()
+```
+
+--------------------------------
+
+### Install React Query via Package Managers
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/installation.md
+
+Use these commands to add React Query to your project using various package managers like npm, pnpm, yarn, bun, or deno.
+
+```bash
+npm i @tanstack/react-query
+```
+
+```bash
+pnpm add @tanstack/react-query
+```
+
+```bash
+yarn add @tanstack/react-query
+```
+
+```bash
+bun add @tanstack/react-query
+```
+
+```bash
+deno add @tanstack/react-query
 ```
 
 --------------------------------
@@ -1897,6 +1846,33 @@ function Component({ id }) {
 
 --------------------------------
 
+### Configure Query Persistence with experimental_createQueryPersister
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/plugins/createPersister.md
+
+Initialize the persister with a storage engine and apply it to the QueryClient default options. This setup ensures queries are persisted individually and restored lazily when first used.
+
+```tsx
+import { QueryClient } from '@tanstack/vue-query'
+import { experimental_createQueryPersister } from '@tanstack/query-persist-client-core'
+
+const persister = experimental_createQueryPersister({
+  storage: AsyncStorage,
+  maxAge: 1000 * 60 * 60 * 12, // 12 hours
+})
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 30, // 30 seconds
+      persister: persister.persisterFn,
+    },
+  },
+})
+```
+
+--------------------------------
+
 ### Correct queryKey reference in getQueryData (TypeScript/TSX)
 
 Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
@@ -2083,6 +2059,30 @@ Run this command to display a comprehensive list of all available schematics for
 
 ```bash
 ng generate --help
+```
+
+--------------------------------
+
+### Fetch Data with useQuery in a Component
+
+Source: https://github.com/tanstack/query/blob/main/packages/vue-query/README.md
+
+Call useQuery inside the component setup hook with a unique queryKey and an asynchronous queryFn.
+
+```tsx
+import { defineComponent } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+
+export default defineComponent({
+  name: 'MyComponent',
+  setup() {
+    const query = useQuery({ queryKey: ['todos'], queryFn: getTodos })
+
+    return {
+      query,
+    }
+  },
+})
 ```
 
 --------------------------------
