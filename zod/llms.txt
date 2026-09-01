@@ -14,6 +14,18 @@ pnpm add zod          # pnpm
 
 --------------------------------
 
+### Install Zod with npm
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Installs Zod 4.5.0 or compatible versions. Import zod/compile or call z.compile() after installation to enable schema compilation.
+
+```sh
+npm install zod@^4.5.0
+```
+
+--------------------------------
+
 ### New transformer syntax
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/MIGRATION.md
@@ -92,6 +104,18 @@ npm install zod @zod/mini
 
 --------------------------------
 
+### Dev Server
+
+Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
+
+Command to start the development server for Zod documentation.
+
+```sh
+pnpm run --filter=@zod/docs dev
+```
+
+--------------------------------
+
 ### Parse Primitive Schemas for Bundle Comparison
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
@@ -104,14 +128,20 @@ z.boolean().parse(true)
 
 --------------------------------
 
-### Dev Server
+### Parse Object Schemas for Bundle Comparison
 
-Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
 
-Command to start the development server for Zod documentation.
+A multi-property object schema example used to benchmark bundle size differences.
 
-```sh
-pnpm run --filter=@zod/docs dev
+```ts
+const schema = z.object({ a: z.string(), b: z.number(), c: z.boolean() });
+
+schema.parse({
+  a: "asdf",
+  b: 123,
+  c: true,
+});
 ```
 
 --------------------------------
@@ -132,24 +162,6 @@ Example of adding Zod as both a peer and dev dependency in package.json for deve
     "zod": "^4.0.0"
   }
 }
-```
-
---------------------------------
-
-### Parse Object Schemas for Bundle Comparison
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-A multi-property object schema example used to benchmark bundle size differences.
-
-```ts
-const schema = z.object({ a: z.string(), b: z.number(), c: z.boolean() });
-
-schema.parse({
-  a: "asdf",
-  b: 123,
-  c: true,
-});
 ```
 
 --------------------------------
@@ -202,27 +214,23 @@ const myError = new z.ZodError([]);
 
 --------------------------------
 
-### Basic Zod Schema Definition and Validation
+### Differentiating Zod 3 and Zod 4 schemas at runtime
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/index.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
 
-This example demonstrates how to define a basic Zod object schema, parse untrusted input data, and access the type-safe result.
+Code example showing how to check for the `_zod` property to determine if a schema is Zod 3 or Zod 4.
 
 ```ts
-import * as z from "zod";
+import type * as z3 from "zod/v3";
+import type * as z4 from "zod/v4/core";
 
-const User = z.object({
-  name: z.string(),
-});
+declare const schema: z3.ZodTypeAny | z4.$ZodType;
 
-// some untrusted data...
-const input = { /* stuff */ };
-
-// the parsed result is validated and type safe!
-const data = User.parse(input);
-
-// so you can use it with confidence :)
-console.log(data.name);
+if ("_zod" in schema) {
+  schema._zod.def; // Zod 4 schema
+} else {
+  schema._def; // Zod 3 schema
+}
 ```
 
 --------------------------------
@@ -241,27 +249,6 @@ const test = z
     .transform((val) => val * 2);
 
 test.parse("12characters"); // => 24
-```
-
---------------------------------
-
-### Differentiating Zod 3 and Zod 4 schemas at runtime
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Code example showing how to check for the `_zod` property to determine if a schema is Zod 3 or Zod 4.
-
-```ts
-import type * as z3 from "zod/v3";
-import type * as z4 from "zod/v4/core";
-
-declare const schema: z3.ZodTypeAny | z4.$ZodType;
-
-if ("_zod" in schema) {
-  schema._zod.def; // Zod 4 schema
-} else {
-  schema._def; // Zod 3 schema
-}
 ```
 
 --------------------------------
@@ -402,6 +389,33 @@ jsonToObject.decode('~~invalid~~');
 
 --------------------------------
 
+### Iterate on Contributor PR via Git Worktree in Bash
+
+Source: https://github.com/colinhacks/zod/blob/main/AGENTS.md
+
+Fetch an open contributor PR into an isolated worktree, inspect PR head metadata using GitHub CLI, and push updates back to the contributor's fork. Ensures the main working directory remains clean and dependencies are installed against the shared pnpm store.
+
+```bash
+# 1. Fetch the PR as a local branch and create a worktree for it
+git fetch origin pull/<N>/head:pr-<N>
+git worktree add ~/.cursor/worktrees/zod/pr-<N> pr-<N>
+cd ~/.cursor/worktrees/zod/pr-<N>
+pnpm install --frozen-lockfile   # fast, pnpm store is shared across worktrees
+
+# 2. Look up the PR's head info — you'll need the contributor's fork URL
+#    and the head ref name to push back.
+gh pr view <N> --repo colinhacks/zod \
+  --json headRefName,headRepositoryOwner,maintainerCanModify
+
+# 3. If maintainerCanModify is true, add the fork as a remote and push to
+#    the PR's head ref (NOT to your local branch name).
+git remote add <contributor> git@github.com:<contributor>/zod.git
+git push <contributor> pr-<N>:<headRefName>                 # first push
+git push <contributor> pr-<N>:<headRefName> --force-with-lease   # for amends
+```
+
+--------------------------------
+
 ### Old transformer syntax (not available)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/MIGRATION.md
@@ -425,25 +439,6 @@ Configure preload settings in configuration files such as bunfig.toml or nub.jso
 ```jsonc
 {
   "preload": ["zod/compile"]
-}
-```
-
---------------------------------
-
-### Enable TypeScript Strict Mode
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/index.mdx
-
-Configuration snippet for `tsconfig.json` to enable TypeScript's strict mode, which is a best practice and required for Zod.
-
-```ts
-// tsconfig.json
-{
-  // ...
-  "compilerOptions": {
-    // ...
-    "strict": true
-  }
 }
 ```
 
@@ -496,6 +491,21 @@ const asyncCodec = z.codec(z.string(), z.number(), {
 
 --------------------------------
 
+### Using .register() method
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Shows how to use the .register() method on a schema to add it to a registry.
+
+```ts
+const mySchema = z.string();
+
+mySchema.register(myRegistry, { description: "A cool schema!" });
+// => mySchema
+```
+
+--------------------------------
+
 ### Inverting a Codec
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
@@ -543,21 +553,6 @@ const stringToDate = z.codec(
 
 --------------------------------
 
-### Using .register() method
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Shows how to use the .register() method on a schema to add it to a registry.
-
-```ts
-const mySchema = z.string();
-
-mySchema.register(myRegistry, { description: "A cool schema!" });
-// => mySchema
-```
-
---------------------------------
-
 ### z.flattenError() usage
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-formatting.mdx
@@ -591,21 +586,6 @@ a.parse(undefined); // => "TUNA"
 
 const b = z.string().trim().toUpperCase().default("  tuna  ");
 b.parse(undefined); // => "  tuna  "
-```
-
---------------------------------
-
-### Generic registry without metadata type
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Example of using a registry as a generic collection when no metadata type is defined.
-
-```ts
-const myRegistry = z.registry();
-
-myRegistry.add(z.string());
-myRegistry.add(z.number());
 ```
 
 --------------------------------
@@ -644,6 +624,21 @@ z.email().check(z.meta({ description: "An email address" }));
 
 --------------------------------
 
+### Generic registry without metadata type
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Example of using a registry as a generic collection when no metadata type is defined.
+
+```ts
+const myRegistry = z.registry();
+
+myRegistry.add(z.string());
+myRegistry.add(z.number());
+```
+
+--------------------------------
+
 ### Parsing data with Zod Core functions
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
@@ -661,6 +656,35 @@ parseData("sup", z.string());
 
 --------------------------------
 
+### Enable schema compilation in application entrypoint
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Import at the application entrypoint before any schemas are defined to enable automatic compile-by-default.
+
+```ts
+// in your entrypoint (or before any schemas are defined)
+import "zod/compile";
+```
+
+--------------------------------
+
+### .describe() method (Zod)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Demonstrates using `.describe()` and its equivalence to `.meta()` for registering a schema description in Zod.
+
+```ts
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
+```
+
+--------------------------------
+
 ### Validate UUID-like GUID Identifiers with Zod
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -673,15 +697,28 @@ z.guid();
 
 --------------------------------
 
-### Enable schema compilation in application entrypoint
+### Preload global compilation using Node.js CLI flags
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
 
-Import at the application entrypoint before any schemas are defined to enable automatic compile-by-default.
+Pass `--import` or `--require` flags to ensure `zod/compile` is loaded before any module creates schemas.
 
-```ts
-// in your entrypoint (or before any schemas are defined)
-import "zod/compile";
+```shell
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
+```
+
+--------------------------------
+
+### Production Build
+
+Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
+
+Commands to build Zod documentation for production, requiring a GITHUB_TOKEN.
+
+```sh
+export GITHUB_TOKEN=your_token_here # persists in shell session
+pnpm run --filter=@zod/docs build
 ```
 
 --------------------------------
@@ -717,31 +754,62 @@ switch (def.check) {
 
 --------------------------------
 
-### .describe() method (Zod)
+### Import Standalone @zod/mini Package
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
 
-Demonstrates using `.describe()` and its equivalence to `.meta()` for registering a schema description in Zod.
+Imports the functional API from the standalone `@zod/mini` package.
 
 ```ts
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
+import * as z from "@zod/mini";
 ```
 
 --------------------------------
 
-### Production Build
+### Constraining input schema to a specific subclass
 
-Source: https://github.com/colinhacks/zod/blob/main/CONTRIBUTING.md
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
 
-Commands to build Zod documentation for production, requiring a GITHUB_TOKEN.
+Example of how to constrain the accepted schema type to a specific Zod subclass, such as `ZodObject`.
 
-```sh
-export GITHUB_TOKEN=your_token_here # persists in shell session
-pnpm run --filter=@zod/docs build
+```ts
+
+import * as z4 from "zod/v4/core";
+
+// only accepts object schemas
+function inferSchema<T extends z4.$ZodObject>(schema: T) {
+  return schema;
+}
+```
+
+--------------------------------
+
+### z.input(schema) / z.output(schema)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Runtime counterparts to type-level z.input and z.output that replace every pipe in a schema with its respective input or output side.
+
+```APIDOC
+### z.input(schema) / z.output(schema)
+
+### Description
+Extracts runtime schema equivalents representing the input or output side of piped schemas or codecs nested inside objects, records, or maps.
+
+### Signatures
+- `z.input(schema: ZodSchema): ZodSchema`
+- `z.output(schema: ZodSchema): ZodSchema`
+
+### Parameters
+- **schema** (`ZodSchema`) - Required - The schema containing pipes or codecs to extract input/output representations from.
+
+### Usage Example
+```ts
+const Event = z.object({ name: z.string(), at: stringToDate });
+
+z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // Validates against input side
+z.output(Event).parse({ name: "launch", at: new Date() });            // Validates against output side
+```
 ```
 
 --------------------------------
@@ -766,44 +834,16 @@ export {}
 
 --------------------------------
 
-### Constraining input schema to a specific subclass
+### Creating a simple registry
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
 
-Example of how to constrain the accepted schema type to a specific Zod subclass, such as `ZodObject`.
-
-```ts
-
-import * as z4 from "zod/v4/core";
-
-// only accepts object schemas
-function inferSchema<T extends z4.$ZodObject>(schema: T) {
-  return schema;
-}
-```
-
---------------------------------
-
-### Dispatch workflow to back-publish @zod/mini via GitHub CLI
-
-Source: https://github.com/colinhacks/zod/blob/main/AGENTS.md
-
-Triggers the release workflow manually to publish a specific version of @zod/mini that was omitted in a previous release. Run one version at a time to avoid concurrent npm publish failures.
-
-```bash
-gh workflow run release.yml -f mini_version=4.5.2
-```
-
---------------------------------
-
-### Import Standalone @zod/mini Package
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Imports the functional API from the standalone `@zod/mini` package.
+Demonstrates how to create a Zod registry with a specific metadata type.
 
 ```ts
-import * as z from "@zod/mini";
+import * as z from "zod";
+
+const myRegistry = z.registry<{ description: string }>();
 ```
 
 --------------------------------
@@ -842,46 +882,14 @@ z.guid();
 
 --------------------------------
 
-### z.input(schema) / z.output(schema)
+### Dispatch manual release workflow for @zod/mini using GitHub CLI
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+Source: https://github.com/colinhacks/zod/blob/main/AGENTS.md
 
-Runtime counterparts to type-level z.input and z.output that replace every pipe in a schema with its respective input or output side.
+Triggers the release workflow to publish @zod/mini at an existing zod release version. Dispatch runs one version at a time to avoid concurrent publish failures.
 
-```APIDOC
-### z.input(schema) / z.output(schema)
-
-### Description
-Extracts runtime schema equivalents representing the input or output side of piped schemas or codecs nested inside objects, records, or maps.
-
-### Signatures
-- `z.input(schema: ZodSchema): ZodSchema`
-- `z.output(schema: ZodSchema): ZodSchema`
-
-### Parameters
-- **schema** (`ZodSchema`) - Required - The schema containing pipes or codecs to extract input/output representations from.
-
-### Usage Example
-```ts
-const Event = z.object({ name: z.string(), at: stringToDate });
-
-z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // Validates against input side
-z.output(Event).parse({ name: "launch", at: new Date() });            // Validates against output side
-```
-```
-
---------------------------------
-
-### Creating a simple registry
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Demonstrates how to create a Zod registry with a specific metadata type.
-
-```ts
-import * as z from "zod";
-
-const myRegistry = z.registry<{ description: string }>();
+```bash
+gh workflow run release.yml -f mini_version=4.5.2
 ```
 
 --------------------------------
@@ -946,6 +954,18 @@ Eagerly compiles a schema at call time and returns a cloned schema whose `_zod.r
 
 --------------------------------
 
+### Preload zod/compile with Node.js CLI
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
+
+Preloads automatic compilation across the entire application using Node's --import CLI flag before application code executes.
+
+```sh
+node --import zod/compile app.js
+```
+
+--------------------------------
+
 ### Access enum values with .enum property
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
@@ -967,14 +987,16 @@ FishEnum.enum;
 
 --------------------------------
 
-### Enabling global schema compilation with Node.js CLI flag
+### Configure runtime preload in JSONC configuration
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
 
-Preloads zod/compile using Node's --import flag. Guarantees compilation logic is loaded before any application modules define schemas.
+Add `zod/compile` to the `preload` array in supported configuration files such as `nub.jsonc` or `bunfig.toml`.
 
-```sh
-node --import zod/compile app.js
+```jsonc
+{
+  "preload": ["zod/compile"]
+}
 ```
 
 --------------------------------
@@ -1058,24 +1080,6 @@ new URL("HTTP://ExAmPle.com:80/./a/../b?X=1#f oo").href
 
 --------------------------------
 
-### Using .meta() to register metadata (Zod Mini)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Conveniently registers metadata in z.globalRegistry using the .meta() method in Zod Mini.
-
-```ts
-const emailSchema = z.email().check(
-  z.meta({
-    id: "email_address",
-    title: "Email address",
-    description: "Please enter a valid email address",
-  })
-);
-```
-
---------------------------------
-
 ### React Form with Zod Error Display
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/ERROR_HANDLING.md
@@ -1102,6 +1106,42 @@ function MyForm(){
     <Errors errors={errors?.name?._errors} />
   </div>
 }
+```
+
+--------------------------------
+
+### Using .meta() to register metadata (Zod Mini)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Conveniently registers metadata in z.globalRegistry using the .meta() method in Zod Mini.
+
+```ts
+const emailSchema = z.email().check(
+  z.meta({
+    id: "email_address",
+    title: "Email address",
+    description: "Please enter a valid email address",
+  })
+);
+```
+
+--------------------------------
+
+### Regenerate Typia benchmark artifact in a temporary build directory
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/bench/typia-case/README.md
+
+Runs in an isolated temporary directory to avoid patching the shared workspace TypeScript installation. Compiles typia-case with ts-patch and copies the resulting bundle back to build/index.cjs.
+
+```sh
+mkdir -p /tmp/typia-build/src && cd /tmp/typia-build
+npm init -y
+npm install typia@9.7.2 typescript@5.9.3 ts-patch@3.3.0
+cp <repo>/packages/bench/typia-case/src/index.ts src/index.ts
+cp <repo>/packages/bench/typia-case/tsconfig.json tsconfig.json
+npx ts-patch install && npx tsc -p tsconfig.json
+cp build/index.js <repo>/packages/bench/typia-case/build/index.cjs
 ```
 
 --------------------------------
@@ -1184,24 +1224,6 @@ window.$docsify = {
     "https://go.clerk.com/PKHrcwh"
   ]
 };
-```
-
---------------------------------
-
-### Regenerate Typia benchmark artifact in a temporary build directory
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/bench/typia-case/README.md
-
-Runs in an isolated temporary directory to avoid patching the shared workspace TypeScript installation. Compiles typia-case with ts-patch and copies the resulting bundle back to build/index.cjs.
-
-```sh
-mkdir -p /tmp/typia-build/src && cd /tmp/typia-build
-npm init -y
-npm install typia@9.7.2 typescript@5.9.3 ts-patch@3.3.0
-cp <repo>/packages/bench/typia-case/src/index.ts src/index.ts
-cp <repo>/packages/bench/typia-case/tsconfig.json tsconfig.json
-npx ts-patch install && npx tsc -p tsconfig.json
-cp build/index.js <repo>/packages/bench/typia-case/build/index.cjs
 ```
 
 --------------------------------
@@ -1320,6 +1342,18 @@ function toggleDarkTheme(isDark) {
   );
   // localStorage.setItem("dark-theme", isDark ? "true" : "false");
 }
+```
+
+--------------------------------
+
+### Verify Successful Branch Creation in Git Push Output
+
+Source: https://github.com/colinhacks/zod/blob/main/AGENTS.md
+
+Verify that the command output indicates a new remote branch was created rather than updating main. If the destination ref indicates main, revert or abort immediately.
+
+```text
+* [new branch]      <branch> -> <branch>
 ```
 
 --------------------------------
@@ -1644,71 +1678,4 @@ z.email().parse("user@example.com");
 
 // as a check
 z.string().check(z.email()).parse("user@example.com")
-```
-
---------------------------------
-
-### .catchall()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
-
-Validates all unrecognized keys against a specified catchall schema.
-
-```APIDOC
-### `z.object().catchall(schema)`
-
-### Description
-Passes a schema against which all unknown keys are validated. Using `.catchall()` obviates `.passthrough()`, `.strip()`, or `.strict()` since all keys are considered known.
-
-### Parameters
-- **schema** (ZodType) - The Zod schema against which unknown keys will be validated.
-
-### Usage Example
-```ts
-const person = z
-  .object({
-    name: z.string(),
-  })
-  .catchall(z.number());
-
-person.parse({
-  name: "bob dylan",
-  validExtraKey: 61, // works fine
-});
-
-person.parse({
-  name: "bob dylan",
-  validExtraKey: false, // fails
-});
-// => throws ZodError
-```
-```
-
---------------------------------
-
-### .describe()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
-
-Adds a description property to the resulting schema metadata.
-
-```APIDOC
-## .describe(description)
-
-### Description
-Adds a `description` property to the resulting schema object, useful for documenting fields or exporting to JSON Schema.
-
-### Signature
-`schema.describe(description)`
-
-### Parameters
-- **description** `string` - Required. The description text to associate with the schema.
-
-### Usage Example
-```ts
-const documentedString = z
-  .string()
-  .describe("A useful bit of text, if you know what to do with it.");
-documentedString.description; // => "A useful bit of text, if you know what to do with it."
-```
 ```
