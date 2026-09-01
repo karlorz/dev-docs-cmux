@@ -29,19 +29,6 @@ $ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### CSS Styling Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Example of basic CSS styling for paragraphs and a class.
-
-```css
-p { background: rgba(0, 0, 0, 0.1); }
-.classname { color: green; }
-```
-
---------------------------------
-
 ### Install a Vite plugin
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
@@ -336,23 +323,6 @@ export default {
 
 --------------------------------
 
-### Accessing Environments from the Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
-
-Example demonstrating how to access client and SSR environments from a Vite dev server instance.
-
-```js
-// create the server, or get it from the configureServer hook
-const server = await createServer(/* options */)
-
-const clientEnvironment = server.environments.client
-clientEnvironment.transformRequest(url)
-console.log(server.environments.ssr.moduleGraph)
-```
-
---------------------------------
-
 ### ModuleRunner Example Usage
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
@@ -376,6 +346,23 @@ const moduleRunner = new ModuleRunner(
 )
 
 await moduleRunner.import('/src/entry-point.js')
+```
+
+--------------------------------
+
+### Accessing Environments from the Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+
+Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+
+```js
+// create the server, or get it from the configureServer hook
+const server = await createServer(/* options */)
+
+const clientEnvironment = server.environments.client
+clientEnvironment.transformRequest(url)
+console.log(server.environments.ssr.moduleGraph)
 ```
 
 --------------------------------
@@ -557,6 +544,19 @@ import init from './example.wasm?init'
 init().then((instance) => {
   instance.exports.test()
 })
+```
+
+--------------------------------
+
+### CSS Styling Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Example of basic CSS styling for paragraphs and a class.
+
+```css
+p { background: rgba(0, 0, 0, 0.1); }
+.classname { color: green; }
 ```
 
 --------------------------------
@@ -753,6 +753,18 @@ MIT License
 
 --------------------------------
 
+### SSR Dependencies Example
+
+Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
+
+Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
+
+```javascript
+// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
+```
+
+--------------------------------
+
 ### Configure build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -766,18 +778,6 @@ Define the standard build and preview commands within the scripts section of you
     "preview": "vite preview"
   }
 }
-```
-
---------------------------------
-
-### SSR Dependencies Example
-
-Source: https://github.com/vitejs/vite/blob/main/playground/ssr-deps/index.html
-
-Example demonstrating hydration scripts and dynamic module imports, including a specific case to disable pre-transform optimization to trigger a race condition for testing purposes.
-
-```javascript
-// hydration scripts import '@vitejs/test-css-lib' // Using dynamic import, so the module is transformed when browser actually // requests it. This essentially disables pre-transform optimization that's // crucial to trigger a race condition, covered by the test case introduced // in https://github.com/vitejs/vite/pull/11973 import('virtual:isomorphic-module').then(({ default: message }) => { document.querySelector('.isomorphic-module-browser').textContent = message })
 ```
 
 --------------------------------
@@ -922,19 +922,6 @@ new Worker(new URL('./classic-worker.js', import.meta.url))
 
 --------------------------------
 
-### HTML Constant Replacement Syntax
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-Example of using import.meta.env properties in HTML files.
-
-```html
-<h1>Vite is running in %MODE%</h1>
-<p>Using data from %VITE_API_URL%</p>
-```
-
---------------------------------
-
 ### Configure Render Build Settings
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -951,17 +938,15 @@ dist
 
 --------------------------------
 
-### Importing Asset as URL
+### HTML Constant Replacement Syntax
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
 
-Example of importing an image asset, which returns its public URL.
+Example of using import.meta.env properties in HTML files.
 
-```js
-import 'vite/client'
-// ---cut---
-import imgUrl from './img.png'
-document.getElementById('hero-img').src = imgUrl
+```html
+<h1>Vite is running in %MODE%</h1>
+<p>Using data from %VITE_API_URL%</p>
 ```
 
 --------------------------------
@@ -979,6 +964,21 @@ document.querySelector('.result-eager').textContent = JSON.stringify(
   null,
   2,
 )
+```
+
+--------------------------------
+
+### Importing Asset as URL
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+
+Example of importing an image asset, which returns its public URL.
+
+```js
+import 'vite/client'
+// ---cut---
+import imgUrl from './img.png'
+document.getElementById('hero-img').src = imgUrl
 ```
 
 --------------------------------
@@ -1115,18 +1115,6 @@ for (const { testId, path } of paths) {
 
 --------------------------------
 
-### Importing an Inline Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing an inline worker module for the .pong-inline test case.
-
-```javascript
-import InlineWorker from '../my-worker?worker&inline'
-```
-
---------------------------------
-
 ### Configure Preview Port
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -1139,6 +1127,18 @@ Sets a custom port for the local preview server via the package.json scripts.
     "preview": "vite preview --port 8080"
   }
 }
+```
+
+--------------------------------
+
+### Importing an Inline Worker
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Importing an inline worker module for the .pong-inline test case.
+
+```javascript
+import InlineWorker from '../my-worker?worker&inline'
 ```
 
 --------------------------------
@@ -1166,25 +1166,6 @@ Examples of generated HTML tags for different entry points in production. Follow
 
 --------------------------------
 
-### Conditional Exports in package.json
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
-
-Example of an exports field in package.json used to define entry points for different module systems.
-
-```json
-{
-  "exports": {
-    ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
-    }
-  }
-}
-```
-
---------------------------------
-
 ### Configure Multi-Page App Entry Points in Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1205,6 +1186,25 @@ export default defineConfig({
 
 --------------------------------
 
+### Conditional Exports in package.json
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Example of an exports field in package.json used to define entry points for different module systems.
+
+```json
+{
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  }
+}
+```
+
+--------------------------------
+
 ### Instantiate per-environment plugins with helper in Vite (JavaScript)
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
@@ -1221,18 +1221,6 @@ export default defineConfig({
     ),
   ],
 })
-```
-
---------------------------------
-
-### Self-Referencing URL Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a worker that references itself via URL, for the .self-reference-url-worker test case.
-
-```javascript
-new Worker(new URL('../self-reference-url-worker.js', import.meta.url))
 ```
 
 --------------------------------
@@ -1274,14 +1262,14 @@ const keys =
 
 --------------------------------
 
-### Classic Shared Worker Instantiation
+### Self-Referencing URL Worker
 
 Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
 
-Instantiating a classic shared worker, for the .classic-shared-worker test case.
+Instantiating a worker that references itself via URL, for the .self-reference-url-worker test case.
 
 ```javascript
-new SharedWorker(new URL('./classic-shared-worker.js', import.meta.url), { type: 'classic' })
+new Worker(new URL('../self-reference-url-worker.js', import.meta.url))
 ```
 
 --------------------------------
@@ -1300,18 +1288,6 @@ import init from './example.wasm?init'
 init().then((instance) => {
   instance.exports.test()
 })
-```
-
---------------------------------
-
-### Importing a Shared Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing a named shared worker module for the .tick-count test case.
-
-```javascript
-import mySharedWorker from '../my-shared-worker?sharedworker&name=shared'
 ```
 
 --------------------------------
@@ -1342,6 +1318,18 @@ document.querySelector('.result-base').textContent = JSON.stringify(
 
 --------------------------------
 
+### Classic Shared Worker Instantiation
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Instantiating a classic shared worker, for the .classic-shared-worker test case.
+
+```javascript
+new SharedWorker(new URL('./classic-shared-worker.js', import.meta.url), { type: 'classic' })
+```
+
+--------------------------------
+
 ### Raw Glob Import for JSON Files
 
 Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
@@ -1363,6 +1351,18 @@ document.querySelector('.globraw').textContent = JSON.stringify(
   null,
   2,
 )
+```
+
+--------------------------------
+
+### Importing a Shared Worker
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Importing a named shared worker module for the .tick-count test case.
+
+```javascript
+import mySharedWorker from '../my-shared-worker?sharedworker&name=shared'
 ```
 
 --------------------------------
