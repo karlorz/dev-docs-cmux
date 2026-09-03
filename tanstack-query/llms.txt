@@ -940,62 +940,6 @@ npm init solid@latest my-app
 
 --------------------------------
 
-### Implementing Infinite Queries in Vue
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/guides/infinite-queries.md
-
-This example demonstrates how to use `useInfiniteQuery` to fetch paginated data, manage loading and error states, and provide a 'Load More' button to fetch subsequent pages.
-
-```vue
-<script setup>
-import { useInfiniteQuery } from '@tanstack/vue-query'
-
-const fetchProjects = async ({ pageParam }) => {
-  const res = await fetch('/api/projects?cursor=' + pageParam)
-  return res.json()
-}
-
-const {
-  data,
-  error,
-  fetchNextPage,
-  hasNextPage,
-  isFetching,
-  isFetchingNextPage,
-  isPending,
-  isError,
-} = useInfiniteQuery({
-  queryKey: ['projects'],
-  queryFn: fetchProjects,
-  initialPageParam: 0,
-  getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
-})
-</script>
-
-<template>
-  <span v-if="isPending">Loading...</span>
-  <span v-else-if="isError">Error: {{ error.message }}</span>
-  <div v-else-if="data">
-    <span v-if="isFetching && !isFetchingNextPage">Fetching...</span>
-    <ul v-for="(group, index) in data.pages" :key="index">
-      <li v-for="project in group.projects" :key="project.id">
-        {{ project.name }}
-      </li>
-    </ul>
-    <button
-      @click="() => fetchNextPage()"
-      :disabled="!hasNextPage || isFetchingNextPage"
-    >
-      <span v-if="isFetchingNextPage">Loading more...</span>
-      <span v-else-if="hasNextPage">Load More</span>
-      <span v-else>Nothing more to load</span>
-    </button>
-  </div>
-</template>
-```
-
---------------------------------
-
 ### Setting Up and Using a Global Default Query Function in Solid
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/default-query-function.md
@@ -1593,6 +1537,18 @@ function PendingPosts() {
 
 --------------------------------
 
+### Get mutation defaults on QueryClient in TSX
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+Returns the default options configured for specific mutation keys.
+
+```tsx
+const defaultOptions = queryClient.getMutationDefaults(['addPost'])
+```
+
+--------------------------------
+
 ### Defining Query Functions with useQuery in Solid
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/guides/query-functions.md
@@ -1616,30 +1572,6 @@ useQuery(() => ({
   queryKey: ['todos', todoId],
   queryFn: ({ queryKey }) => fetchTodoById(queryKey[1]),
 }))
-```
-
---------------------------------
-
-### Get mutation defaults on QueryClient in TSX
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-Returns the default options configured for specific mutation keys.
-
-```tsx
-const defaultOptions = queryClient.getMutationDefaults(['addPost'])
-```
-
---------------------------------
-
-### Concise `injectQuery` Assignment in Angular
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/queries.md
-
-This example shows a more concise way to assign the result of an `injectQuery` call to a variable.
-
-```ts
-result = injectQuery(() => ({ queryKey: ['todos'], queryFn: fetchTodoList }))
 ```
 
 --------------------------------
@@ -1703,6 +1635,18 @@ class ProjectsView extends LitElement {
   }
 }
 ```
+```
+
+--------------------------------
+
+### Concise `injectQuery` Assignment in Angular
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/angular/guides/queries.md
+
+This example shows a more concise way to assign the result of an `injectQuery` call to a variable.
+
+```ts
+result = injectQuery(() => ({ queryKey: ['todos'], queryFn: fetchTodoList }))
 ```
 
 --------------------------------
@@ -1805,30 +1749,6 @@ npm install @tanstack/react-query-devtools
 
 --------------------------------
 
-### Correct queryKey reference in invalidateQueries (TypeScript/TSX)
-
-Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
-
-This example demonstrates correctly referencing `queryKey` from the `queryOptions` result when using `queryClient.invalidateQueries`.
-
-```tsx
-/* eslint "@tanstack/query/prefer-query-options": "error" */
-
-function todoOptions(id) {
-  return queryOptions({
-    queryKey: ['todo', id],
-    queryFn: () => api.getTodo(id),
-  })
-}
-
-function Component({ id }) {
-  const queryClient = useQueryClient()
-  return queryClient.invalidateQueries({ queryKey: todoOptions(id).queryKey })
-}
-```
-
---------------------------------
-
 ### Configure Query Persistence with experimental_createQueryPersister
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/plugins/createPersister.md
@@ -1852,6 +1772,30 @@ const queryClient = new QueryClient({
     },
   },
 })
+```
+
+--------------------------------
+
+### Correct queryKey reference in invalidateQueries (TypeScript/TSX)
+
+Source: https://github.com/tanstack/query/blob/main/docs/eslint/prefer-query-options.md
+
+This example demonstrates correctly referencing `queryKey` from the `queryOptions` result when using `queryClient.invalidateQueries`.
+
+```tsx
+/* eslint "@tanstack/query/prefer-query-options": "error" */
+
+function todoOptions(id) {
+  return queryOptions({
+    queryKey: ['todo', id],
+    queryFn: () => api.getTodo(id),
+  })
+}
+
+function Component({ id }) {
+  const queryClient = useQueryClient()
+  return queryClient.invalidateQueries({ queryKey: todoOptions(id).queryKey })
+}
 ```
 
 --------------------------------
@@ -2070,6 +2014,62 @@ export default defineComponent({
 
 --------------------------------
 
+### Implementing Infinite Queries in Vue
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/guides/infinite-queries.md
+
+This example demonstrates how to use `useInfiniteQuery` to fetch paginated data, manage loading and error states, and provide a 'Load More' button to fetch subsequent pages.
+
+```vue
+<script setup>
+import { useInfiniteQuery } from '@tanstack/vue-query'
+
+const fetchProjects = async ({ pageParam }) => {
+  const res = await fetch('/api/projects?cursor=' + pageParam)
+  return res.json()
+}
+
+const {
+  data,
+  error,
+  fetchNextPage,
+  hasNextPage,
+  isFetching,
+  isFetchingNextPage,
+  isPending,
+  isError,
+} = useInfiniteQuery({
+  queryKey: ['projects'],
+  queryFn: fetchProjects,
+  initialPageParam: 0,
+  getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+})
+</script>
+
+<template>
+  <span v-if="isPending">Loading...</span>
+  <span v-else-if="isError">Error: {{ error.message }}</span>
+  <div v-else-if="data">
+    <span v-if="isFetching && !isFetchingNextPage">Fetching...</span>
+    <ul v-for="(group, index) in data.pages" :key="index">
+      <li v-for="project in group.projects" :key="project.id">
+        {{ project.name }}
+      </li>
+    </ul>
+    <button
+      @click="() => fetchNextPage()"
+      :disabled="!hasNextPage || isFetchingNextPage"
+    >
+      <span v-if="isFetchingNextPage">Loading more...</span>
+      <span v-else-if="hasNextPage">Load More</span>
+      <span v-else>Nothing more to load</span>
+    </button>
+  </div>
+</template>
+```
+
+--------------------------------
+
 ### Get current online state in TanStack Query
 
 Source: https://github.com/tanstack/query/blob/main/docs/reference/onlineManager.md
@@ -2078,35 +2078,6 @@ Returns a boolean indicating the current online state managed by OnlineManager.
 
 ```tsx
 const isOnline = onlineManager.isOnline()
-```
-
---------------------------------
-
-### queryClient.getQueryState
-
-Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
-
-A synchronous function used to get an existing query's state from the cache. Returns undefined if the query does not exist.
-
-```APIDOC
-## queryClient.getQueryState
-
-### Description
-`getQueryState` is a synchronous function that can be used to get an existing query's state. If the query does not exist, `undefined` will be returned.
-
-### Signature
-```tsx
-queryClient.getQueryState(queryKey)
-```
-
-### Parameters
-- **queryKey** (`QueryKey`) - Required - The query key identifying the query.
-
-### Usage Example
-```tsx
-const state = queryClient.getQueryState(queryKey)
-console.log(state.dataUpdatedAt)
-```
 ```
 
 --------------------------------
@@ -2151,6 +2122,35 @@ function App() {
     </div>
   )
 }
+```
+
+--------------------------------
+
+### queryClient.getQueryState
+
+Source: https://github.com/tanstack/query/blob/main/docs/reference/QueryClient.md
+
+A synchronous function used to get an existing query's state from the cache. Returns undefined if the query does not exist.
+
+```APIDOC
+## queryClient.getQueryState
+
+### Description
+`getQueryState` is a synchronous function that can be used to get an existing query's state. If the query does not exist, `undefined` will be returned.
+
+### Signature
+```tsx
+queryClient.getQueryState(queryKey)
+```
+
+### Parameters
+- **queryKey** (`QueryKey`) - Required - The query key identifying the query.
+
+### Usage Example
+```tsx
+const state = queryClient.getQueryState(queryKey)
+console.log(state.dataUpdatedAt)
+```
 ```
 
 --------------------------------
