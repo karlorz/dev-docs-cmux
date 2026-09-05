@@ -14,18 +14,6 @@ pnpm add zod          # pnpm
 
 --------------------------------
 
-### New transformer syntax
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/MIGRATION.md
-
-Example of the new `.transform()` method available on all Zod schemas.
-
-```typescript
-z.string().transform((val) => val.length);
-```
-
---------------------------------
-
 ### Inspect URL Normalization Example
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -35,6 +23,18 @@ Demonstrates the output of standard WHATWG URL normalization.
 ```ts
 new URL("HTTP://ExAmPle.com:80/./a/../b?X=1#f oo").href
 // => "http://example.com/b?X=1#f%20oo"
+```
+
+--------------------------------
+
+### New transformer syntax
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/MIGRATION.md
+
+Example of the new `.transform()` method available on all Zod schemas.
+
+```typescript
+z.string().transform((val) => val.length);
 ```
 
 --------------------------------
@@ -309,26 +309,6 @@ acceptObjectSchema(zm.object({ name: zm.string() }))
 
 --------------------------------
 
-### import "zod/compile"
-
-Source: https://github.com/colinhacks/zod/blob/main/wiki/compile.md
-
-Side-effect import that installs a global post-processor wrapping every newly constructed schema with a one-shot lazy compile shim.
-
-```APIDOC
-## Module Import: import "zod/compile"
-
-### Description
-Installs a global post-processor that automatically wraps every newly constructed schema with a one-shot lazy compile shim for project-wide opt-in.
-
-### Usage
-```ts
-import "zod/compile";
-```
-```
-
---------------------------------
-
 ### Traversing Zod Schemas
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -511,18 +491,6 @@ z.guid();
 
 --------------------------------
 
-### z.prettifyError() usage
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-formatting.mdx
-
-Shows how to use z.prettifyError() to get a human-readable string representation of the error.
-
-```ts
-const pretty = z.prettifyError(result.error);
-```
-
---------------------------------
-
 ### Using .register() method
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
@@ -534,6 +502,18 @@ const mySchema = z.string();
 
 mySchema.register(myRegistry, { description: "A cool schema!" });
 // => mySchema
+```
+
+--------------------------------
+
+### z.prettifyError() usage
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-formatting.mdx
+
+Shows how to use z.prettifyError() to get a human-readable string representation of the error.
+
+```ts
+const pretty = z.prettifyError(result.error);
 ```
 
 --------------------------------
@@ -620,18 +600,6 @@ const stringToDate = z.codec(
 
 --------------------------------
 
-### Preloading zod/compile with Node.js CLI flag
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
-
-Ensures zod/compile runs before any application modules are evaluated in Node.js.
-
-```sh
-node --import zod/compile app.js
-```
-
---------------------------------
-
 ### Importing Zod 3 and Zod 4 side-by-side
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
@@ -668,6 +636,18 @@ const flattened = z.flattenError(result.error);
     favoriteNumbers: [ 'Invalid input: expected number, received string' ]
   }
 }
+```
+
+--------------------------------
+
+### Preloading zod/compile with Node.js CLI flag
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
+
+Ensures zod/compile runs before any application modules are evaluated in Node.js.
+
+```sh
+node --import zod/compile app.js
 ```
 
 --------------------------------
@@ -773,6 +753,20 @@ import * as z from "@zod/mini";
 
 --------------------------------
 
+### Creating a simple registry
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Demonstrates how to create a Zod registry with a specific metadata type.
+
+```ts
+import * as z from "zod";
+
+const myRegistry = z.registry<{ description: string }>();
+```
+
+--------------------------------
+
 ### Discriminating String Format Checks
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -818,20 +812,6 @@ import * as z4 from "zod/v4/core";
 function inferSchema<T extends z4.$ZodObject>(schema: T) {
   return schema;
 }
-```
-
---------------------------------
-
-### Creating a simple registry
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Demonstrates how to create a Zod registry with a specific metadata type.
-
-```ts
-import * as z from "zod";
-
-const myRegistry = z.registry<{ description: string }>();
 ```
 
 --------------------------------
@@ -936,6 +916,24 @@ z.number().multipleOf(0); // ❌ the divisor must be finite and non-zero
 
 --------------------------------
 
+### Using .meta() to register metadata (Zod Mini)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Conveniently registers metadata in z.globalRegistry using the .meta() method in Zod Mini.
+
+```ts
+const emailSchema = z.email().check(
+  z.meta({
+    id: "email_address",
+    title: "Email address",
+    description: "Please enter a valid email address",
+  })
+);
+```
+
+--------------------------------
+
 ### Access enum values with .enum property
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/home.md
@@ -953,24 +951,6 @@ FishEnum.enum;
   Trout: "Trout",
 }
 */
-```
-
---------------------------------
-
-### Using .meta() to register metadata (Zod Mini)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Conveniently registers metadata in z.globalRegistry using the .meta() method in Zod Mini.
-
-```ts
-const emailSchema = z.email().check(
-  z.meta({
-    id: "email_address",
-    title: "Email address",
-    description: "Please enter a valid email address",
-  })
-);
 ```
 
 --------------------------------
@@ -1001,6 +981,40 @@ const mySchema = z.string();
 
 mySchema.clone(mySchema._zod.def);
 ```
+```
+
+--------------------------------
+
+### Example ZodError Issues
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/ERROR_HANDLING.md
+
+Shows the structure of the error issues generated by Zod for the improperly formatted data, including code, expected/received types, path, and message.
+
+```ts
+[
+  {
+    code: "invalid_type",
+    expected: "string",
+    received: "number",
+    path: ["names", 1],
+    message: "Invalid input: expected string, received number",
+  },
+  {
+    code: "unrecognized_keys",
+    keys: ["extra"],
+    path: ["address"],
+    message: "Unrecognized key(s) in object: 'extra'",
+  },
+  {
+    code: "too_small",
+    minimum: 10000,
+    type: "number",
+    inclusive: true,
+    path: ["address", "zipCode"],
+    message: "Value should be greater than or equal to 10000",
+  },
+];
 ```
 
 --------------------------------
@@ -1057,40 +1071,6 @@ window.$docsify = {
 
 --------------------------------
 
-### Example ZodError Issues
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs-v3/ERROR_HANDLING.md
-
-Shows the structure of the error issues generated by Zod for the improperly formatted data, including code, expected/received types, path, and message.
-
-```ts
-[
-  {
-    code: "invalid_type",
-    expected: "string",
-    received: "number",
-    path: ["names", 1],
-    message: "Invalid input: expected string, received number",
-  },
-  {
-    code: "unrecognized_keys",
-    keys: ["extra"],
-    path: ["address"],
-    message: "Unrecognized key(s) in object: 'extra'",
-  },
-  {
-    code: "too_small",
-    minimum: 10000,
-    type: "number",
-    inclusive: true,
-    path: ["address", "zipCode"],
-    message: "Value should be greater than or equal to 10000",
-  },
-];
-```
-
---------------------------------
-
 ### Register schema in a registry with .register()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
@@ -1101,6 +1081,30 @@ Associates metadata with a schema inside a custom registry.
 const myReg = z.registry<{title: string}>();
 
 z.string().register(myReg, { title: "My cool string schema" });
+```
+
+--------------------------------
+
+### Using a Codec for Decoding and Encoding
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
+
+Demonstrates how `decode` and `encode` behave differently when using a codec that diverges input and output types.
+
+```typescript
+stringToDate.decode("2024-01-15T10:30:00.000Z")
+// => Date
+
+stringToDate.encode(new Date("2024-01-15T10:30:00.000Z"))
+// => string
+```
+
+```typescript
+z.decode(stringToDate, "2024-01-15T10:30:00.000Z")
+// => Date
+
+z.encode(stringToDate, new Date("2024-01-15T10:30:00.000Z"))
+// => string
 ```
 
 --------------------------------
@@ -1135,40 +1139,15 @@ function MyForm(){
 
 --------------------------------
 
-### Using a Codec for Decoding and Encoding
+### Enable compilation using Node.js CLI flags
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
 
-Demonstrates how `decode` and `encode` behave differently when using a codec that diverges input and output types.
+Pass `--import` or `--require` flags when launching Node.js to guarantee compilation is enabled prior to module evaluation.
 
-```typescript
-stringToDate.decode("2024-01-15T10:30:00.000Z")
-// => Date
-
-stringToDate.encode(new Date("2024-01-15T10:30:00.000Z"))
-// => string
-```
-
-```typescript
-z.decode(stringToDate, "2024-01-15T10:30:00.000Z")
-// => Date
-
-z.encode(stringToDate, new Date("2024-01-15T10:30:00.000Z"))
-// => string
-```
-
---------------------------------
-
-### Clone a schema with .clone()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Returns a schema clone using the supplied internal definition object.
-
-```ts
-const mySchema = z.string()
-
-mySchema.clone(mySchema._zod.def);
+```shell
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
 ```
 
 --------------------------------
@@ -1191,15 +1170,16 @@ cp build/index.js <repo>/packages/bench/typia-case/build/index.cjs
 
 --------------------------------
 
-### Enable compilation using Node.js CLI flags
+### Clone a schema with .clone()
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
 
-Pass `--import` or `--require` flags when launching Node.js to guarantee compilation is enabled prior to module evaluation.
+Returns a schema clone using the supplied internal definition object.
 
-```shell
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
+```ts
+const mySchema = z.string()
+
+mySchema.clone(mySchema._zod.def);
 ```
 
 --------------------------------
@@ -1393,29 +1373,6 @@ z.parse(stringToLength, "hello"); // => 5
 
 --------------------------------
 
-### z.compile(schema, options?)
-
-Source: https://github.com/colinhacks/zod/blob/main/wiki/compile.md
-
-Eagerly compiles a schema to an AOT-compiled fast path. Returns a cloned schema that functions as a normal ZodType while falling back to the standard runtime parser on failure.
-
-```APIDOC
-## Function: z.compile(schema, options?)
-
-### Description
-Eagerly compiles a schema into a cloned schema that runs an AOT-compiled fast path, falling back to the runtime parser on failure. Derivations construct new schemas and do not inherit the fast path, so compile the final schema.
-
-### Parameters
-- **schema** (`ZodType`) - Required - The Zod schema to compile.
-- **options** (`object`) - Optional - Configuration options for compilation.
-  - **strict** (`boolean`) - Optional - When set to `true`, raises refusal errors if the schema cannot be compiled instead of falling back to runtime parsing.
-
-### Return Value
-- **Returns** (`ZodType`) - A cloned schema with an AOT-compiled fast path.
-```
-
---------------------------------
-
 ### Run benchmark build
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/resolution/README.md
@@ -1424,36 +1381,6 @@ Command to run `tsc` with `extendedDiagnostics` for performance testing.
 
 ```shell
 npm run build-bench
-```
-
---------------------------------
-
-### z.iso.time([options])
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Validates ISO time strings in HH:MM[:SS[.s+]] format with configurable precision.
-
-```APIDOC
-### Function Signature
-`z.iso.time(options?: { precision?: number }): ZodType<string>`
-
-### Description
-Validates strings in the format `HH:MM[:SS[.s+]]`. Seconds and sub-second decimals are optional by default. Offsets and `Z` specifiers are not allowed.
-
-### Parameters
-- `options.precision` (number, optional) - Constrains decimal precision: `-1` for minute precision (`HH:MM`), `0` for second precision (`HH:MM:SS`), or `1` through `3` for decisecond, centisecond, or millisecond precision.
-
-### Example
-```ts
-const time = z.iso.time();
-time.parse("03:15"); // ✅
-time.parse("03:15:00"); // ✅
-time.parse("03:15:00.9999999"); // ✅
-
-const millisecondTime = z.iso.time({ precision: 3 });
-millisecondTime.parse("03:15:00.123"); // ✅
-```
 ```
 
 --------------------------------
@@ -1502,6 +1429,36 @@ fileSchemaMini.check(z.minSize(10_000));
 fileSchemaMini.check(z.maxSize(1_000_000));
 fileSchemaMini.check(z.mime("image/png"));
 fileSchemaMini.check(z.mime(["image/png", "image/jpeg"]));
+```
+```
+
+--------------------------------
+
+### z.iso.time([options])
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Validates ISO time strings in HH:MM[:SS[.s+]] format with configurable precision.
+
+```APIDOC
+### Function Signature
+`z.iso.time(options?: { precision?: number }): ZodType<string>`
+
+### Description
+Validates strings in the format `HH:MM[:SS[.s+]]`. Seconds and sub-second decimals are optional by default. Offsets and `Z` specifiers are not allowed.
+
+### Parameters
+- `options.precision` (number, optional) - Constrains decimal precision: `-1` for minute precision (`HH:MM`), `0` for second precision (`HH:MM:SS`), or `1` through `3` for decisecond, centisecond, or millisecond precision.
+
+### Example
+```ts
+const time = z.iso.time();
+time.parse("03:15"); // ✅
+time.parse("03:15:00"); // ✅
+time.parse("03:15:00.9999999"); // ✅
+
+const millisecondTime = z.iso.time({ precision: 3 });
+millisecondTime.parse("03:15:00.123"); // ✅
 ```
 ```
 
@@ -1722,4 +1679,49 @@ const USD = z.string().brand<"USD">();
 
 type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
 type USDInput = z.input<typeof USD>; // string
+```
+
+--------------------------------
+
+### Demonstrate TypeScript structural type compatibility
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Illustrates how TypeScript allows assignability between structurally identical types by default.
+
+```ts
+type Cat = { name: string };
+type Dog = { name: string };
+
+const pluto: Dog = { name: "pluto" };
+const simba: Cat = pluto; // works fine
+```
+
+--------------------------------
+
+### Using .meta() to register metadata (Zod)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Conveniently registers metadata in z.globalRegistry using the .meta() method.
+
+```ts
+const emailSchema = z.email().meta({ 
+  id: "email_address",
+  title: "Email address",
+  description: "Please enter a valid email address",
+});
+```
+
+--------------------------------
+
+### Retrieving metadata with .meta()
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Shows how to retrieve metadata associated with a schema instance using .meta() without arguments.
+
+```ts
+emailSchema.meta();
+// => { id: "email_address", title: "Email address", ... }
 ```
