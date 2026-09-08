@@ -582,6 +582,18 @@ pnpm dev
 
 --------------------------------
 
+### Start Development Server with Angular CLI
+
+Source: https://github.com/tanstack/query/blob/main/integrations/angular-cli-20/README.md
+
+Use this command to launch a local development server, making the application accessible in a browser and enabling automatic reloads on file changes.
+
+```bash
+ng serve
+```
+
+--------------------------------
+
 ### Run Next.js Development Server
 
 Source: https://github.com/tanstack/query/blob/main/integrations/react-next-15/README.md
@@ -835,6 +847,57 @@ npm run astro -- --help
 
 --------------------------------
 
+### VueQueryPlugin.install(app, options)
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/reference/variables/VueQueryPlugin.md
+
+Installs a QueryClient on the Vue app, making it available to every descendant component through useQueryClient. Supports passing a custom QueryClient instance or configuration options.
+
+```APIDOC
+### VueQueryPlugin.install(app, options)
+
+Installs a `QueryClient` on the Vue app, making it available to every descendant component through `useQueryClient`.
+
+#### Parameters
+- **app** (`any`) - The Vue application instance.
+- **options** (`VueQueryPluginOptions`, optional) - Plugin configuration options. Defaults to `{}`.
+
+#### Returns
+- `void`
+
+#### Examples
+
+Basic installation:
+```ts
+import { createApp } from 'vue'
+import { VueQueryPlugin } from '@tanstack/vue-query'
+
+const app = createApp(App)
+app.use(VueQueryPlugin)
+```
+
+With a custom `QueryClient` instance:
+```ts
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
+
+const queryClient = new QueryClient()
+app.use(VueQueryPlugin, { queryClient })
+```
+
+With `queryClientConfig` defaults:
+```ts
+import { VueQueryPlugin } from '@tanstack/vue-query'
+
+app.use(VueQueryPlugin, {
+  queryClientConfig: {
+    defaultOptions: { queries: { staleTime: 5 * 1000 } },
+  },
+})
+```
+```
+
+--------------------------------
+
 ### useQueryClient(id)
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/reference/functions/useQueryClient.md
@@ -1080,6 +1143,35 @@ function Example() {
 
 --------------------------------
 
+### Implementing Dependent Queries with useQueries
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/react/guides/dependent-queries.md
+
+This example shows how to use `useQueries` for dynamic parallel queries that depend on a previous `useQuery` result. The `usersMessages` queries are generated only after `userIds` are fetched.
+
+```tsx
+// Get the users ids
+const { data: userIds } = useQuery({
+  queryKey: ['users'],
+  queryFn: getUsersData,
+  select: (users) => users.map((user) => user.id),
+})
+
+// Then get the users messages
+const usersMessages = useQueries({
+  queries: userIds
+    ? userIds.map((id) => {
+        return {
+          queryKey: ['messages', id],
+          queryFn: () => getMessagesByUsers(id),
+        }
+      })
+    : [], // if userIds is undefined, an empty array will be returned
+})
+```
+
+--------------------------------
+
 ### Preview Production Build Locally
 
 Source: https://github.com/tanstack/query/blob/main/examples/solid/astro/README.md
@@ -1100,18 +1192,6 @@ Use this command to initialize a new Astro project with the minimal template.
 
 ```sh
 npm create astro@latest -- --template minimal
-```
-
---------------------------------
-
-### Start Development Server with Angular CLI
-
-Source: https://github.com/tanstack/query/blob/main/integrations/angular-cli-20/README.md
-
-Use this command to launch a local development server, making the application accessible in a browser and enabling automatic reloads on file changes.
-
-```bash
-ng serve
 ```
 
 --------------------------------
@@ -1867,57 +1947,6 @@ function Component({ id }) {
   const queryClient = useQueryClient()
   return queryClient.getQueryData(todoOptions(id).queryKey)
 }
-```
-
---------------------------------
-
-### VueQueryPlugin.install(app, options)
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/vue/reference/variables/VueQueryPlugin.md
-
-Installs a QueryClient on the Vue app, making it available to every descendant component through useQueryClient. Supports passing a custom QueryClient instance or configuration options.
-
-```APIDOC
-### VueQueryPlugin.install(app, options)
-
-Installs a `QueryClient` on the Vue app, making it available to every descendant component through `useQueryClient`.
-
-#### Parameters
-- **app** (`any`) - The Vue application instance.
-- **options** (`VueQueryPluginOptions`, optional) - Plugin configuration options. Defaults to `{}`.
-
-#### Returns
-- `void`
-
-#### Examples
-
-Basic installation:
-```ts
-import { createApp } from 'vue'
-import { VueQueryPlugin } from '@tanstack/vue-query'
-
-const app = createApp(App)
-app.use(VueQueryPlugin)
-```
-
-With a custom `QueryClient` instance:
-```ts
-import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-
-const queryClient = new QueryClient()
-app.use(VueQueryPlugin, { queryClient })
-```
-
-With `queryClientConfig` defaults:
-```ts
-import { VueQueryPlugin } from '@tanstack/vue-query'
-
-app.use(VueQueryPlugin, {
-  queryClientConfig: {
-    defaultOptions: { queries: { staleTime: 5 * 1000 } },
-  },
-})
-```
 ```
 
 --------------------------------
