@@ -398,23 +398,6 @@ DB_PASSWORD=foobar
 
 --------------------------------
 
-### Accessing Environments from the Server
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
-
-Example demonstrating how to access client and SSR environments from a Vite dev server instance.
-
-```js
-// create the server, or get it from the configureServer hook
-const server = await createServer(/* options */)
-
-const clientEnvironment = server.environments.client
-clientEnvironment.transformRequest(url)
-console.log(server.environments.ssr.moduleGraph)
-```
-
---------------------------------
-
 ### Custom Environment Instance Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment.md
@@ -436,6 +419,23 @@ export default {
     }),
   },
 }
+```
+
+--------------------------------
+
+### Accessing Environments from the Server
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-instances.md
+
+Example demonstrating how to access client and SSR environments from a Vite dev server instance.
+
+```js
+// create the server, or get it from the configureServer hook
+const server = await createServer(/* options */)
+
+const clientEnvironment = server.environments.client
+clientEnvironment.transformRequest(url)
+console.log(server.environments.ssr.moduleGraph)
 ```
 
 --------------------------------
@@ -576,62 +576,6 @@ import shaderString from './shader.glsl?raw'
 
 --------------------------------
 
-### configEnvironment
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
-
-Configures individual environments with partially resolved configuration and environment context. Called sequentially for each environment during the setup phase.
-
-```APIDOC
-## Hook: `configEnvironment`
-
-### Description
-Configures each environment with its partially resolved config including resolution of final defaults. Called sequentially for each environment.
-
-### Signature
-```ts
-(name: string, config: EnvironmentOptions, env: {
-  mode: string
-  command: 'build' | 'serve'
-  isSsrBuild?: boolean
-  isPreview?: boolean
-  isSsrTargetWebworker?: boolean
-}) => EnvironmentOptions | null | void
-```
-
-### Hook Attributes
-- **Kind**: `async`, `sequential`
-- **Scope**: Per-environment
-
-### Parameters
-- **name** (`string`) - The name identifier of the environment being configured (e.g. `'rsc'`, `'client'`).
-- **config** (`EnvironmentOptions`) - Partially resolved configuration options for the environment.
-- **env** (`object`) - Execution environment metadata.
-  - **mode** (`string`) - Current mode string.
-  - **command** (`'build' | 'serve'`) - Vite command being executed.
-  - **isSsrBuild** (`boolean`, optional) - Indicates if this is an SSR build.
-  - **isPreview** (`boolean`, optional) - Indicates if Vite is running preview mode.
-  - **isSsrTargetWebworker** (`boolean`, optional) - Indicates if the SSR target is a web worker.
-
-### Return Value
-- Returns `EnvironmentOptions | null | void`. Returning an options object merges and updates the configuration for that environment.
-
-### Example
-```ts
-configEnvironment(name: string, options: EnvironmentOptions) {
-  if (name === 'rsc') {
-    return {
-      resolve: {
-        conditions: ['workerd'],
-      },
-    }
-  }
-}
-```
-```
-
---------------------------------
-
 ### WASM Import API Example
 
 Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite3.md
@@ -656,6 +600,25 @@ Install the required development dependency for Cloudflare Workers integration.
 
 ```bash
 $ npm install --save-dev @cloudflare/vite-plugin
+```
+
+--------------------------------
+
+### Define Conditional Exports in package.json
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Example exports field within a package.json file demonstrating import and require conditions for package resolution.
+
+```json
+{
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  }
+}
 ```
 
 --------------------------------
@@ -838,38 +801,6 @@ Example demonstrating hydration scripts and dynamic module imports, including a 
 
 --------------------------------
 
-### Configure application entry point in Vite
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
-
-Sets the default entry point for build and optimization options when index.html is not used. Paths are resolved relative to the project root.
-
-```javascript
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  input: 'src/main.ts',
-})
-```
-
---------------------------------
-
-### Configure Dev Server URL Pathname to Open on Start
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-Specifies a custom URL pathname to open automatically in the browser when the development server starts. You can configure browser selection via the BROWSER environment variable.
-
-```javascript
-export default defineConfig({
-  server: {
-    open: '/docs/index.html',
-  },
-})
-```
-
---------------------------------
-
 ### Configure build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -941,6 +872,22 @@ app.use('*', async (req, res, next) => {
 
   // 6. Send the rendered HTML back.
   res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+})
+```
+
+--------------------------------
+
+### Configure Dev Server URL Pathname to Open on Start
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+Specifies a custom URL pathname to open automatically in the browser when the development server starts. You can configure browser selection via the BROWSER environment variable.
+
+```javascript
+export default defineConfig({
+  server: {
+    open: '/docs/index.html',
+  },
 })
 ```
 
@@ -1089,18 +1036,6 @@ dist
 
 --------------------------------
 
-### Importing an Inline Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing an inline worker module for the .pong-inline test case.
-
-```javascript
-import InlineWorker from '../my-worker?worker&inline'
-```
-
---------------------------------
-
 ### Eager Glob Import
 
 Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
@@ -1114,6 +1049,18 @@ document.querySelector('.result-eager').textContent = JSON.stringify(
   null,
   2,
 )
+```
+
+--------------------------------
+
+### Importing an Inline Worker
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Importing an inline worker module for the .pong-inline test case.
+
+```javascript
+import InlineWorker from '../my-worker?worker&inline'
 ```
 
 --------------------------------
@@ -1336,6 +1283,62 @@ export default defineConfig({
 
 --------------------------------
 
+### configEnvironment
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
+
+Configures individual environments with partially resolved configuration and environment context. Called sequentially for each environment during the setup phase.
+
+```APIDOC
+## Hook: `configEnvironment`
+
+### Description
+Configures each environment with its partially resolved config including resolution of final defaults. Called sequentially for each environment.
+
+### Signature
+```ts
+(name: string, config: EnvironmentOptions, env: {
+  mode: string
+  command: 'build' | 'serve'
+  isSsrBuild?: boolean
+  isPreview?: boolean
+  isSsrTargetWebworker?: boolean
+}) => EnvironmentOptions | null | void
+```
+
+### Hook Attributes
+- **Kind**: `async`, `sequential`
+- **Scope**: Per-environment
+
+### Parameters
+- **name** (`string`) - The name identifier of the environment being configured (e.g. `'rsc'`, `'client'`).
+- **config** (`EnvironmentOptions`) - Partially resolved configuration options for the environment.
+- **env** (`object`) - Execution environment metadata.
+  - **mode** (`string`) - Current mode string.
+  - **command** (`'build' | 'serve'`) - Vite command being executed.
+  - **isSsrBuild** (`boolean`, optional) - Indicates if this is an SSR build.
+  - **isPreview** (`boolean`, optional) - Indicates if Vite is running preview mode.
+  - **isSsrTargetWebworker** (`boolean`, optional) - Indicates if the SSR target is a web worker.
+
+### Return Value
+- Returns `EnvironmentOptions | null | void`. Returning an options object merges and updates the configuration for that environment.
+
+### Example
+```ts
+configEnvironment(name: string, options: EnvironmentOptions) {
+  if (name === 'rsc') {
+    return {
+      resolve: {
+        conditions: ['workerd'],
+      },
+    }
+  }
+}
+```
+```
+
+--------------------------------
+
 ### Self-Referencing URL Worker
 
 Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
@@ -1344,18 +1347,6 @@ Instantiating a worker that references itself via URL, for the .self-reference-u
 
 ```javascript
 new Worker(new URL('../self-reference-url-worker.js', import.meta.url))
-```
-
---------------------------------
-
-### Classic Shared Worker Instantiation
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Instantiating a classic shared worker, for the .classic-shared-worker test case.
-
-```javascript
-new SharedWorker(new URL('./classic-shared-worker.js', import.meta.url), { type: 'classic' })
 ```
 
 --------------------------------
@@ -1397,6 +1388,18 @@ const keys =
 
 --------------------------------
 
+### Classic Shared Worker Instantiation
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Instantiating a classic shared worker, for the .classic-shared-worker test case.
+
+```javascript
+new SharedWorker(new URL('./classic-shared-worker.js', import.meta.url), { type: 'classic' })
+```
+
+--------------------------------
+
 ### Raw Glob Import for JSON Files
 
 Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
@@ -1418,28 +1421,4 @@ document.querySelector('.globraw').textContent = JSON.stringify(
   null,
   2,
 )
-```
-
---------------------------------
-
-### Importing a Shared Worker
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Importing a named shared worker module for the .tick-count test case.
-
-```javascript
-import mySharedWorker from '../my-shared-worker?sharedworker&name=shared'
-```
-
---------------------------------
-
-### Deep Import Resolution with Babel
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Shows resolution of deep paths within external packages using a generator function example.
-
-```javascript
-// deep import import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray' const iterable = (function* () { yield 2 yield 4 yield 6 yield 8 })() text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
