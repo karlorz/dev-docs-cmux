@@ -1312,22 +1312,23 @@ GET
 
 --------------------------------
 
-### Example Component Styling
+### Build Expected Server Proof
 
-Source: https://github.com/bloopai/vibe-kanban/blob/main/packages/local-web/AGENTS.md
+Source: https://github.com/bloopai/vibe-kanban/blob/main/scripts/relay-test-client/index.html
 
-Illustrates how to apply the new design system's utility classes for input fields, buttons, and containers. Ensure all styles are scoped within the `.new-design` class.
+Constructs the expected server proof for verification. Similar to the client proof but includes the server's public key in the input data.
 
-```tsx
-className="px-base bg-secondary rounded border text-base text-normal placeholder:text-low focus:outline-none focus:ring-1 focus:ring-brand"
-```
-
-```tsx
-className="flex items-center justify-center bg-secondary rounded border text-low hover:text-normal"
-```
-
-```tsx
-className="w-64 bg-secondary shrink-0 p-base"
+```javascript
+async function buildExpectedServerProof(sharedKey, enrollmentId, browserPkBytes, serverPkBytes) {
+  const confirmationKey = await deriveConfirmationKey(sharedKey);
+  const proofInput = concatBytes(
+    SERVER_PROOF_CONTEXT,
+    parseUuidBytes(enrollmentId),
+    browserPkBytes,
+    serverPkBytes,
+  );
+  return hmacSha256(confirmationKey, proofInput);
+}
 ```
 
 --------------------------------
