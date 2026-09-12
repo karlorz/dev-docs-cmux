@@ -467,6 +467,31 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
+### Example License Metadata Output in JSON
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
+
+Generated when setting build.license fileName to a path ending with .json. Contains structured metadata for each bundled dependency.
+
+```json
+[
+  {
+    "name": "dep-1",
+    "version": "1.2.3",
+    "identifier": "CC0-1.0",
+    "text": "CC0 1.0 Universal\n\n..."
+  },
+  {
+    "name": "dep-2",
+    "version": "4.5.6",
+    "identifier": "MIT",
+    "text": "MIT License\n\n..."
+  }
+]
+```
+
+--------------------------------
+
 ### configurePreviewServer
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -507,31 +532,6 @@ const myPlugin = () => ({
   },
 })
 ```
-```
-
---------------------------------
-
-### Example License Metadata Output in JSON
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
-
-Generated when setting build.license fileName to a path ending with .json. Contains structured metadata for each bundled dependency.
-
-```json
-[
-  {
-    "name": "dep-1",
-    "version": "1.2.3",
-    "identifier": "CC0-1.0",
-    "text": "CC0 1.0 Universal\n\n..."
-  },
-  {
-    "name": "dep-2",
-    "version": "4.5.6",
-    "identifier": "MIT",
-    "text": "MIT License\n\n..."
-  }
-]
 ```
 
 --------------------------------
@@ -600,25 +600,6 @@ Install the required development dependency for Cloudflare Workers integration.
 
 ```bash
 $ npm install --save-dev @cloudflare/vite-plugin
-```
-
---------------------------------
-
-### Define Conditional Exports in package.json
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
-
-Example exports field within a package.json file demonstrating import and require conditions for package resolution.
-
-```json
-{
-  "exports": {
-    ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
-    }
-  }
-}
 ```
 
 --------------------------------
@@ -746,6 +727,18 @@ export default writable(0)
 
 --------------------------------
 
+### Create index.html entry point
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Define the basic HTML entry point for the Vite application.
+
+```html
+<p>Hello Vite!</p>
+```
+
+--------------------------------
+
 ### Install alternative minifiers with npm
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
@@ -755,18 +748,6 @@ Install esbuild or Terser as dev dependencies when configuring build.minify to '
 ```sh
 npm add -D esbuild
 npm add -D terser
-```
-
---------------------------------
-
-### Create index.html entry point
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Define the basic HTML entry point for the Vite application.
-
-```html
-<p>Hello Vite!</p>
 ```
 
 --------------------------------
@@ -814,6 +795,22 @@ Define the standard build and preview commands within the scripts section of you
     "preview": "vite preview"
   }
 }
+```
+
+--------------------------------
+
+### Configure Dev Server URL Pathname to Open on Start
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+Specifies a custom URL pathname to open automatically in the browser when the development server starts. You can configure browser selection via the BROWSER environment variable.
+
+```javascript
+export default defineConfig({
+  server: {
+    open: '/docs/index.html',
+  },
+})
 ```
 
 --------------------------------
@@ -872,22 +869,6 @@ app.use('*', async (req, res, next) => {
 
   // 6. Send the rendered HTML back.
   res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
-})
-```
-
---------------------------------
-
-### Configure Dev Server URL Pathname to Open on Start
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-Specifies a custom URL pathname to open automatically in the browser when the development server starts. You can configure browser selection via the BROWSER environment variable.
-
-```javascript
-export default defineConfig({
-  server: {
-    open: '/docs/index.html',
-  },
 })
 ```
 
@@ -1005,21 +986,6 @@ init().then((instance) => {
 
 --------------------------------
 
-### Importing Asset as URL
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
-
-Example of importing an image asset, which returns its public URL.
-
-```js
-import 'vite/client'
-// ---cut---
-import imgUrl from './img.png'
-document.getElementById('hero-img').src = imgUrl
-```
-
---------------------------------
-
 ### Configure Render Build Settings
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -1032,6 +998,21 @@ npm install && npm run build
 
 ```text
 dist
+```
+
+--------------------------------
+
+### Importing Asset as URL
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/assets.md
+
+Example of importing an image asset, which returns its public URL.
+
+```js
+import 'vite/client'
+// ---cut---
+import imgUrl from './img.png'
+document.getElementById('hero-img').src = imgUrl
 ```
 
 --------------------------------
@@ -1263,26 +1244,6 @@ Examples of generated HTML tags for different entry points in production. Follow
 
 --------------------------------
 
-### Configure Multi-Page App Entry Points in Vite
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Defines multiple HTML files as entry points for multi-page builds. If specifying a custom root directory, include the root entry path in the `resolve` arguments.
-
-```javascript
-import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  input: {
-    main: resolve(import.meta.dirname, 'index.html'),
-    nested: resolve(import.meta.dirname, 'nested/index.html'),
-  },
-})
-```
-
---------------------------------
-
 ### configEnvironment
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-plugins.md
@@ -1339,14 +1300,22 @@ configEnvironment(name: string, options: EnvironmentOptions) {
 
 --------------------------------
 
-### Self-Referencing URL Worker
+### Configure Multi-Page App Entry Points in Vite
 
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Instantiating a worker that references itself via URL, for the .self-reference-url-worker test case.
+Defines multiple HTML files as entry points for multi-page builds. If specifying a custom root directory, include the root entry path in the `resolve` arguments.
 
 ```javascript
-new Worker(new URL('../self-reference-url-worker.js', import.meta.url))
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  input: {
+    main: resolve(import.meta.dirname, 'index.html'),
+    nested: resolve(import.meta.dirname, 'nested/index.html'),
+  },
+})
 ```
 
 --------------------------------
@@ -1388,6 +1357,44 @@ const keys =
 
 --------------------------------
 
+### Self-Referencing URL Worker
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Instantiating a worker that references itself via URL, for the .self-reference-url-worker test case.
+
+```javascript
+new Worker(new URL('../self-reference-url-worker.js', import.meta.url))
+```
+
+--------------------------------
+
+### Glob Import with Base Option
+
+Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
+
+This example uses `import.meta.glob` with the `base` option to specify a different root directory for the glob pattern. It imports raw JSON files eagerly from the specified base path, then parses and displays their content.
+
+```javascript
+const baseModules = import.meta.glob('./*.json', {
+  query: '?raw',
+  eager: true,
+  import: 'default',
+  base: './dir',
+})
+const globBase = {}
+Object.keys(baseModules).forEach((key) => {
+  globBase[key] = JSON.parse(baseModules[key])
+})
+document.querySelector('.result-base').textContent = JSON.stringify(
+  globBase,
+  null,
+  2,
+)
+```
+
+--------------------------------
+
 ### Classic Shared Worker Instantiation
 
 Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
@@ -1400,25 +1407,12 @@ new SharedWorker(new URL('./classic-shared-worker.js', import.meta.url), { type:
 
 --------------------------------
 
-### Raw Glob Import for JSON Files
+### Importing a Shared Worker
 
-Source: https://github.com/vitejs/vite/blob/main/playground/glob-import/root/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
 
-This example uses `import.meta.glob` with `query: '?raw'` to import JSON files as raw strings. The `eager: true` and `import: 'default'` options ensure immediate loading and direct access to the raw content.
+Importing a named shared worker module for the .tick-count test case.
 
 ```javascript
-const rawModules = import.meta.glob('/dir/*.json', {
-  query: '?raw',
-  eager: true,
-  import: 'default',
-})
-const globraw = {}
-Object.keys(rawModules).forEach((key) => {
-  globraw[key] = JSON.parse(rawModules[key])
-})
-document.querySelector('.globraw').textContent = JSON.stringify(
-  globraw,
-  null,
-  2,
-)
+import mySharedWorker from '../my-shared-worker?sharedworker&name=shared'
 ```
