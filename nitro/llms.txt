@@ -245,24 +245,6 @@ export default createServerEntry({
 
 --------------------------------
 
-### Define utility functions
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/import-alias.md
-
-Example utility module providing math functions for the application.
-
-```ts
-export function rand(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export function sum(a: number, b: number): number {
-  return a + b;
-}
-```
-
---------------------------------
-
 ### Server Actions and Client Components
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-rsc.md
@@ -292,6 +274,24 @@ export function ClientCounter() {
   const [count, setCount] = React.useState(0);
 
   return <button onClick={() => setCount((count) => count + 1)}>Client Counter: {count}</button>;
+}
+```
+
+--------------------------------
+
+### Define utility functions
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/import-alias.md
+
+Example utility module providing math functions for the application.
+
+```ts
+export function rand(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function sum(a: number, b: number): number {
+  return a + b;
 }
 ```
 
@@ -924,6 +924,23 @@ export default app.routing;
 
 --------------------------------
 
+### Create Custom App Runner
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
+
+A server entry point that listens on the nginx socket.
+
+```ts
+import { createServer } from 'node:http'
+import { middleware } from './.output/server/index.mjs'
+
+const server = createServer(middleware)
+
+server.listen('/tmp/nginx.socket') //following the buildpack doc
+```
+
+--------------------------------
+
 ### Configure Genezio project
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/genezio.md
@@ -954,23 +971,6 @@ backend:
         handler: handler
         # The entry point for the function.
         entry: index.mjs
-```
-
---------------------------------
-
-### Create Custom App Runner
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
-
-A server entry point that listens on the nginx socket.
-
-```ts
-import { createServer } from 'node:http'
-import { middleware } from './.output/server/index.mjs'
-
-const server = createServer(middleware)
-
-server.listen('/tmp/nginx.socket') //following the buildpack doc
 ```
 
 --------------------------------
