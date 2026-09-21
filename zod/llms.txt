@@ -541,6 +541,18 @@ schema.parse(undefined); // => 0
 
 --------------------------------
 
+### Import Zod Mini from standalone package
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
+
+Imports the functional Zod API from the standalone @zod/mini package export.
+
+```ts
+import * as z from "@zod/mini";
+```
+
+--------------------------------
+
 ### Invoke standard ZodType instance methods
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/zod.mdx
@@ -588,18 +600,6 @@ mySchema.clone(def);
 mySchema.brand<T>();
 mySchema.isOptional(); // boolean
 mySchema.isNullable(); // boolean
-```
-
---------------------------------
-
-### Import Zod Mini from standalone package
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Imports the functional Zod API from the standalone @zod/mini package export.
-
-```ts
-import * as z from "@zod/mini";
 ```
 
 --------------------------------
@@ -1456,6 +1456,22 @@ z.toJSONSchema(schema, {
 
 --------------------------------
 
+### Set description with .describe() in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+
+```typescript
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
+```
+
+--------------------------------
+
 ### Convert file schema with size and MIME constraints
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1472,22 +1488,6 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 //   minLength: 1,
 //   maxLength: 1048576,
 // }
-```
-
---------------------------------
-
-### Set description with .describe() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
-
-```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
@@ -1541,6 +1541,21 @@ z.describe("...");
 
 --------------------------------
 
+### Inspect default input and output types for branded schemas
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
+
+```typescript
+const USD = z.string().brand<"USD">();
+
+type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
+type USDInput = z.input<typeof USD>; // string
+```
+
+--------------------------------
+
 ### Parse, decode, and encode with standard Zod schema methods
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
@@ -1556,21 +1571,6 @@ type Output = z.output<typeof schema>;  // string
 schema.parse("asdf");   // => "asdf"
 schema.decode("asdf");  // => "asdf"
 schema.encode("asdf");  // => "asdf"
-```
-
---------------------------------
-
-### Inspect default input and output types for branded schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
-
-```typescript
-const USD = z.string().brand<"USD">();
-
-type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
-type USDInput = z.input<typeof USD>; // string
 ```
 
 --------------------------------
