@@ -46,56 +46,14 @@ npm install zod@^4.5.0
 
 --------------------------------
 
-### Parse boolean value benchmark example
+### Install latest Zod via npm
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
 
-Sample code used to compare gzip bundle sizes between Zod (5.91kb) and Zod Mini (2.12kb).
-
-```ts
-z.boolean().parse(true)
-```
-
---------------------------------
-
-### Install Zod with npm
-
-Source: https://github.com/colinhacks/zod/blob/main/README.md
-
-Install the zod package from npm into your project dependencies.
+Installs the latest release of Zod using the npm package manager.
 
 ```sh
-npm install zod
-```
-
---------------------------------
-
-### Parse object schema benchmark example
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Sample object schema parsing used to benchmark bundle size reductions between regular Zod (13.1kb) and Zod Mini (4.0kb).
-
-```ts
-const schema = z.object({ a: z.string(), b: z.number(), c: z.boolean() });
-
-schema.parse({
-  a: "asdf",
-  b: 123,
-  c: true,
-});
-```
-
---------------------------------
-
-### Install zod for Zod Mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Installs Zod version 4.0.0 or higher to use the built-in Zod Mini subpath export.
-
-```sh
-npm install zod@^4.0.0
+npm install zod@latest
 ```
 
 --------------------------------
@@ -146,18 +104,32 @@ nub run --filter=@zod/docs build
 
 --------------------------------
 
-### Compare schema composition between regular Zod and Zod Mini
+### Push initial branch with explicit refspec and verify output
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
+Source: https://github.com/colinhacks/zod/blob/main/AGENTS.md
 
-Contrasts regular Zod method chaining with Zod Mini functional composition using z.nullable and z.optional wrappers.
+Use an explicit refspec on the initial push to ensure the remote ref targets a new branch instead of main. Verify that the output displays a new branch creation rather than pointing to main.
+
+```bash
+# Always use a refspec on the initial push so the remote ref name is unambiguous.
+git push -u origin <branch>:refs/heads/<branch>
+```
+
+```text
+* [new branch]      <branch> -> <branch>
+```
+
+--------------------------------
+
+### Enable default compilation in entrypoint
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
 
 ```ts
-// regular Zod
-const mySchema = z.string().optional().nullable();
-
-// Zod Mini
-const mySchema = z.nullable(z.optional(z.string()));
+// in your entrypoint (or before any schemas are defined)
+import "zod/compile";
 ```
 
 --------------------------------
@@ -199,32 +171,22 @@ z.guid();
 
 --------------------------------
 
-### Push initial branch with explicit refspec and verify output
+### Project schema input and output with z.input() and z.output()
 
-Source: https://github.com/colinhacks/zod/blob/main/AGENTS.md
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
 
-Use an explicit refspec on the initial push to ensure the remote ref targets a new branch instead of main. Verify that the output displays a new branch creation rather than pointing to main.
-
-```bash
-# Always use a refspec on the initial push so the remote ref name is unambiguous.
-git push -u origin <branch>:refs/heads/<branch>
-```
-
-```text
-* [new branch]      <branch> -> <branch>
-```
-
---------------------------------
-
-### Enable default compilation in entrypoint
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
+Projects a schema onto either its input or output side to validate codec halves independently. This behaves as a no-op on schemas without codecs or pipes.
 
 ```ts
-// in your entrypoint (or before any schemas are defined)
-import "zod/compile";
+const isoDate = z.codec(z.iso.datetime(), z.date(), {
+  decode: (s) => new Date(s),
+  encode: (d) => d.toISOString(),
+});
+
+const Event = z.object({ name: z.string(), at: isoDate });
+
+z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
+z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
 ```
 
 --------------------------------
@@ -243,26 +205,6 @@ Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The
     "zod": "^3.25.0 || ^4.0.0"
   }
 }
-```
-
---------------------------------
-
-### Project schema input and output with z.input() and z.output()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
-
-Projects a schema onto either its input or output side to validate codec halves independently. This behaves as a no-op on schemas without codecs or pipes.
-
-```ts
-const isoDate = z.codec(z.iso.datetime(), z.date(), {
-  decode: (s) => new Date(s),
-  encode: (d) => d.toISOString(),
-});
-
-const Event = z.object({ name: z.string(), at: isoDate });
-
-z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
-z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
 ```
 
 --------------------------------
@@ -362,20 +304,6 @@ const myRegistry = z.registry<{ description: string };>();
 
 --------------------------------
 
-### Register schema in a registry with .register()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Registers a Zod Mini schema along with metadata into a specified registry.
-
-```typescript
-const myReg = z.registry<{title: string}>();
-
-z.string().register(myReg, { title: "My cool string schema" });
-```
-
---------------------------------
-
 ### Register schema using .register() method
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
@@ -387,20 +315,6 @@ const mySchema = z.string();
 
 mySchema.register(myRegistry, { description: "A cool schema!" });
 // => mySchema
-```
-
---------------------------------
-
-### Clone schema using .clone(def)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Returns an identical clone of the current schema definition.
-
-```typescript
-const mySchema = z.string()
-
-mySchema.clone(mySchema._zod.def);
 ```
 
 --------------------------------
@@ -469,31 +383,6 @@ const Recipe = z.object({
 
 --------------------------------
 
-### schema.clone(def)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Returns an identical clone of the current schema using the provided definition object.
-
-```APIDOC
-## schema.clone(def)
-
-### Description
-Clones the schema using the provided schema definition.
-
-### Parameters
-- `def` (object): Schema definition object (such as `schema._zod.def`).
-
-### Usage
-```ts
-const mySchema = z.string();
-
-mySchema.clone(mySchema._zod.def);
-```
-```
-
---------------------------------
-
 ### Validate unknown keys with .catchall()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -537,18 +426,6 @@ Demonstrates how `.default()` short-circuits the parsing process on undefined in
 ```ts
 const schema = z.string().transform(val => val.length).default(0);
 schema.parse(undefined); // => 0
-```
-
---------------------------------
-
-### Import Zod Mini from standalone package
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Imports the functional Zod API from the standalone @zod/mini package export.
-
-```ts
-import * as z from "@zod/mini";
 ```
 
 --------------------------------
@@ -618,16 +495,16 @@ overlapping.parse("hello"); // ❌ fails (matches both string and any)
 
 --------------------------------
 
-### Configure locale using z.locales in Zod Mini
+### Registering a Zod Mini schema in a registry using .register()
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/error-customization.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
 
-Applies a locale directly from z.locales in Zod Mini.
+Associates metadata with a schema by registering it to an explicit schema registry instance.
 
 ```ts
-import * as z from "zod/mini"
+const myReg = z.registry<{title: string}>();
 
-z.config(z.locales.en());
+z.string().register(myReg, { title: "My cool string schema" });
 ```
 
 --------------------------------
@@ -790,24 +667,6 @@ const Player = z.object({
 
 --------------------------------
 
-### Configure Zod as a peer dependency in package.json
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Include zod in peerDependencies so users of your library can provide their own Zod version.
-
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  }
-}
-```
-
---------------------------------
-
 ### Inspect core schema class inheritance diagram
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -883,6 +742,24 @@ Displays the complete inheritance hierarchy extending from $ZodType down to spec
       - $ZodCustom
 
       
+```
+
+--------------------------------
+
+### Configure Zod as a peer dependency in package.json
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Include zod in peerDependencies so users of your library can provide their own Zod version.
+
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  }
+}
 ```
 
 --------------------------------
@@ -1036,18 +913,6 @@ const JustTheTitle = z.pick(Recipe, { title: true });
 
 --------------------------------
 
-### Import Zod Mini from zod/mini subpath
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Imports the functional tree-shakable Zod API directly from the zod/mini subpath export.
-
-```ts
-import * as z from "zod/mini";
-```
-
---------------------------------
-
 ### Upgrade Zod using npm
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/reducing-memory-footprint.mdx
@@ -1081,6 +946,37 @@ Calling .parse() on a codec executes the forward transformation by running the c
 
 ```ts
 stringToDate.parse("2024-01-15T10:30:00.000Z"); // => Date
+```
+
+--------------------------------
+
+### import "zod/compile"
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
+
+Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
+
+```APIDOC
+### Module Import
+`import "zod/compile"`
+
+### Description
+Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
+
+### Usage Examples
+```ts
+import "zod/compile"; // must come before modules that define schemas
+import * as z from "zod";
+
+const schema = z.object({ name: z.string() });
+schema.parse({ name: "ok" }); // compiled on first parse
+```
+
+CLI invocation:
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
+```
 ```
 
 --------------------------------
@@ -1122,37 +1018,6 @@ z.util.isValidJWT(...);
 
 --------------------------------
 
-### import "zod/compile"
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
-
-Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
-
-```APIDOC
-### Module Import
-`import "zod/compile"`
-
-### Description
-Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
-
-### Usage Examples
-```ts
-import "zod/compile"; // must come before modules that define schemas
-import * as z from "zod";
-
-const schema = z.object({ name: z.string() });
-schema.parse({ name: "ok" }); // compiled on first parse
-```
-
-CLI invocation:
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
-```
-
---------------------------------
-
 ### z.iso.datetime(options?)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1190,18 +1055,6 @@ localDt.parse("2020-01-01T06:15"); // Valid
 const millis = z.iso.datetime({ precision: 3 });
 millis.parse("2020-01-01T06:15:00.123Z"); // Valid
 ```
-```
-
---------------------------------
-
-### Enable global AOT compilation via zod/compile import
-
-Source: https://github.com/colinhacks/zod/blob/main/README.md
-
-Import zod/compile before modules that define schemas to enable ahead-of-time compilation globally.
-
-```ts
-import "zod/compile"; // place before modules that define schemas
 ```
 
 --------------------------------
@@ -1426,22 +1279,6 @@ const computeTrimmedLengthAsync = MyFunction.implementAsync(
 
 --------------------------------
 
-### Compare string validations with z.check in Zod Mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
-
-Demonstrates replacing chained string methods like .min(), .max(), and .trim() with standalone check functions inside z.string().check().
-
-```ts
-// regular Zod
-z.string().min(5).max(10).trim()
-
-// Zod Mini
-z.string().check(z.minLength(5), z.maxLength(10), z.trim());
-```
-
---------------------------------
-
 ### Pass options to z.toJSONSchema()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1452,22 +1289,6 @@ Provide a configuration object as the second argument to `z.toJSONSchema()` to c
 z.toJSONSchema(schema, {
   // ...params
 })
-```
-
---------------------------------
-
-### Set description with .describe() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
-
-```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
@@ -1492,51 +1313,46 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 
 --------------------------------
 
-### List supported checks, mutations, and metadata in Zod Mini
+### Set description with .describe() in Zod
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
 
-Overview of available type-safe check functions, custom checks, mutation helpers, and metadata registrations in Zod Mini.
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
 
 ```typescript
-z.lt(value);
-z.lte(value); // alias: z.maximum()
-z.gt(value);
-z.gte(value); // alias: z.minimum()
-z.positive();
-z.negative();
-z.nonpositive();
-z.nonnegative();
-z.multipleOf(value);
-z.maxSize(value);
-z.minSize(value);
-z.size(value);
-z.maxLength(value);
-z.minLength(value);
-z.length(value);
-z.regex(regex);
-z.lowercase();
-z.uppercase();
-z.includes(value);
-z.startsWith(value);
-z.endsWith(value);
-z.property(key, schema);
-z.mime(value);
+const emailSchema = z.email();
+emailSchema.describe("An email address");
 
-// custom checks
-z.refine()
-z.check()   // replaces .superRefine()
+// equivalent to
+emailSchema.meta({ description: "An email address" });
+```
 
-// mutations (these do not change the inferred types)
-z.overwrite(value => newValue);
-z.normalize();
-z.trim();
-z.toLowerCase();
-z.toUpperCase();
+--------------------------------
 
-// metadata (registers schema in z.globalRegistry)
-z.meta({ title: "...", description: "..." });
-z.describe("...");
+### Inspect customized issue path with safeParse
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Executes safeParse on the schema to demonstrate the custom path set in the resulting error issue.
+
+```typescript
+const result = passwordForm.safeParse({ password: "asdf", confirm: "qwer" });
+result.error.issues;
+/* [{
+  "code": "custom",
+  "path": [ "confirm" ],
+  "message": "Passwords don't match"
+}] */
+```
+
+```typescript
+const result = z.safeParse(passwordForm, { password: "asdf", confirm: "qwer" });
+result.error.issues;
+/* [{
+  "code": "custom",
+  "path": [ "confirm" ],
+  "message": "Passwords don't match"
+}] */
 ```
 
 --------------------------------
@@ -1643,4 +1459,122 @@ const Player = z.object({
 });
 
 const CompiledPlayer = z.compile(Player);
+```
+
+--------------------------------
+
+### Invert a codec using z.invertCodec() in Zod Mini
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
+
+Derive the reverse codec and invoke standalone z.decode() and z.encode() functions on the inverted schema.
+
+```ts
+const dateToString = z.invertCodec(stringToDate);
+
+z.decode(dateToString, new Date("2024-01-15T10:30:00.000Z"));
+// => string
+
+z.encode(dateToString, "2024-01-15T10:30:00.000Z");
+// => Date
+```
+
+--------------------------------
+
+### Validate numeric keys and numerical constraints in z.record
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Demonstrates validating numeric string keys and applying additional number constraints such as step, min, and max to record keys.
+
+```ts
+const numberKeys = z.record(z.number(), z.string());
+numberKeys.parse({ 
+  1: "one", // ✅
+  2: "two", // ✅
+  "1.5": "one", // ✅
+  "-3": "two", // ✅
+  abc: "one" // ❌
+});
+
+// further validation is also supported
+const intKeys = z.record(z.int().step(1).min(0).max(10), z.string());
+intKeys.parse({ 
+  0: "zero", // ✅
+  1: "one", // ✅
+  2: "two", // ✅
+  12: "twelve", // ❌
+  abc: "one" // ❌
+});
+```
+
+--------------------------------
+
+### Supporting Zod and Zod Mini with zod/v4/core
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Import from "zod/v4/core" in library code to access shared base interfaces, parsing utilities, and internal schema definitions.
+
+```typescript
+// library code
+import * as z4 from "zod/v4/core";
+
+export function acceptObjectSchema<T extends z4.$ZodObject>(schema: T){
+  // parse data
+  z4.parse(schema, { /* somedata */});
+  // inspect internals
+  schema._zod.def.shape;
+}
+```
+
+--------------------------------
+
+### Constrain Set schema size with Zod methods
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Applies item count constraints to a Set schema using .nonempty(), .min(), .max(), and .size() methods.
+
+```ts
+z.set(z.string()).nonempty(); // must contain at least 1 item
+z.set(z.string()).min(5); // must contain 5 or more items
+z.set(z.string()).max(5); // must contain 5 or fewer items
+z.set(z.string()).size(5); // must contain 5 items exactly
+```
+
+--------------------------------
+
+### Configure Zod in devDependencies for local development
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Add zod to devDependencies alongside peerDependencies to satisfy peer dependency requirements during library development.
+
+```ts
+// package.json
+{
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "zod": "^4.0.0"
+  }
+}
+```
+
+--------------------------------
+
+### Define and parse union schemas with z.union()
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Checks the input against each option schema in order and returns the first value that successfully validates.
+
+```ts
+const stringOrNumber = z.union([z.string(), z.number()]);
+// string | number
+
+stringOrNumber.parse("foo"); // passes
+stringOrNumber.parse(14); // passes
 ```
