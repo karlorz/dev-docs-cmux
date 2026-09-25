@@ -318,6 +318,29 @@ Port 3000 is already in use. Trying 3001 instead.
 
 --------------------------------
 
+### Wildcard pattern matching on resource in opencode.json
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/policies.mdx
+
+Applies a wildcard pattern using * to match zero or more characters in the resource ID. This example denies any provider starting with company-.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "experimental": {
+    "policies": [
+      {
+        "effect": "deny",
+        "action": "provider.use",
+        "resource": "company-*"
+      }
+    ]
+  }
+}
+```
+
+--------------------------------
+
 ### POST /project/init
 
 Source: https://github.com/anomalyco/opencode/blob/dev/specs/project.md
@@ -343,29 +366,6 @@ POST
 
 --------------------------------
 
-### Wildcard pattern matching on resource in opencode.json
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/policies.mdx
-
-Applies a wildcard pattern using * to match zero or more characters in the resource ID. This example denies any provider starting with company-.
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "experimental": {
-    "policies": [
-      {
-        "effect": "deny",
-        "action": "provider.use",
-        "resource": "company-*"
-      }
-    ]
-  }
-}
-```
-
---------------------------------
-
 ### Add a custom LSP server with command and extensions
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/lsp.mdx
@@ -382,18 +382,6 @@ Define a new LSP entry by specifying the startup `command` array and the file `e
     }
   }
 }
-```
-
---------------------------------
-
-### Install Agents SDK
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/fixture/skills/agents-sdk/SKILL.md
-
-Installs the `agents` package using npm if it is not already installed.
-
-```bash
-npm install agents
 ```
 
 --------------------------------
@@ -426,6 +414,18 @@ PluginBoot background fiber
         → Catalog internally rebuilds
           → Catalog.Event.Updated
             → Frontend.refetchCatalog()
+```
+
+--------------------------------
+
+### Install Agents SDK
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/fixture/skills/agents-sdk/SKILL.md
+
+Installs the `agents` package using npm if it is not already installed.
+
+```bash
+npm install agents
 ```
 
 --------------------------------
@@ -654,20 +654,6 @@ use the mcp_everything tool to add the number 3 and 4
 
 --------------------------------
 
-### Set custom installation directory for OpenCode
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-Specifies a custom target path such as OPENCODE_INSTALL_DIR or XDG_BIN_DIR when executing the install script.
-
-```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
-```
-
---------------------------------
-
 ### Create a skill definition in SKILL.md
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/skills.mdx
@@ -695,6 +681,20 @@ metadata:
 
 Use this when you are preparing a tagged release.
 Ask clarifying questions if the target versioning scheme is unclear.
+```
+
+--------------------------------
+
+### Set custom installation directory for OpenCode
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Specifies a custom target path such as OPENCODE_INSTALL_DIR or XDG_BIN_DIR when executing the install script.
+
+```bash
+# Examples
+OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
+XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
 ```
 
 --------------------------------
@@ -760,6 +760,24 @@ bun dev serve
 
 --------------------------------
 
+### Install and Enable opencode-helicone-session Plugin
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
+
+Install the Helicone session tracking plugin globally and enable it in opencode.json to group conversations into sessions.
+
+```bash
+npm install -g opencode-helicone-session
+```
+
+```json
+{
+  "plugin": ["opencode-helicone-session"]
+}
+```
+
+--------------------------------
+
 ### Blocca la lettura di file .env con tool.execute.before (.opencode/plugins/env-protection.js)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/it/plugins.mdx
@@ -775,24 +793,6 @@ export const EnvProtection = async ({ project, client, $, directory, worktree })
       }
     },
   }
-}
-```
-
---------------------------------
-
-### Install and Enable opencode-helicone-session Plugin
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
-
-Install the Helicone session tracking plugin globally and enable it in opencode.json to group conversations into sessions.
-
-```bash
-npm install -g opencode-helicone-session
-```
-
-```json
-{
-  "plugin": ["opencode-helicone-session"]
 }
 ```
 
@@ -866,4 +866,29 @@ Installs xclip or xsel on Linux systems running X11 to restore copy/paste functi
 apt install -y xclip
 # or
 apt install -y xsel
+```
+
+--------------------------------
+
+### Configure local MCP server in opencode.jsonc
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
+
+Sets up a local MCP server by specifying the command to start the server, enabled status, and environment variables.
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "my-local-mcp-server": {
+      "type": "local",
+      // Or ["bun", "x", "my-mcp-command"]
+      "command": ["npx", "-y", "my-mcp-command"],
+      "enabled": true,
+      "environment": {
+        "MY_ENV_VAR": "my_env_var_value",
+      },
+    },
+  },
+}
 ```
