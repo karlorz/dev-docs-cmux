@@ -667,6 +667,24 @@ const Player = z.object({
 
 --------------------------------
 
+### Configure Zod as a peer dependency in package.json
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Include zod in peerDependencies so users of your library can provide their own Zod version.
+
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  }
+}
+```
+
+--------------------------------
+
 ### Inspect core schema class inheritance diagram
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -742,24 +760,6 @@ Displays the complete inheritance hierarchy extending from $ZodType down to spec
       - $ZodCustom
 
       
-```
-
---------------------------------
-
-### Configure Zod as a peer dependency in package.json
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Include zod in peerDependencies so users of your library can provide their own Zod version.
-
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  }
-}
 ```
 
 --------------------------------
@@ -950,37 +950,6 @@ stringToDate.parse("2024-01-15T10:30:00.000Z"); // => Date
 
 --------------------------------
 
-### import "zod/compile"
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
-
-Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
-
-```APIDOC
-### Module Import
-`import "zod/compile"`
-
-### Description
-Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
-
-### Usage Examples
-```ts
-import "zod/compile"; // must come before modules that define schemas
-import * as z from "zod";
-
-const schema = z.object({ name: z.string() });
-schema.parse({ name: "ok" }); // compiled on first parse
-```
-
-CLI invocation:
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
-```
-
---------------------------------
-
 ### Importing base classes and utilities from zod/v4/core
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -1014,6 +983,37 @@ z.$ZodError;
 
 // utils
 z.util.isValidJWT(...);
+```
+
+--------------------------------
+
+### import "zod/compile"
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
+
+Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
+
+```APIDOC
+### Module Import
+`import "zod/compile"`
+
+### Description
+Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
+
+### Usage Examples
+```ts
+import "zod/compile"; // must come before modules that define schemas
+import * as z from "zod";
+
+const schema = z.object({ name: z.string() });
+schema.parse({ name: "ok" }); // compiled on first parse
+```
+
+CLI invocation:
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
+```
 ```
 
 --------------------------------
@@ -1293,6 +1293,22 @@ z.toJSONSchema(schema, {
 
 --------------------------------
 
+### Set description with .describe() in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+
+```typescript
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
+```
+
+--------------------------------
+
 ### Convert file schema with size and MIME constraints
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1309,22 +1325,6 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 //   minLength: 1,
 //   maxLength: 1048576,
 // }
-```
-
---------------------------------
-
-### Set description with .describe() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
-
-```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
