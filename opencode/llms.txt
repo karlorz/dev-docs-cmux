@@ -65,6 +65,25 @@ scoop install opencode
 
 --------------------------------
 
+### Run custom setup and return extra data with init
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+
+Provide an `init` function to perform custom directory setup. The returned value is accessible via `tmp.extra`.
+
+```typescript
+await using tmp = await tmpdir<string>({
+  init: async (dir) => {
+    await Bun.write(path.join(dir, "file.txt"), "content")
+    return "extra data"
+  },
+})
+// Access extra data via tmp.extra
+console.log(tmp.extra) // "extra data"
+```
+
+--------------------------------
+
 ### Install @opencode-ai/sdk via npm
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/da/sdk.mdx
@@ -89,21 +108,14 @@ npm install -g opencode-ai
 
 --------------------------------
 
-### Run custom setup and return extra data with init
+### Start OpenCode server for desktop app connection
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/AGENTS.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
 
-Provide an `init` function to perform custom directory setup. The returned value is accessible via `tmp.extra`.
+Starts the server in WSL listening on 0.0.0.0 at port 4096 to allow external desktop app connections.
 
-```typescript
-await using tmp = await tmpdir<string>({
-  init: async (dir) => {
-    await Bun.write(path.join(dir, "file.txt"), "content")
-    return "extra data"
-  },
-})
-// Access extra data via tmp.extra
-console.log(tmp.extra) // "extra data"
+```bash
+opencode serve --hostname 0.0.0.0 --port 4096
 ```
 
 --------------------------------
@@ -116,18 +128,6 @@ Install and manage OpenCode globally on Windows via Mise.
 
 ```bash
 mise use -g github:anomalyco/opencode
-```
-
---------------------------------
-
-### Start OpenCode server for desktop app connection
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
-
-Starts the server in WSL listening on 0.0.0.0 at port 4096 to allow external desktop app connections.
-
-```bash
-opencode serve --hostname 0.0.0.0 --port 4096
 ```
 
 --------------------------------
@@ -183,18 +183,6 @@ scoop bucket add extras; scoop install extras/opencode-desktop
 
 --------------------------------
 
-### Install dependencies
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
-
-Installs project dependencies using npm, pnpm, or yarn after cloning the template.
-
-```bash
-$ npm install # or pnpm install or yarn install
-```
-
---------------------------------
-
 ### Install OpenCode using Homebrew
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -203,18 +191,6 @@ Install OpenCode on macOS and Linux using the official OpenCode tap for the most
 
 ```bash
 brew install anomalyco/tap/opencode
-```
-
---------------------------------
-
-### Install wl-clipboard for Wayland on Linux
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/troubleshooting.mdx
-
-Installs wl-clipboard on Linux systems running Wayland to restore copy/paste functionality in OpenCode.
-
-```bash
-apt install -y wl-clipboard
 ```
 
 --------------------------------
@@ -253,30 +229,6 @@ Run this command from your local terminal within your repository to install the 
 
 ```bash
 opencode github install
-```
-
---------------------------------
-
-### Start OpenCode with --auto
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/permissions.mdx
-
-Starts OpenCode in auto mode to automatically approve permission requests that are not explicitly denied.
-
-```bash
-opencode --auto
-```
-
---------------------------------
-
-### Install Mintlify CLI globally
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
-
-Install the Mintlify CLI package globally via npm to preview documentation changes locally.
-
-```shell
-npm i -g mint
 ```
 
 --------------------------------
@@ -386,6 +338,81 @@ Define a new LSP entry by specifying the startup `command` array and the file `e
 
 --------------------------------
 
+### Enter API Key in /connect CLI
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/it/providers.mdx
+
+Inserisci la chiave API per salvare le credenziali del provider. Richiede comunque la configurazione manuale in `opencode.json`.
+
+```bash
+$ /connect
+
+┌  Add credential
+│
+▲  This only stores a credential for myprovider - you will need to configure it in opencode.json, check the docs for examples.
+│
+◇  Enter your API key
+│  sk-...
+└
+```
+
+--------------------------------
+
+### Install Agents SDK
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/fixture/skills/agents-sdk/SKILL.md
+
+Installs the `agents` package using npm if it is not already installed.
+
+```bash
+npm install agents
+```
+
+--------------------------------
+
+### Select Other Provider in /connect CLI
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/it/providers.mdx
+
+Esegui il comando `/connect` e seleziona 'Other' per avviare la procedura di aggiunta di un provider personalizzato.
+
+```bash
+$ /connect
+
+┌  Add credential
+│
+◆  Select provider
+│  ...
+│  ● Other
+└
+```
+
+--------------------------------
+
+### Install OpenCode CLI via curl or package managers
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Installs the OpenCode CLI using the install script or via various package managers across Linux, macOS, and Windows. Versions older than 0.1.x should be removed prior to installation.
+
+```bash
+# YOLO
+curl -fsSL https://opencode.ai/install | bash
+
+# Package managers
+npm i -g opencode-ai@latest        # or bun/pnpm/yarn
+scoop install opencode             # Windows
+choco install opencode             # Windows
+brew install anomalyco/tap/opencode # macOS and Linux (recommended, always up to date)
+brew install opencode              # macOS and Linux (official brew formula, updated less)
+sudo pacman -S opencode            # Arch Linux (Stable)
+paru -S opencode-bin               # Arch Linux (Latest from AUR)
+mise use -g opencode               # Any OS
+nix run nixpkgs#opencode           # or github:anomalyco/opencode for latest dev branch
+```
+
+--------------------------------
+
 ### Sequence catalog initial load and background plugin boot
 
 Source: https://github.com/anomalyco/opencode/blob/dev/specs/v2/catalog-config-plugin-lifecycle.md
@@ -418,18 +445,6 @@ PluginBoot background fiber
 
 --------------------------------
 
-### Install Agents SDK
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/opencode/test/fixture/skills/agents-sdk/SKILL.md
-
-Installs the `agents` package using npm if it is not already installed.
-
-```bash
-npm install agents
-```
-
---------------------------------
-
 ### Initialize Project Configuration with /init
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -438,42 +453,6 @@ Analyzes the codebase and creates an AGENTS.md file in the root directory to gui
 
 ```bash
 /init
-```
-
---------------------------------
-
-### Navigate to Project Directory
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Change into the target project folder before launching OpenCode.
-
-```bash
-cd /path/to/project
-```
-
---------------------------------
-
-### Install OpenCode CLI via curl or package managers
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-Installs the OpenCode CLI using the install script or via various package managers across Linux, macOS, and Windows. Versions older than 0.1.x should be removed prior to installation.
-
-```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Package managers
-npm i -g opencode-ai@latest        # or bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS and Linux (recommended, always up to date)
-brew install opencode              # macOS and Linux (official brew formula, updated less)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # Any OS
-nix run nixpkgs#opencode           # or github:anomalyco/opencode for latest dev branch
 ```
 
 --------------------------------
@@ -510,6 +489,30 @@ GET
 
 --------------------------------
 
+### Kør /connect for OpenCode Go
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/da/providers.mdx
+
+Start forbindelsesprocessen i OpenCode TUI og vælg OpenCode Go.
+
+```txt
+/connect
+```
+
+--------------------------------
+
+### Navigate to Project Directory
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Change into the target project folder before launching OpenCode.
+
+```bash
+cd /path/to/project
+```
+
+--------------------------------
+
 ### Create a new SolidStart project
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/console/app/README.md
@@ -522,6 +525,18 @@ npm init solid@latest
 
 # create a new project in my-app
 npm init solid@latest my-app
+```
+
+--------------------------------
+
+### Install a plugin with opencode plugin
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Install a plugin module and update your OpenCode configuration.
+
+```bash
+opencode plugin <module>
 ```
 
 --------------------------------
@@ -564,30 +579,6 @@ opencode.server.close()
 
 --------------------------------
 
-### Create an agent with opencode agent create
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/agents.mdx
-
-Runs an interactive prompt to configure agent scope, description, system prompt, and permissions, saving the result to a markdown file.
-
-```bash
-opencode agent create
-```
-
---------------------------------
-
-### Install a plugin with opencode plugin
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
-
-Install a plugin module and update your OpenCode configuration.
-
-```bash
-opencode plugin <module>
-```
-
---------------------------------
-
 ### GET /project/:projectID/session/:sessionID/file
 
 Source: https://github.com/anomalyco/opencode/blob/dev/specs/project.md
@@ -618,6 +609,30 @@ GET
 
 --------------------------------
 
+### Create an agent with opencode agent create
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/agents.mdx
+
+Runs an interactive prompt to configure agent scope, description, system prompt, and permissions, saving the result to a markdown file.
+
+```bash
+opencode agent create
+```
+
+--------------------------------
+
+### Install dependencies
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
+
+Installs project dependencies using npm, pnpm, or yarn after cloning the template.
+
+```bash
+$ npm install # or pnpm install or yarn install
+```
+
+--------------------------------
+
 ### Install OpenCode on Windows using Chocolatey
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -642,6 +657,32 @@ npm ls agents  # Should show agents package
 
 --------------------------------
 
+### Install wl-clipboard for Wayland on Linux
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/troubleshooting.mdx
+
+Installs wl-clipboard on Linux systems running Wayland to restore copy/paste functionality in OpenCode.
+
+```bash
+apt install -y wl-clipboard
+```
+
+--------------------------------
+
+### Set custom installation directory for OpenCode
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Specifies a custom target path such as OPENCODE_INSTALL_DIR or XDG_BIN_DIR when executing the install script.
+
+```bash
+# Examples
+OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
+XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+```
+
+--------------------------------
+
 ### Prompt to invoke mcp_everything tool
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
@@ -650,6 +691,30 @@ Example prompt syntax for instructing OpenCode to use the mcp_everything tool.
 
 ```txt
 use the mcp_everything tool to add the number 3 and 4
+```
+
+--------------------------------
+
+### Start OpenCode with --auto
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/permissions.mdx
+
+Starts OpenCode in auto mode to automatically approve permission requests that are not explicitly denied.
+
+```bash
+opencode --auto
+```
+
+--------------------------------
+
+### Start OpenCode TUI in current directory
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/es/tui.mdx
+
+Starts the interactive terminal user interface (TUI) for the current working directory.
+
+```bash
+opencode
 ```
 
 --------------------------------
@@ -685,16 +750,14 @@ Ask clarifying questions if the target versioning scheme is unclear.
 
 --------------------------------
 
-### Set custom installation directory for OpenCode
+### Start OpenCode TUI default
 
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
 
-Specifies a custom target path such as OPENCODE_INSTALL_DIR or XDG_BIN_DIR when executing the install script.
+Runs OpenCode without arguments, which starts the terminal user interface (TUI) by default.
 
 ```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+opencode
 ```
 
 --------------------------------
@@ -712,42 +775,6 @@ bun run --cwd packages/desktop package
 
 --------------------------------
 
-### Start OpenCode TUI in current directory
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/es/tui.mdx
-
-Starts the interactive terminal user interface (TUI) for the current working directory.
-
-```bash
-opencode
-```
-
---------------------------------
-
-### Start OpenCode TUI default
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
-
-Runs OpenCode without arguments, which starts the terminal user interface (TUI) by default.
-
-```bash
-opencode
-```
-
---------------------------------
-
-### Run /themes slash command
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tui.mdx
-
-Lists available themes. Keybind shortcut is ctrl+x t.
-
-```bash
-/themes
-```
-
---------------------------------
-
 ### Start headless API server on default port
 
 Source: https://github.com/anomalyco/opencode/blob/dev/CONTRIBUTING.md
@@ -756,6 +783,18 @@ Starts the OpenCode headless API server on default port 4096.
 
 ```bash
 bun dev serve
+```
+
+--------------------------------
+
+### Connect to LLM Provider with /connect
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Run this command in the TUI to begin configuring an LLM provider.
+
+```txt
+/connect
 ```
 
 --------------------------------
@@ -774,48 +813,6 @@ npm install -g opencode-helicone-session
 {
   "plugin": ["opencode-helicone-session"]
 }
-```
-
---------------------------------
-
-### Blocca la lettura di file .env con tool.execute.before (.opencode/plugins/env-protection.js)
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/it/plugins.mdx
-
-Intercetta l'esecuzione del tool di lettura per impedire a OpenCode di accedere ai file contenenti .env nel percorso.
-
-```javascript
-export const EnvProtection = async ({ project, client, $, directory, worktree }) => {
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (input.tool === "read" && output.args.filePath.includes(".env")) {
-        throw new Error("Do not read .env files")
-      }
-    },
-  }
-}
-```
-
---------------------------------
-
-### session.init({ path, body })
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/bs/sdk.mdx
-
-Analyzes the application and generates an AGENTS.md configuration file. Returns a boolean result.
-
-```APIDOC
-## session.init({ path, body })
-
-### Description
-Analyze app and create `AGENTS.md`.
-
-### Parameters
-- `path` (object) - Path parameters.
-- `body` (object) - Initialization options.
-
-### Returns
-- `boolean`
 ```
 
 --------------------------------
@@ -844,14 +841,14 @@ yarn global add opencode-ai
 
 --------------------------------
 
-### Start OpenCode web client in WSL
+### Install Mintlify CLI globally
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/docs/README.md
 
-Launches the web client from the WSL terminal bound to 0.0.0.0 for access via a Windows web browser.
+Install the Mintlify CLI package globally via npm to preview documentation changes locally.
 
-```bash
-opencode web --hostname 0.0.0.0
+```shell
+npm i -g mint
 ```
 
 --------------------------------
@@ -870,25 +867,12 @@ apt install -y xsel
 
 --------------------------------
 
-### Configure local MCP server in opencode.jsonc
+### Run /themes slash command
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/mcp-servers.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tui.mdx
 
-Sets up a local MCP server by specifying the command to start the server, enabled status, and environment variables.
+Lists available themes. Keybind shortcut is ctrl+x t.
 
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "my-local-mcp-server": {
-      "type": "local",
-      // Or ["bun", "x", "my-mcp-command"]
-      "command": ["npx", "-y", "my-mcp-command"],
-      "enabled": true,
-      "environment": {
-        "MY_ENV_VAR": "my_env_var_value",
-      },
-    },
-  },
-}
+```bash
+/themes
 ```
