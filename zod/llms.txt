@@ -121,6 +121,19 @@ git push -u origin <branch>:refs/heads/<branch>
 
 --------------------------------
 
+### Enable default compilation in entrypoint
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
+
+```ts
+// in your entrypoint (or before any schemas are defined)
+import "zod/compile";
+```
+
+--------------------------------
+
 ### z.uuid(params?)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -154,19 +167,6 @@ z.uuidv7();
 // Relaxed UUID-like identifier
 z.guid();
 ```
-```
-
---------------------------------
-
-### Enable default compilation in entrypoint
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
-
-```ts
-// in your entrypoint (or before any schemas are defined)
-import "zod/compile";
 ```
 
 --------------------------------
@@ -636,23 +636,6 @@ fileSchemaMini.check(z.mime(["image/png", "image/jpeg"]));
 
 --------------------------------
 
-### Define an object schema with Zod Mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/basics.mdx
-
-Defines a basic object schema using the lightweight zod/mini entrypoint.
-
-```typescript
-import * as z from "zod/mini"
-
-const Player = z.object({ 
-  username: z.string(),
-  xp: z.number()
-});
-```
-
---------------------------------
-
 ### Create a typed registry
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
@@ -667,20 +650,19 @@ const myRegistry = z.registry<{ description: string }>();
 
 --------------------------------
 
-### Configure Zod as a peer dependency in package.json
+### Define an object schema with Zod Mini
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/basics.mdx
 
-Include zod in peerDependencies so users of your library can provide their own Zod version.
+Defines a basic object schema using the lightweight zod/mini entrypoint.
 
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  }
-}
+```typescript
+import * as z from "zod/mini"
+
+const Player = z.object({ 
+  username: z.string(),
+  xp: z.number()
+});
 ```
 
 --------------------------------
@@ -760,6 +742,24 @@ Displays the complete inheritance hierarchy extending from $ZodType down to spec
       - $ZodCustom
 
       
+```
+
+--------------------------------
+
+### Configure Zod as a peer dependency in package.json
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Include zod in peerDependencies so users of your library can provide their own Zod version.
+
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  }
+}
 ```
 
 --------------------------------
@@ -950,37 +950,6 @@ stringToDate.parse("2024-01-15T10:30:00.000Z"); // => Date
 
 --------------------------------
 
-### import "zod/compile"
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
-
-Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
-
-```APIDOC
-### Module Import
-`import "zod/compile"`
-
-### Description
-Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
-
-### Usage Examples
-```ts
-import "zod/compile"; // must come before modules that define schemas
-import * as z from "zod";
-
-const schema = z.object({ name: z.string() });
-schema.parse({ name: "ok" }); // compiled on first parse
-```
-
-CLI invocation:
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
-```
-
---------------------------------
-
 ### Importing base classes and utilities from zod/v4/core
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -1014,6 +983,37 @@ z.$ZodError;
 
 // utils
 z.util.isValidJWT(...);
+```
+
+--------------------------------
+
+### import "zod/compile"
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
+
+Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
+
+```APIDOC
+### Module Import
+`import "zod/compile"`
+
+### Description
+Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
+
+### Usage Examples
+```ts
+import "zod/compile"; // must come before modules that define schemas
+import * as z from "zod";
+
+const schema = z.object({ name: z.string() });
+schema.parse({ name: "ok" }); // compiled on first parse
+```
+
+CLI invocation:
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
+```
 ```
 
 --------------------------------
@@ -1055,6 +1055,20 @@ localDt.parse("2020-01-01T06:15"); // Valid
 const millis = z.iso.datetime({ precision: 3 });
 millis.parse("2020-01-01T06:15:00.123Z"); // Valid
 ```
+```
+
+--------------------------------
+
+### Verifying in-place instance validation result
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+
+Parses an instance with okResponse to return the untouched input object reference. The prototype survives and methods remain accessible.
+
+```ts
+const res = await fetch("/api/user");
+
+okResponse.parse(res) === res; // ✅ true
 ```
 
 --------------------------------
@@ -1325,89 +1339,4 @@ result.error.issues;
   "path": [ "confirm" ],
   "message": "Passwords don't match"
 }] */
-```
-
---------------------------------
-
-### Parse, decode, and encode with standard Zod schema methods
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
-
-Execute forward parsing and decoding or backward encoding on standard Zod schemas where input and output types match.
-
-```ts
-const schema = z.string();
-
-type Input = z.input<typeof schema>;    // string
-type Output = z.output<typeof schema>;  // string
-
-schema.parse("asdf");   // => "asdf"
-schema.decode("asdf");  // => "asdf"
-schema.encode("asdf");  // => "asdf"
-```
-
---------------------------------
-
-### Inspect default input and output types for branded schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
-
-```typescript
-const USD = z.string().brand<"USD">();
-
-type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
-type USDInput = z.input<typeof USD>; // string
-```
-
---------------------------------
-
-### Chain schemas into pipes with pipe
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Chains schemas together to parse and transform values sequentially. Shown in both standard Zod and Zod Mini syntax.
-
-```ts
-const stringToLength = z.string().pipe(z.transform(val => val.length));
-
-stringToLength.parse("hello"); // => 5
-```
-
-```ts
-const stringToLength = z.pipe(z.string(), z.transform(val => val.length));
-
-z.parse(stringToLength, "hello"); // => 5
-```
-
---------------------------------
-
-### z.iso.time(options?)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Creates a Zod schema validating time strings in the format HH:MM[:SS[.s+]] with configurable decimal precision.
-
-```APIDOC
-### Function
-`z.iso.time(options?)`
-
-### Description
-Validates strings formatted as `HH:MM[:SS[.s+]]`. Seconds and sub-second decimals are optional by default. No timezone offsets or `Z` designators are permitted.
-
-### Parameters
-- **options** (object, optional)
-  - **precision** (number, optional) - Constrains fractional second precision (`-1` for HH:MM, `0` for HH:MM:SS, `1` for deciseconds, `2` for centiseconds, `3` for milliseconds).
-
-### Usage Example
-```ts
-const time = z.iso.time();
-time.parse("03:15");              // Valid
-time.parse("03:15:00");           // Valid
-time.parse("03:15:00.9999999");   // Valid
-
-const minuteTime = z.iso.time({ precision: -1 });
-minuteTime.parse("03:15");        // Valid
-```
 ```
