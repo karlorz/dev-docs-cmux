@@ -121,19 +121,6 @@ git push -u origin <branch>:refs/heads/<branch>
 
 --------------------------------
 
-### Enable default compilation in entrypoint
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
-
-```ts
-// in your entrypoint (or before any schemas are defined)
-import "zod/compile";
-```
-
---------------------------------
-
 ### z.uuid(params?)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -171,20 +158,15 @@ z.guid();
 
 --------------------------------
 
-### Configure peerDependencies to support Zod 3 and Zod 4
+### Enable default compilation in entrypoint
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
 
-Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The zod/v4 subpath is available starting in version 3.25.0.
+Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
 
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^3.25.0 || ^4.0.0"
-  }
-}
+```ts
+// in your entrypoint (or before any schemas are defined)
+import "zod/compile";
 ```
 
 --------------------------------
@@ -205,6 +187,24 @@ const Event = z.object({ name: z.string(), at: isoDate });
 
 z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
 z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
+```
+
+--------------------------------
+
+### Configure peerDependencies to support Zod 3 and Zod 4
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The zod/v4 subpath is available starting in version 3.25.0.
+
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  }
+}
 ```
 
 --------------------------------
@@ -1059,20 +1059,6 @@ millis.parse("2020-01-01T06:15:00.123Z"); // Valid
 
 --------------------------------
 
-### Verifying in-place instance validation result
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
-
-Parses an instance with okResponse to return the untouched input object reference. The prototype survives and methods remain accessible.
-
-```ts
-const res = await fetch("/api/user");
-
-okResponse.parse(res) === res; // ✅ true
-```
-
---------------------------------
-
 ### Define any and unknown schemas
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1279,18 +1265,16 @@ const computeTrimmedLengthAsync = MyFunction.implementAsync(
 
 --------------------------------
 
-### Set description with .describe() in Zod
+### Pass options to z.toJSONSchema()
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
 
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+Provide a configuration object as the second argument to `z.toJSONSchema()` to customize the conversion behavior.
 
 ```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
+z.toJSONSchema(schema, {
+  // ...params
+})
 ```
 
 --------------------------------
@@ -1311,6 +1295,22 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 //   minLength: 1,
 //   maxLength: 1048576,
 // }
+```
+
+--------------------------------
+
+### Set description with .describe() in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+
+```typescript
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
