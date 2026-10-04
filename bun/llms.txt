@@ -74,18 +74,6 @@ bun install
 
 --------------------------------
 
-### Install a package using bun install
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/install.mdx
-
-Install a package by specifying its package name and target version.
-
-```sh
-bun install <name>@<version>
-```
-
---------------------------------
-
 ### Install Bun in GitHub Actions with setup-bun
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/install/cicd.mdx
@@ -105,6 +93,18 @@ jobs:
 
       # run any `bun` or `bunx` command
       - run: bun install # [!code ++]
+```
+
+--------------------------------
+
+### Install a package using bun install
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/install.mdx
+
+Install a package by specifying its package name and target version.
+
+```sh
+bun install <name>@<version>
 ```
 
 --------------------------------
@@ -315,19 +315,6 @@ bun add @neondatabase/serverless
 
 --------------------------------
 
-### Configure security scanner in bunfig.toml
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/security-scanner-api.mdx
-
-Configures Bun to scan packages before installation. Replace the example package name with your scanner's actual package name.
-
-```toml
-[install.security]
-scanner = "@oven/bun-security-scanner" # example name, replace with your scanner's package
-```
-
---------------------------------
-
 ### Initialize project and install Drizzle and Neon dependencies
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-drizzle.mdx
@@ -340,6 +327,19 @@ cd bun-drizzle-neon
 bun init -y
 bun add drizzle-orm @neondatabase/serverless
 bun add -D drizzle-kit
+```
+
+--------------------------------
+
+### Configure security scanner in bunfig.toml
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/security-scanner-api.mdx
+
+Configures Bun to scan packages before installation. Replace the example package name with your scanner's actual package name.
+
+```toml
+[install.security]
+scanner = "@oven/bun-security-scanner" # example name, replace with your scanner's package
 ```
 
 --------------------------------
@@ -424,18 +424,6 @@ console.log(`Server running at ${server.url}`);
 
 --------------------------------
 
-### Initialize Prisma with SQLite datasource provider
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
-
-Uses bunx to run prisma init, generating the schema file, migration directory, and writing DATABASE_URL to .env.
-
-```bash
-bunx --bun prisma init --datasource-provider sqlite
-```
-
---------------------------------
-
 ### Get current file name with import.meta.file
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/import-meta-file.mdx
@@ -444,6 +432,18 @@ Use `import.meta.file` to retrieve the filename of the currently executing modul
 
 ```ts
 import.meta.file; // => "c.ts"
+```
+
+--------------------------------
+
+### Initialize Prisma with SQLite datasource provider
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
+
+Uses bunx to run prisma init, generating the schema file, migration directory, and writing DATABASE_URL to .env.
+
+```bash
+bunx --bun prisma init --datasource-provider sqlite
 ```
 
 --------------------------------
@@ -546,94 +546,6 @@ bun install react@latest # specific tag
 
 --------------------------------
 
-### sql.begin(callback)
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/sql.mdx
-
-Starts a new transaction across supported databases such as PostgreSQL and SQLite. Automatically commits on successful execution of the callback or rolls back if an error is thrown.
-
-```APIDOC
-## sql.begin
-
-### Description
-Starts a new database transaction. For PostgreSQL, it reserves a dedicated connection from the pool. For SQLite, it initiates a transaction on the single connection. Automatically executes `BEGIN`, commits if no errors are thrown, and executes `ROLLBACK` on error.
-
-### Syntax
-```ts
-await sql.begin(callback: (tx: Transaction) => Promise<any> | Array<Promise<any>>)
-```
-
-### Parameters
-- **callback** `(tx: Transaction) => Promise<any> | Array<Promise<any>>` - Required - An async function that receives the transaction client `tx` and executes SQL operations inside the transaction. Can optionally return an array of queries to pipeline them.
-
-### Examples
-
-#### Basic Transaction
-```ts
-await sql.begin(async tx => {
-  await tx`INSERT INTO users (name) VALUES (${'Alice'})`;
-  await tx`UPDATE accounts SET balance = balance - 100 WHERE user_id = 1`;
-});
-```
-
-#### Pipelined Queries
-```ts
-await sql.begin(async tx => {
-  return [
-    tx`INSERT INTO users (name) VALUES (${'Alice'})`,
-    tx`UPDATE accounts SET balance = balance - 100 WHERE user_id = 1`,
-  ];
-});
-```
-```
-
---------------------------------
-
-### Install a specific version of Bun on macOS and Linux
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/upgrade.mdx
-
-Installs a specific version tag of Bun via the bash install script on macOS and Linux.
-
-```bash
-curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.3"
-```
-
---------------------------------
-
-### Set up a Rust native plugin project
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
-
-Initialize a new NAPI-RS project template and add the bun-native-plugin crate dependency.
-
-```bash
-bun add -g @napi-rs/cli
-napi new
-```
-
-```bash
-cargo add bun-native-plugin
-```
-
---------------------------------
-
-### Parse ordered list start number with leading zeros
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
-
-Demonstrates that leading zeros in start numbers are parsed to their integer value for the list start attribute.
-
-```markdown
-003. ok
-.
-<ol start="3">
-<li>ok</li>
-</ol>
-```
-
---------------------------------
-
 ### Global test setup with beforeAll and afterAll hooks
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/test/configuration.mdx
@@ -657,6 +569,34 @@ afterAll(() => {
 
 --------------------------------
 
+### Install a specific version of Bun on macOS and Linux
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/upgrade.mdx
+
+Installs a specific version tag of Bun via the bash install script on macOS and Linux.
+
+```bash
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.3"
+```
+
+--------------------------------
+
+### Parse ordered list start number with leading zeros
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec.txt
+
+Demonstrates that leading zeros in start numbers are parsed to their integer value for the list start attribute.
+
+```markdown
+003. ok
+.
+<ol start="3">
+<li>ok</li>
+</ol>
+```
+
+--------------------------------
+
 ### Run an npm template using equivalent `bun create` and `bunx` commands
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/templating/create.mdx
@@ -666,33 +606,6 @@ Shows equivalent commands for running npm package initializers such as `create-r
 ```sh
 bun create remix
 bunx create-remix
-```
-
---------------------------------
-
-### Install Bun across platforms
-
-Source: https://github.com/oven-sh/bun/blob/main/README.md
-
-Installs Bun using various package managers and platform-specific methods including the install script, PowerShell, npm, Homebrew, and Docker.
-
-```sh
-# with install script (recommended)
-curl -fsSL https://bun.com/install | bash
-
-# on windows
-powershell -c "irm bun.sh/install.ps1 | iex"
-
-# with npm
-npm install -g bun
-
-# with Homebrew
-brew tap oven-sh/bun
-brew install bun
-
-# with Docker
-docker pull oven/bun
-docker run --rm --init --ulimit memlock=-1:-1 oven/bun
 ```
 
 --------------------------------
@@ -735,18 +648,6 @@ bun run publisher.ts
 
 --------------------------------
 
-### Install dependencies
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/postgres/README.md
-
-Installs the required package dependencies for the benchmark suite.
-
-```bash
-bun install
-```
-
---------------------------------
-
 ### Install dependencies using hardlink backend
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
@@ -756,6 +657,45 @@ Force the hardlink backend with bun install. This is the default and fastest bac
 ```bash
 rm -rf node_modules
 bun install --backend hardlink
+```
+
+--------------------------------
+
+### Install Bun across platforms
+
+Source: https://github.com/oven-sh/bun/blob/main/README.md
+
+Installs Bun using various package managers and platform-specific methods including the install script, PowerShell, npm, Homebrew, and Docker.
+
+```sh
+# with install script (recommended)
+curl -fsSL https://bun.com/install | bash
+
+# on windows
+powershell -c "irm bun.sh/install.ps1 | iex"
+
+# with npm
+npm install -g bun
+
+# with Homebrew
+brew tap oven-sh/bun
+brew install bun
+
+# with Docker
+docker pull oven/bun
+docker run --rm --init --ulimit memlock=-1:-1 oven/bun
+```
+
+--------------------------------
+
+### Install dependencies
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/postgres/README.md
+
+Installs the required package dependencies for the benchmark suite.
+
+```bash
+bun install
 ```
 
 --------------------------------
@@ -816,56 +756,6 @@ bun init my-app
 
 --------------------------------
 
-### Run multi-statement queries with sql.simple()
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/sql.mdx
-
-Executes multiple statements in a single query using PostgreSQL simple query mode. Simple queries cannot use template parameters and are typically used for migrations and setup scripts.
-
-```ts
-// Multiple statements in one query
-await sql`
-  SELECT 1;
-  SELECT 2;
-`.simple();
-```
-
---------------------------------
-
-### query.execute() and query.cancel()
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/sql.mdx
-
-Explicitly starts query execution or cancels an in-flight query.
-
-```APIDOC
-## `query.execute()` and `query.cancel()`
-
-### Description
-Bun SQL queries are lazy and only execute when awaited or explicitly called with `.execute()`. Call `.cancel()` on the query object to abort an ongoing query.
-
-### Usage Example
-```ts
-const query = sql`SELECT * FROM users`.execute();
-setTimeout(() => query.cancel(), 100);
-await query;
-```
-```
-
---------------------------------
-
-### Install commander via npm
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/commander/Readme.md
-
-Installs the Commander package as a dependency in your project.
-
-```sh
-npm install commander
-```
-
---------------------------------
-
 ### Create a SvelteKit project with Bun
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sveltekit.mdx
@@ -912,14 +802,14 @@ bunx sv create my-app
 
 --------------------------------
 
-### Install the Railway CLI
+### Install commander via npm
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/railway.mdx
+Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/commander/Readme.md
 
-Installs the Railway CLI globally using Bun.
+Installs the Commander package as a dependency in your project.
 
-```bash
-bun install -g @railway/cli
+```sh
+npm install commander
 ```
 
 --------------------------------
@@ -932,6 +822,18 @@ Scaffold a new project in an optional target directory or the current working di
 
 ```bash
 bun init <folder?>
+```
+
+--------------------------------
+
+### Install the Railway CLI
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/railway.mdx
+
+Installs the Railway CLI globally using Bun.
+
+```bash
+bun install -g @railway/cli
 ```
 
 --------------------------------
@@ -990,18 +892,6 @@ sudo dnf install llvm clang lld-devel
 
 --------------------------------
 
-### Install @happy-dom/global-registrator
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/test/happy-dom.mdx
-
-Install the Happy DOM global registrator package as a development dependency.
-
-```sh
-bun add -d @happy-dom/global-registrator
-```
-
---------------------------------
-
 ### Example pages directory structure
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/file-system-router.mdx
@@ -1020,15 +910,14 @@ pages
 
 --------------------------------
 
-### Install react and react-dom
+### Install @happy-dom/global-registrator
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/ssr-react.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/test/happy-dom.mdx
 
-Install React and React DOM dependencies using Bun.
+Install the Happy DOM global registrator package as a development dependency.
 
 ```sh
-# Any package manager can be used
-bun add react react-dom
+bun add -d @happy-dom/global-registrator
 ```
 
 --------------------------------
@@ -1043,6 +932,32 @@ Creates a new project directory and initializes it with default configuration us
 mkdir prisma-postgres-app
 cd prisma-postgres-app
 bun init
+```
+
+--------------------------------
+
+### Initialize a NAPI project with @napi-rs/cli
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
+
+Install the NAPI CLI globally and scaffold a new native Node-API project.
+
+```bash
+bun add -g @napi-rs/cli
+napi new
+```
+
+--------------------------------
+
+### Install react and react-dom
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/ssr-react.mdx
+
+Install React and React DOM dependencies using Bun.
+
+```sh
+# Any package manager can be used
+bun add react react-dom
 ```
 
 --------------------------------
@@ -1123,6 +1038,47 @@ systemctl start my-app
 
 --------------------------------
 
+### build.onStart(callback)
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
+
+Registers a lifecycle callback that executes when the bundler starts a new bundle. Bun waits until all onStart callbacks have resolved before continuing the bundling process.
+
+```APIDOC
+## build.onStart
+
+### Description
+Registers a callback that runs when the bundler starts a new bundle. The callback may be asynchronous, and the bundler waits until all `onStart()` callbacks have completed before proceeding. Lifecycle callbacks cannot modify `build.config`.
+
+### Signature
+```ts
+onStart(callback: () => void | Promise<void>): void;
+```
+
+### Parameters
+- **callback** (`() => void | Promise<void>`) - Required. A function to execute at the start of bundling. Can return a Promise.
+
+### Return Value
+- **void**
+
+### Example
+```ts
+import type { BunPlugin } from "bun";
+
+const myPlugin: BunPlugin = {
+  name: "onStart example",
+  setup(build) {
+    build.onStart(async () => {
+      console.log("Bundle started!");
+      await Bun.sleep(1000);
+    });
+  },
+};
+```
+```
+
+--------------------------------
+
 ### Start benchmark server using Node.js
 
 Source: https://github.com/oven-sh/bun/blob/main/bench/stream-file-upload-client/README.md
@@ -1132,25 +1088,6 @@ Runs the destination HTTP web server to receive file uploads.
 ```bash
 node server-node.mjs
 
-```
-
---------------------------------
-
-### Start a simple HTTP server with Bun.serve
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/http/simple.mdx
-
-Starts an HTTP server listening on port 3000 that responds to every request with status 200 and "Welcome to Bun!".
-
-```typescript
-const server = Bun.serve({
-  port: 3000,
-  fetch(request) {
-    return new Response("Welcome to Bun!");
-  },
-});
-
-console.log(`Listening on ${server.url}`);
 ```
 
 --------------------------------
@@ -1175,14 +1112,44 @@ coverage = true
 
 --------------------------------
 
-### Start the Fullstack Dev Server
+### Start a simple HTTP server with Bun.serve
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/fullstack.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/http/simple.mdx
 
-Runs the application server script using Bun CLI.
+Starts an HTTP server listening on port 3000 that responds to every request with status 200 and "Welcome to Bun!".
 
-```bash
-bun run app.ts
+```typescript
+const server = Bun.serve({
+  port: 3000,
+  fetch(request) {
+    return new Response("Welcome to Bun!");
+  },
+});
+
+console.log(`Listening on ${server.url}`);
+```
+
+--------------------------------
+
+### onStart(callback)
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
+
+Registers a callback that runs once the bundler has started a bundle. It can be used for initialization before module resolution begins.
+
+```APIDOC
+## onStart(callback)
+
+### Description
+Run once the bundler has started a bundle.
+
+### Signature
+```ts
+onStart(callback: () => void | Promise<void>): void;
+```
+
+### Parameters
+- **callback** (`() => void | Promise<void>`) - Function invoked when the bundling process begins.
 ```
 
 --------------------------------
@@ -1195,6 +1162,43 @@ Installs the required package dependencies for the Expo project using npm.
 
 ```bash
 npm install
+```
+
+--------------------------------
+
+### Install LLVM on Ubuntu/Debian
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
+
+Run the automatic LLVM installation script compatible with all versions of Ubuntu.
+
+```bash
+# LLVM has an automatic installation script that is compatible with all versions of Ubuntu
+wget https://apt.llvm.org/llvm.sh -O - | sudo bash -s -- 23 all
+```
+
+--------------------------------
+
+### Start the Fullstack Dev Server
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/fullstack.mdx
+
+Runs the application server script using Bun CLI.
+
+```bash
+bun run app.ts
+```
+
+--------------------------------
+
+### Install LLVM on macOS using Homebrew
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
+
+Install LLVM 23 on macOS using Homebrew.
+
+```bash
+brew install llvm@23
 ```
 
 --------------------------------
@@ -1218,27 +1222,14 @@ $ bun index.html
 
 --------------------------------
 
-### Install LLVM on Ubuntu/Debian
+### Install dependencies on openSUSE Tumbleweed with zypper
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
 
-Run the automatic LLVM installation script compatible with all versions of Ubuntu.
+Installs the necessary build packages on openSUSE Tumbleweed.
 
 ```bash
-# LLVM has an automatic installation script that is compatible with all versions of Ubuntu
-wget https://apt.llvm.org/llvm.sh -O - | sudo bash -s -- 23 all
-```
-
---------------------------------
-
-### Install LLVM on macOS using Homebrew
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
-
-Install LLVM 23 on macOS using Homebrew.
-
-```bash
-brew install llvm@23
+sudo zypper install go cmake ninja automake git icu rustup
 ```
 
 --------------------------------
@@ -1272,18 +1263,6 @@ Your database is now in sync with your schema.
 
 --------------------------------
 
-### Install dependencies on openSUSE Tumbleweed with zypper
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
-
-Installs the necessary build packages on openSUSE Tumbleweed.
-
-```bash
-sudo zypper install go cmake ninja automake git icu rustup
-```
-
---------------------------------
-
 ### Install dependencies on Arch Linux with pacman
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
@@ -1292,18 +1271,6 @@ Installs required build dependencies on Arch Linux.
 
 ```bash
 sudo pacman -S base-devel cmake git go libiconv libtool make ninja pkg-config python rustup sed unzip ruby
-```
-
---------------------------------
-
-### Start WebSocket server in Deno
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/websocket-server/README.md
-
-Runs the WebSocket chat server benchmark in Deno using Deno.serve with full permissions enabled.
-
-```bash
-deno run -A ./chat-server.deno.mjs
 ```
 
 --------------------------------
@@ -1320,26 +1287,6 @@ scoop install bun
 
 --------------------------------
 
-### Create a local template directory and `package.json`
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/templating/create.mdx
-
-Creates a template folder inside `$HOME/.bun-create` and defines a minimal `package.json` for it.
-
-```bash
-cd $HOME/.bun-create
-mkdir foo
-cd foo
-```
-
-```json
-{
-  "name": "foo"
-}
-```
-
---------------------------------
-
 ### Install Bun via Homebrew
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/installation.mdx
@@ -1352,19 +1299,14 @@ brew install oven-sh/bun/bun
 
 --------------------------------
 
-### Run shell commands with Bun Shell quickstart
+### Start WebSocket server in Deno
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/shell.mdx
+Source: https://github.com/oven-sh/bun/blob/main/bench/websocket-server/README.md
 
-Execute shell commands using the $ template tag and pass JavaScript objects like fetch Response instances directly into stdin.
+Runs the WebSocket chat server benchmark in Deno using Deno.serve with full permissions enabled.
 
-```ts
-import { $ } from "bun";
-
-const response = await fetch("https://example.com");
-
-// Use Response as stdin.
-await $`cat < ${response} | wc -c`; // 1256
+```bash
+deno run -A ./chat-server.deno.mjs
 ```
 
 --------------------------------
