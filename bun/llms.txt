@@ -272,6 +272,18 @@ RUNS=1 BUN=... bench/site/run-all.sh                # quick smoke run
 
 --------------------------------
 
+### Reset to a blank starter project
+
+Source: https://github.com/oven-sh/bun/blob/main/test/integration/expo-app/README.md
+
+Moves starter code into the app-example directory and creates a clean app directory for development.
+
+```bash
+npm run reset-project
+```
+
+--------------------------------
+
 ### Autolink URLs with fragments
 
 Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec-permissive-autolinks.txt
@@ -284,18 +296,6 @@ https://example.com#fragment
 <p><a href="https://example.com#fragment">https://example.com#fragment</a></p>
 .
 --fpermissive-url-autolinks
-```
-
---------------------------------
-
-### Reset to a blank starter project
-
-Source: https://github.com/oven-sh/bun/blob/main/test/integration/expo-app/README.md
-
-Moves starter code into the app-example directory and creates a clean app directory for development.
-
-```bash
-npm run reset-project
 ```
 
 --------------------------------
@@ -315,6 +315,19 @@ bun add @neondatabase/serverless
 
 --------------------------------
 
+### Configure security scanner in bunfig.toml
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/security-scanner-api.mdx
+
+Configures Bun to scan packages before installation. Replace the example package name with your scanner's actual package name.
+
+```toml
+[install.security]
+scanner = "@oven/bun-security-scanner" # example name, replace with your scanner's package
+```
+
+--------------------------------
+
 ### Initialize project and install Drizzle and Neon dependencies
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-drizzle.mdx
@@ -327,19 +340,6 @@ cd bun-drizzle-neon
 bun init -y
 bun add drizzle-orm @neondatabase/serverless
 bun add -D drizzle-kit
-```
-
---------------------------------
-
-### Configure security scanner in bunfig.toml
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/security-scanner-api.mdx
-
-Configures Bun to scan packages before installation. Replace the example package name with your scanner's actual package name.
-
-```toml
-[install.security]
-scanner = "@oven/bun-security-scanner" # example name, replace with your scanner's package
 ```
 
 --------------------------------
@@ -424,18 +424,6 @@ console.log(`Server running at ${server.url}`);
 
 --------------------------------
 
-### Get current file name with import.meta.file
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/import-meta-file.mdx
-
-Use `import.meta.file` to retrieve the filename of the currently executing module (for example, evaluating inside `/a/b/c.ts` returns `"c.ts"`).
-
-```ts
-import.meta.file; // => "c.ts"
-```
-
---------------------------------
-
 ### Initialize Prisma with SQLite datasource provider
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
@@ -444,6 +432,18 @@ Uses bunx to run prisma init, generating the schema file, migration directory, a
 
 ```bash
 bunx --bun prisma init --datasource-provider sqlite
+```
+
+--------------------------------
+
+### Get current file name with import.meta.file
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/import-meta-file.mdx
+
+Use `import.meta.file` to retrieve the filename of the currently executing module (for example, evaluating inside `/a/b/c.ts` returns `"c.ts"`).
+
+```ts
+import.meta.file; // => "c.ts"
 ```
 
 --------------------------------
@@ -688,18 +688,6 @@ docker run --rm --init --ulimit memlock=-1:-1 oven/bun
 
 --------------------------------
 
-### Install dependencies
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/postgres/README.md
-
-Installs the required package dependencies for the benchmark suite.
-
-```bash
-bun install
-```
-
---------------------------------
-
 ### Initialize a new project with bun init
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
@@ -708,6 +696,18 @@ Initializes a new Bun project in a directory named my-app.
 
 ```bash
 bun init my-app
+```
+
+--------------------------------
+
+### Install dependencies
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/postgres/README.md
+
+Installs the required package dependencies for the benchmark suite.
+
+```bash
+bun install
 ```
 
 --------------------------------
@@ -814,18 +814,6 @@ npm install commander
 
 --------------------------------
 
-### Initialize a new Bun project with bun init
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/init.mdx
-
-Scaffold a new project in an optional target directory or the current working directory.
-
-```bash
-bun init <folder?>
-```
-
---------------------------------
-
 ### Install the Railway CLI
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/railway.mdx
@@ -834,6 +822,18 @@ Installs the Railway CLI globally using Bun.
 
 ```bash
 bun install -g @railway/cli
+```
+
+--------------------------------
+
+### Initialize a new Bun project with bun init
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/init.mdx
+
+Scaffold a new project in an optional target directory or the current working directory.
+
+```bash
+bun init <folder?>
 ```
 
 --------------------------------
@@ -910,6 +910,40 @@ pages
 
 --------------------------------
 
+### build.onStart
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/plugins.mdx
+
+Registers a callback that executes when the bundler starts a new bundle build. Bun waits until all onStart callbacks complete before continuing with the build process.
+
+```APIDOC
+## build.onStart(callback)
+
+### Description
+Registers a callback that runs when the bundler starts a new bundle. The bundler pauses until all `onStart` callbacks complete (including async promises).
+
+### Signature
+```ts
+onStart(callback: () => void | Promise<void>): void;
+```
+
+### Parameters
+- **callback** (`() => void | Promise<void>`) - Required - A function executed when the build starts. Can return a Promise.
+
+### Example
+```ts
+build.onStart(async () => {
+  console.log("Bundle started!");
+  await Bun.sleep(1000);
+});
+```
+
+### Notes
+- `onStart()` callbacks cannot modify the `build.config` object. Mutate `build.config` directly within the `setup()` function instead.
+```
+
+--------------------------------
+
 ### Install @happy-dom/global-registrator
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/test/happy-dom.mdx
@@ -936,19 +970,6 @@ bun init
 
 --------------------------------
 
-### Initialize a NAPI project with @napi-rs/cli
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
-
-Install the NAPI CLI globally and scaffold a new native Node-API project.
-
-```bash
-bun add -g @napi-rs/cli
-napi new
-```
-
---------------------------------
-
 ### Install react and react-dom
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/ssr-react.mdx
@@ -958,6 +979,18 @@ Install React and React DOM dependencies using Bun.
 ```sh
 # Any package manager can be used
 bun add react react-dom
+```
+
+--------------------------------
+
+### Install the @sentry/bun SDK
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sentry.mdx
+
+Install the official Sentry SDK for Bun into your project dependencies.
+
+```sh
+bun add @sentry/bun
 ```
 
 --------------------------------
@@ -978,14 +1011,15 @@ Listening on http://0.0.0.0:3000/
 
 --------------------------------
 
-### Install the @sentry/bun SDK
+### Initialize a NAPI project with @napi-rs/cli
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sentry.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
 
-Install the official Sentry SDK for Bun into your project dependencies.
+Install the NAPI CLI globally and scaffold a new native Node-API project.
 
-```sh
-bun add @sentry/bun
+```bash
+bun add -g @napi-rs/cli
+napi new
 ```
 
 --------------------------------
@@ -1131,6 +1165,18 @@ console.log(`Listening on ${server.url}`);
 
 --------------------------------
 
+### Install project dependencies
+
+Source: https://github.com/oven-sh/bun/blob/main/test/integration/expo-app/README.md
+
+Installs the required package dependencies for the Expo project using npm.
+
+```bash
+npm install
+```
+
+--------------------------------
+
 ### onStart(callback)
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
@@ -1154,18 +1200,6 @@ onStart(callback: () => void | Promise<void>): void;
 
 --------------------------------
 
-### Install project dependencies
-
-Source: https://github.com/oven-sh/bun/blob/main/test/integration/expo-app/README.md
-
-Installs the required package dependencies for the Expo project using npm.
-
-```bash
-npm install
-```
-
---------------------------------
-
 ### Install LLVM on Ubuntu/Debian
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
@@ -1179,18 +1213,6 @@ wget https://apt.llvm.org/llvm.sh -O - | sudo bash -s -- 23 all
 
 --------------------------------
 
-### Start the Fullstack Dev Server
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/fullstack.mdx
-
-Runs the application server script using Bun CLI.
-
-```bash
-bun run app.ts
-```
-
---------------------------------
-
 ### Install LLVM on macOS using Homebrew
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
@@ -1199,6 +1221,30 @@ Install LLVM 23 on macOS using Homebrew.
 
 ```bash
 brew install llvm@23
+```
+
+--------------------------------
+
+### Install dependencies on openSUSE Tumbleweed with zypper
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
+
+Installs the necessary build packages on openSUSE Tumbleweed.
+
+```bash
+sudo zypper install go cmake ninja automake git icu rustup
+```
+
+--------------------------------
+
+### Start the Fullstack Dev Server
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/fullstack.mdx
+
+Runs the application server script using Bun CLI.
+
+```bash
+bun run app.ts
 ```
 
 --------------------------------
@@ -1222,14 +1268,14 @@ $ bun index.html
 
 --------------------------------
 
-### Install dependencies on openSUSE Tumbleweed with zypper
+### Install dependencies on Arch Linux with pacman
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
 
-Installs the necessary build packages on openSUSE Tumbleweed.
+Installs required build dependencies on Arch Linux.
 
 ```bash
-sudo zypper install go cmake ninja automake git icu rustup
+sudo pacman -S base-devel cmake git go libiconv libtool make ninja pkg-config python rustup sed unzip ruby
 ```
 
 --------------------------------
@@ -1259,18 +1305,6 @@ prisma/migrations/
     └─ migration.sql
 
 Your database is now in sync with your schema.
-```
-
---------------------------------
-
-### Install dependencies on Arch Linux with pacman
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
-
-Installs required build dependencies on Arch Linux.
-
-```bash
-sudo pacman -S base-devel cmake git go libiconv libtool make ninja pkg-config python rustup sed unzip ruby
 ```
 
 --------------------------------
@@ -1307,16 +1341,4 @@ Runs the WebSocket chat server benchmark in Deno using Deno.serve with full perm
 
 ```bash
 deno run -A ./chat-server.deno.mjs
-```
-
---------------------------------
-
-### Install Bun globally via npm
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/installation.mdx
-
-Installs the Bun package globally using npm.
-
-```bash
-npm install -g bun # the last `npm` command you'll ever need
 ```
