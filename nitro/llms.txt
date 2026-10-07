@@ -1,82 +1,63 @@
-### Zephyr deployment output example
+### Runtime Config Example Project
 
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zephyr.md
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/runtime-config.md
 
-Example console output after a successful build and deployment to Zephyr.
+Complete example project for runtime config, including configuration, server handler, and build setup.
 
-```txt
-◐ Building [Nitro] (preset: zephyr, compatibility: YYYY-MM-DD)
-...
-ZEPHYR   Uploaded local snapshot in 110ms
-ZEPHYR   Deployed to Zephyr's edge in 700ms.
-ZEPHYR
-ZEPHYR   https://my-app.zephyrcloud.app
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  serverDir: "./",
+  runtimeConfig: {
+    apiKey: "",
+  },
+});
 ```
-
---------------------------------
-
-### Define Start Script in package.json
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/digitalocean.md
-
-Add a start script to your package.json to point to the Nitro output server entry point.
-
-```json
-{
-   "scripts": {
-      "start": "node .output/server/index.mjs"
-   }
-}
-```
-
---------------------------------
-
-### Run Tracing Demo
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/tracing.md
-
-Commands to start the development server and trigger traced requests.
-
-```sh
-npm run dev
-# then, in another terminal:
-curl http://localhost:3000/
-curl http://localhost:3000/users/42
-```
-
---------------------------------
-
-### Project Configuration
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-trpc.md
-
-Dependencies and build scripts required for the Vite and tRPC setup.
 
 ```json
 {
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "nitro dev",
+    "build": "nitro build"
   },
   "devDependencies": {
-    "@trpc/client": "^11.16.0",
-    "@trpc/server": "^11.16.0",
-    "nitro": "latest",
-    "vite": "latest",
-    "zod": "^4.3.6"
+    "nitro": "latest"
   }
 }
 ```
 
+```ts
+import { defineHandler } from "nitro";
+import { useRuntimeConfig } from "nitro/runtime-config";
+
+export default defineHandler((event) => {
+  const runtimeConfig = useRuntimeConfig();
+  return { runtimeConfig };
+});
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
 --------------------------------
 
-### Local Preview for Azure Static Web Apps
+### Build and start local preview for Azure Static Web Apps
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/azure.md
 
-Build the application with the azure_swa preset and start the local preview environment using the Azure Static Web Apps CLI.
+Build with the azure_swa preset and start a local preview using Azure Static Web Apps CLI. Requires Azure Functions Core Tools installed.
 
 ```bash
 NITRO_PRESET=azure_swa npm run build
@@ -85,223 +66,11 @@ npx @azure/static-web-apps-cli start .output/public --api-location .output/serve
 
 --------------------------------
 
-### Run Development Server and Test Requests
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/tracing/README.md
-
-Start the development server and trigger requests to observe the generated tracing timelines.
-
-```sh
-npm run dev
-# then, in another terminal:
-curl http://localhost:3000/
-curl http://localhost:3000/users/42
-```
-
---------------------------------
-
-### Import Configuration Helper
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Required import for all configuration examples in nitro.config.ts.
-
-```ts
-import { defineConfig } from "nitro";
-```
-
---------------------------------
-
-### Example Tracing Output
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/tracing/README.md
-
-Sample console output showing a request timeline with middleware, route, and storage operation spans.
-
-```text
-▶ GET /  4.10ms  (4 spans)
-  middleware GET /             █·······················   0.12ms h3.handler_type=middleware http.route=/
-  GET /                        ·███████████████████·····   2.49ms h3.handler_type=route http.route=/
-  getItem                      ···██····················   0.18ms db.operation=getItem db.system=memory unstorage.keys_count=1
-  setItem                      ·····██··················   0.16ms db.operation=setItem db.system=memory unstorage.keys_count=1
-```
-
---------------------------------
-
-### Run Node.js Server Locally
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/1.node.md
-
-Execute the generated server entry point to start the application locally.
-
-```bash
-$ node .output/server/index.mjs
-Listening on http://localhost:3000
-```
-
---------------------------------
-
-### Define Procfile
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
-
-Heroku Procfile to start nginx and the custom app runner.
-
-```txt
-web: bin/start-nginx node apprunner.mjs
-```
-
---------------------------------
-
-### Start Nitro server with Bun
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/bun.md
-
-Execute the production server output using the Bun runtime after building with the bun preset.
-
-```bash
-bun run ./.output/server/index.mjs
-```
-
---------------------------------
-
-### Server Entry Point
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
-
-The server entry file using TanStack Start's server-entry handler.
-
-```ts
-import handler, { createServerEntry } from "@tanstack/react-start/server-entry";
-
-export default createServerEntry({
-  fetch(request) {
-    return handler.fetch(request);
-  },
-});
-```
-
---------------------------------
-
-### Configure CI deployment workflow
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zephyr.md
-
-Example GitHub Actions workflow for non-interactive deployments using a personal API token.
-
-```yaml
-name: Deploy with Zephyr
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    env:
-      ZE_SECRET_TOKEN: ${{ secrets.ZEPHYR_AUTH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm run build
-```
-
---------------------------------
-
-### Configure package.json Scripts
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
-
-Required build and start scripts for the Heroku deployment process.
-
-```json5
-"scripts": {
-  "build": "nitro build", // or `nuxt build` if using nuxt
-  "start": "node .output/server/index.mjs"
-}
-```
-
---------------------------------
-
-### Create Server Entry
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-tss-react/README.md
-
-Implement the server entry using TanStack Start's handler to integrate with Nitro's server entry format.
-
-```ts
-import handler, { createServerEntry } from "@tanstack/react-start/server-entry";
-
-export default createServerEntry({
-  fetch(request) {
-    return handler.fetch(request);
-  },
-});
-```
-
---------------------------------
-
-### Server Actions and Client Components
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-rsc.md
-
-Examples of defining server-side logic and client-side interactive components.
-
-```tsx
-"use server";
-
-let serverCounter = 0;
-
-export async function getServerCounter() {
-  return serverCounter;
-}
-
-export async function updateServerCounter(change: number) {
-  serverCounter += change;
-}
-```
-
-```tsx
-"use client";
-
-import React from "react";
-
-export function ClientCounter() {
-  const [count, setCount] = React.useState(0);
-
-  return <button onClick={() => setCount((count) => count + 1)}>Client Counter: {count}</button>;
-}
-```
-
---------------------------------
-
-### Define utility functions
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/import-alias.md
-
-Example utility module providing math functions for the application.
-
-```ts
-export function rand(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export function sum(a: number, b: number): number {
-  return a + b;
-}
-```
-
---------------------------------
-
-### Configure Nitro server fetch
+### Server Fetch Example Project
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/server-fetch.md
 
-Example configuration for using serverFetch within a Nitro hook.
+Complete example project for server fetch. The nitro.config.ts uses the serverFetch hook to make an internal request during dev:start, while routes/index.ts uses the fetch function to call /hello internally. The package.json, tsconfig.json, and vite.config.ts provide the project setup.
 
 ```ts
 import { defineConfig, serverFetch } from "nitro";
@@ -318,50 +87,1161 @@ export default defineConfig({
 });
 ```
 
---------------------------------
-
-### Configure Flightcontrol with flightcontrol.json
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/flightcontrol.md
-
-Example configuration file for defining an AWS Fargate service for a Nitro application.
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
 
 ```json
 {
-  "$schema": "https://app.flightcontrol.dev/schema.json",
-  "environments": [
-    {
-      "id": "production",
-      "name": "Production",
-      "region": "us-west-2",
-      "source": {
-        "branch": "main"
-      },
-      "services": [
-        {
-          "id": "nitro",
-          "buildType": "nixpacks",
-          "name": "My Nitro site",
-          "type": "fargate",
-          "domain": "www.yourdomain.com",
-          "outputDirectory": ".output",
-          "startCommand": "node .output/server/index.mjs",
-          "cpu": 0.25,
-          "memory": 0.5
-        }
-      ]
-    }
-  ]
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+```ts
+import { defineHandler } from "nitro";
+
+export default defineHandler(() => "Hello!");
+```
+
+```ts
+import { defineHandler } from "nitro";
+import { fetch } from "nitro";
+
+export default defineHandler(() => fetch("/hello"));
+```
+
+--------------------------------
+
+### Example tracing output for GET /
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/tracing.md
+
+Shows the console timeline for a request to `/`, including the middleware, route, and storage spans with timing and attributes.
+
+```text
+▶ GET /  4.10ms  (4 spans)
+  middleware GET /             █·······················   0.12ms h3.handler_type=middleware http.route=/
+  GET /                        ·███████████████████·····   2.49ms h3.handler_type=route http.route=/
+  getItem                      ···██····················   0.18ms db.operation=getItem db.system=memory unstorage.keys_count=1
+  setItem                      ·····██··················   0.16ms db.operation=setItem db.system=memory unstorage.keys_count=1
+```
+
+--------------------------------
+
+### Start production server with Bun
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/bun.md
+
+Starts the production server after building with the bun preset. The output is compatible with the Bun runtime and enables Bun-specific optimizations.
+
+```bash
+bun run ./.output/server/index.mjs
+```
+
+--------------------------------
+
+### Example project: index.html
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
+
+HTML page listing API route links for the example project.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>API Routes</title>
+  </head>
+  <body>
+    <h2>API Routes:</h2>
+    <ul>
+      <li><a href="/api/hello">/api/hello</a></li>
+      <li><a href="/api/hello/world">/api/hello/world</a></li>
+      <li><a href="/api/test">/api/test</a></li>
+    </ul>
+  </body>
+</html>
+```
+
+--------------------------------
+
+### Example project: nitro.config.ts
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
+
+Nitro configuration setting `serverDir` to `./` for the example project.
+
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  serverDir: "./",
+});
+```
+
+--------------------------------
+
+### Add start script to package.json
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/digitalocean.md
+
+Add a start script to your package.json so DigitalOcean knows what command to run after a build. Then add this start script to your DigitalOcean app's run command (Components > Settings > Commands).
+
+```json
+{
+   "scripts": {
+      "start": "node .output/server/index.mjs"
+   }
 }
 ```
 
 --------------------------------
 
-### Configure Vite for SSR
+### Add start and build scripts to package.json
 
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-tss-react/README.md
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
 
-Add necessary Vite plugins including TanStack Start, React, Tailwind CSS, and Nitro. Configure the server entry point for SSR.
+Defines the required 'build' and 'start' scripts in package.json for Heroku deployment.
+
+```json5
+"scripts": {
+  "build": "nitro build", // or `nuxt build` if using nuxt
+  "start": "node .output/server/index.mjs"
+}
+```
+
+--------------------------------
+
+### Example project: package.json
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
+
+Package manifest with `type: module` and scripts for `nitro dev` and `nitro build`.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+--------------------------------
+
+### Server entry examples for H3, Hono, Elysia, and Express
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/index.md
+
+Server entry examples for different frameworks. Export the app from server.ts (or server.node.ts for Express) to run it for every request before routes are matched. Node-style (req, res) frameworks must use the server.node.ts filename.
+
+```ts
+import { H3 } from "h3";
+
+const app = new H3();
+
+app.get("/", () => "⚡️ Hello from H3!");
+
+export default app;
+```
+
+```ts
+import { Hono } from "hono";
+
+const app = new Hono();
+
+app.get("/", (c) => c.text("🔥 Hello from Hono!"));
+
+export default app;
+```
+
+```ts
+import { Elysia } from "elysia";
+
+const app = new Elysia();
+
+app.get("/", () => "🦊 Hello from Elysia!");
+
+export default app.compile();
+```
+
+```ts
+import Express from "express";
+
+const app = Express();
+
+app.use("/", (_req, res) => {
+  res.send("Hello from Express with Nitro!");
+});
+
+export default app;
+```
+
+--------------------------------
+
+### Example project: vite.config.ts
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
+
+Vite configuration using the `nitro` plugin from `nitro/vite`.
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+--------------------------------
+
+### Example project: tsconfig.json
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
+
+TypeScript configuration extending `nitro/tsconfig`.
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+--------------------------------
+
+### Nitro + Vite + Preact SSR example files
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-preact.md
+
+Complete file set for a Nitro + Vite + Preact SSR example: package.json, tsconfig.json, vite.config.mjs, app.tsx, entry-client.tsx, entry-server.tsx, and styles.css. The entry-server.tsx uses renderToReadableStream from preact-render-to-string/stream and merges client/server assets via ?assets=client and ?assets=ssr imports.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview",
+    "dev": "vite dev"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.5",
+    "@tailwindcss/vite": "^4.2.2",
+    "nitro": "latest",
+    "preact": "^10.29.0",
+    "preact-render-to-string": "^6.6.7",
+    "tailwindcss": "^4.2.2",
+    "vite": "latest"
+  }
+}
+```
+
+```json
+{
+  "extends": "nitro/tsconfig",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  }
+}
+```
+
+```js
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+import preact from "@preact/preset-vite";
+
+export default defineConfig({
+  plugins: [nitro(), preact()],
+  environments: {
+    client: {
+      build: {
+        rollupOptions: {
+          input: "./src/entry-client.tsx",
+        },
+      },
+    },
+  },
+});
+```
+
+```tsx
+import { useState } from "preact/hooks";
+
+export function App() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount((c) => c + 1)}>Count is {count}</button>;
+}
+```
+
+```tsx
+import { hydrate } from "preact";
+import { App } from "./app.tsx";
+
+function main() {
+  hydrate(<App />, document.querySelector("#app")!);
+}
+
+main();
+```
+
+```tsx
+import "./styles.css";
+import { renderToReadableStream } from "preact-render-to-string/stream";
+import { App } from "./app.jsx";
+
+import clientAssets from "./entry-client?assets=client";
+import serverAssets from "./entry-server?assets=ssr";
+
+export default {
+  async fetch(request: Request) {
+    const url = new URL(request.url);
+    const htmlStream = renderToReadableStream(<Root url={url} />);
+    return new Response(htmlStream, {
+      headers: { "Content-Type": "text/html;charset=utf-8" },
+    });
+  },
+};
+
+function Root(props: { url: URL }) {
+  const assets = clientAssets.merge(serverAssets);
+  return (
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {assets.css.map((attr: any) => (
+          <link key={attr.href} rel="stylesheet" {...attr} />
+        ))}
+        {assets.js.map((attr: any) => (
+          <link key={attr.href} rel="modulepreload" {...attr} />
+        ))}
+        <script type="module" src={assets.entry} />
+      </head>
+      <body>
+        <h1 className="hero">Nitro + Vite + Preact</h1>
+        <p>URL: {props.url.href}</p>
+        <div id="app">
+          <App />
+        </div>
+      </body>
+    </html>
+  );
+}
+```
+
+```css
+.hero {
+  color: orange;
+}
+
+button {
+  background-color: lightskyblue;
+}
+```
+
+--------------------------------
+
+### Elysia with Nitro example file tree
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/elysia.md
+
+Complete file tree for the Elysia integration example: Nitro config, package.json with elysia dependency, server entry, tsconfig, and Vite config.
+
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({});
+```
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "build": "nitro build",
+    "dev": "nitro dev"
+  },
+  "devDependencies": {
+    "elysia": "^1.4.28",
+    "nitro": "latest"
+  }
+}
+```
+
+```ts
+import { Elysia } from "elysia";
+
+const app = new Elysia();
+
+app.get("/", () => "Hello, Elysia with Nitro!");
+
+export default app.compile();
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+--------------------------------
+
+### Upsun deployment output
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/upsun.md
+
+Example output from the Upsun pipeline showing the build and deployment process.
+
+```bash
+Building application 'nitro' (runtime type: nodejs:24)
+  Executing build hook...
+    W: + pnpm install
+    W: + pnpm build
+    [info] [nitro] Building Nitro Server (preset: `upsun`)
+    [success] [nitro] Nitro Server built
+
+Redeploying environment main
+  Environment routes
+    https://example.org/ is served by application `nitro`
+```
+
+--------------------------------
+
+### render.yaml for Render.com deployment
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/render.md
+
+Defines a Render web service for a Nitro app. Set the name to your project name and adjust the branch as needed. The start command runs the built server, and the build command installs dependencies and builds the project. The NITRO_PRESET environment variable is set to render_com.
+
+```yaml
+services:
+  - type: web
+    name: <PROJECTNAME>
+    env: node
+    branch: main
+    startCommand: node .output/server/index.mjs
+    buildCommand: npx nypm install && npm run build
+    envVars:
+    - key: NITRO_PRESET
+      value: render_com
+
+```
+
+--------------------------------
+
+### amplify.yml templates for standard and monorepo setups
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/aws-amplify.md
+
+Two template `amplify.yml` files for advanced configuration. The first is for a standard app; the second is for a monorepo setup, using `pnpm --filter website1 build` and setting `appRoot` to `apps/website1`.
+
+```yml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm use 24 && node --version
+        - corepack enable && npx --yes nypm install
+    build:
+      commands:
+        - pnpm build
+  artifacts:
+    baseDirectory: .amplify-hosting
+    files:
+      - "**/*"
+```
+
+```yml
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+          - nvm use 24 && node --version
+          - corepack enable && npx --yes nypm install
+        build:
+          commands:
+            - pnpm --filter website1 build
+      artifacts:
+        baseDirectory: apps/website1/.amplify-hosting
+        files:
+          - '**/*'
+      buildPath: /
+    appRoot: apps/website1
+```
+
+--------------------------------
+
+### Deploy during build output
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zephyr.md
+
+Example output after deploying during build. Shows the build progress and the deployment URL printed by Nitro.
+
+```txt
+◐ Building [Nitro] (preset: zephyr, compatibility: YYYY-MM-DD)
+...
+ZEPHYR   Uploaded local snapshot in 110ms
+ZEPHYR   Deployed to Zephyr's edge in 700ms.
+ZEPHYR
+ZEPHYR   https://my-app.zephyrcloud.app
+```
+
+--------------------------------
+
+### Nitro Database Example Project Files
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/database.md
+
+Complete example project files for the Nitro database feature: configuration enabling experimental database and tasks, package.json with dev/build scripts, a server handler that creates a users table and queries it, tsconfig, Vite config, and a migration task.
+
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  experimental: {
+    database: true,
+    tasks: true,
+  },
+  database: {
+    default: { connector: "sqlite" },
+  },
+});
+```
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+```ts
+import { defineHandler } from "nitro";
+import { useDatabase } from "nitro/database";
+
+export default defineHandler(async () => {
+  const db = useDatabase();
+
+  // Create users table
+  await db.sql`DROP TABLE IF EXISTS users`;
+  await db.sql`CREATE TABLE IF NOT EXISTS users ("id" TEXT PRIMARY KEY, "firstName" TEXT, "lastName" TEXT, "email" TEXT)`;
+
+  // Add a new user
+  const userId = String(Math.round(Math.random() * 10_000));
+  await db.sql`INSERT INTO users VALUES (${userId}, 'John', 'Doe', '')`;
+
+  // Query for users
+  const { rows } = await db.sql`SELECT * FROM users WHERE id = ${userId}`;
+
+  return {
+    rows,
+  };
+});
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+```ts
+import { defineTask } from "nitro/task";
+import { useDatabase } from "nitro/database";
+
+export default defineTask({
+  meta: {
+    description: "Run database migrations",
+  },
+  async run() {
+    const db = useDatabase();
+
+    console.log("Running database migrations...");
+
+    // Create users table
+    await db.sql`DROP TABLE IF EXISTS users`;
+    await db.sql`CREATE TABLE IF NOT EXISTS users ("id" TEXT PRIMARY KEY, "firstName" TEXT, "lastName" TEXT, "email" TEXT)`;
+
+    return {
+      result: "Database migrations complete!",
+    };
+  },
+});
+```
+
+--------------------------------
+
+### Package.json for Fastify example
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/fastify.md
+
+Defines the project as an ES module, with build and dev scripts, and lists fastify and nitro as devDependencies.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "build": "nitro build",
+    "dev": "nitro dev"
+  },
+  "devDependencies": {
+    "fastify": "^5.8.4",
+    "nitro": "latest"
+  }
+}
+```
+
+--------------------------------
+
+### Custom Renderer Example Files
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/renderer.md
+
+Complete example files for a custom renderer in Nitro: configuration, renderer handler, and API route. The renderer uses Nitro's internal fetch to call the API route without network overhead.
+
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  serverDir: "./",
+  renderer: { handler: "./renderer" },
+});
+```
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+```ts
+import { fetch } from "nitro";
+
+export default async function renderer({ url }: { req: Request; url: URL }) {
+  const apiRes = await fetch("/api/hello").then((res) => res.text());
+  return new Response(
+    /* html */ `<!DOCTYPE html>
+    <html>
+    <head>
+      <title>Custom Renderer</title>
+    </head>
+    <body>
+      <h1>Hello from custom renderer!</h1>
+      <p>Current path: ${url.pathname}</p>
+      <p>API says: ${apiRes}</p>
+    </body>
+    </html>`,
+    { headers: { "content-type": "text/html; charset=utf-8" } }
+  );
+}
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+```ts
+import { defineHandler } from "nitro";
+
+export default defineHandler(() => "Nitro is amazing!");
+```
+
+--------------------------------
+
+### Global styles in app/index.css
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-rsc.md
+
+Provides default styling for the example, including dark/light mode, typography, and layout.
+
+```css
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 1rem;
+}
+
+.read-the-docs {
+  color: #888;
+  text-align: left;
+}
+```
+
+--------------------------------
+
+### Create Procfile for Heroku nginx
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
+
+Defines the web process to start nginx and the custom app runner.
+
+```txt
+web: bin/start-nginx node apprunner.mjs
+```
+
+--------------------------------
+
+### Package.json for nano-jsx example
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/nano-jsx.md
+
+Specifies the project type as module, scripts for dev and build, and devDependencies including nano-jsx and nitro.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nano-jsx": "^0.2.1",
+    "nitro": "latest"
+  }
+}
+```
+
+--------------------------------
+
+### Virtual Routes project setup (nitro.config.ts, package.json, tsconfig.json, vite.config.ts)
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/virtual-routes.md
+
+Complete project setup for virtual routes: config defines a virtual module and maps it to a route, package.json provides scripts and dependency, tsconfig extends Nitro's config, and vite.config.ts integrates the Nitro plugin.
+
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  routes: {
+    "/": "#virtual-route",
+  },
+  virtual: {
+    "#virtual-route": () =>
+      /* js */ `export default () => new Response("Hello from virtual entry!")`,
+  },
+});
+```
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "build": "nitro build",
+    "dev": "nitro dev",
+    "preview": "node .output/server/index.mjs"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+--------------------------------
+
+### Replace strings at build time
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
+
+Performs build-time string replacements. The example replaces process.env.APP_VERSION with the string "1.0.0".
+
+```ts
+export default defineConfig({
+  replace: {
+    "process.env.APP_VERSION": JSON.stringify("1.0.0"),
+  },
+});
+```
+
+--------------------------------
+
+### package.json for vite-ssr-react-router
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-react-router.md
+
+Defines the project dependencies and scripts for the SSR React Router example. Includes build, dev, start, and typegen scripts.
+
+```json
+{
+  "name": "vite-ssr-react-router",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "start": "node ./build/server/index.mjs",
+    "typegen": "react-router typegen"
+  },
+  "dependencies": {
+    "@react-router/node": "^8.1.0",
+    "isbot": "^5.1.44",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router": "^8.1.0"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^8.1.0",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/node": "^26.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "nitro": "latest",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^6.0.3",
+    "vite": "latest"
+  }
+}
+```
+
+--------------------------------
+
+### src/router.tsx - TanStack Router setup
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
+
+Defines the router factory for the TanStack Start app. Configures preloading, error and not-found components, and scroll restoration.
+
+```tsx
+import { createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen.ts";
+
+export function getRouter() {
+  const router = createRouter({
+    routeTree,
+    defaultPreload: "intent",
+    defaultErrorComponent: () => <div>Internal Server Error</div>,
+    defaultNotFoundComponent: () => <div>Not Found</div>,
+    scrollRestoration: true,
+  });
+  return router;
+}
+```
+
+--------------------------------
+
+### GET handler: api/test.get.ts
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
+
+Defines a GET /api/test endpoint that returns the string "Test get handler".
+
+```ts
+import { defineHandler } from "nitro";
+
+export default defineHandler(() => "Test get handler");
+```
+
+--------------------------------
+
+### Bring your own framework with server.ts
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/9.blog/1.v3-beta.md
+
+Example of a server.ts entry file that exports a Hono app, demonstrating how to take full control of the HTTP layer with any framework.
+
+```ts
+import { Hono } from "hono";
+
+const app = new Hono();
+app.get("/", (c) => c.text("Hello from Hono!"));
+
+export default app;
+```
+
+--------------------------------
+
+### Build and run Nitro app with Deno preset
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/deno.md
+
+Build the Nitro app with the Deno preset and start the production server using the Deno runtime. Requires the Deno CLI and the necessary permissions for network, file read, and environment access.
+
+```bash
+# Build with the Deno preset
+NITRO_PRESET=deno_server npm run build
+
+# Start production server
+deno run --allow-net --allow-read --allow-env .output/server/index.mjs
+```
+
+--------------------------------
+
+### server.ts - Nitro server entry for TanStack Start
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
+
+Creates the Nitro server entry point for TanStack Start. It wraps the TanStack Start handler and delegates fetch requests to it, enabling SSR in Nitro.
+
+```ts
+import handler, { createServerEntry } from "@tanstack/react-start/server-entry";
+
+export default createServerEntry({
+  fetch(request) {
+    return handler.fetch(request);
+  },
+});
+```
+
+--------------------------------
+
+### Deploy with genezio CLI
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/genezio.md
+
+Deploy the built application using the Genezio CLI. Run this after building with the genezio preset.
+
+```bash
+genezio deploy
+```
+
+--------------------------------
+
+### server/trpc.ts - tRPC router with get and inc procedures
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-trpc.md
+
+Defines a tRPC router with a query 'get' and a mutation 'inc' that manipulate a counter. Exports the router type and a default fetch handler using fetchRequestHandler.
+
+```ts
+import { initTRPC } from "@trpc/server";
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+
+let counter = 0;
+
+const t = initTRPC.create();
+
+export const appRouter = t.router({
+  get: t.procedure.query(() => {
+    return { value: counter };
+  }),
+
+  inc: t.procedure.mutation(() => {
+    counter++;
+    return { value: counter };
+  }),
+});
+
+export type AppRouter = typeof appRouter;
+
+export default {
+  async fetch(request: Request): Promise<Response> {
+    return fetchRequestHandler({
+      endpoint: "/trpc",
+      req: request,
+      router: appRouter,
+    });
+  },
+};
+```
+
+--------------------------------
+
+### package.json for Vue Router SSR example
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-vue-router.md
+
+Defines the project's npm scripts and devDependencies for the Vue Router SSR example. Requires Vue 3.5, Vue Router 5, Vite, and Nitro.
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.5",
+    "nitro": "latest",
+    "unhead": "^2.1.12",
+    "vite": "latest",
+    "vite-plugin-devtools-json": "^1.0.0",
+    "vue": "^3.5.31",
+    "vue-router": "^5.0.4"
+  }
+}
+```
+
+--------------------------------
+
+### vite.config.mjs - Vite config for TanStack Start SSR
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
+
+Vite configuration that integrates TanStack Start, React, Tailwind, and Nitro plugins. Sets the SSR build input to server.ts and enables tsconfig path resolution.
 
 ```js
 import { defineConfig } from "vite";
@@ -381,101 +1261,35 @@ export default defineConfig({
 
 --------------------------------
 
-### POST /api/highlight
+### Deploy with Nitro CLI: npx nitro deploy --preset zephyr
 
-Source: https://github.com/nitrojs/nitro/blob/main/examples/shiki/README.md
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/zephyr.md
 
-This endpoint accepts raw code in the request body and returns an HTML string containing the syntax-highlighted version of the code using the Vitesse Dark theme.
-
-```APIDOC
-## POST /api/highlight
-
-### Description
-Accepts raw code as a string in the request body and returns the corresponding syntax-highlighted HTML.
-
-### Method
-POST
-
-### Endpoint
-/api/highlight
-
-### Parameters
-#### Request Body
-- **code** (string) - Required - The raw source code to be highlighted.
-
-### Request Example
-```text
-console.log("Hello World");
-```
-
-### Response
-#### Success Response (200)
-- **html** (string) - The rendered HTML string with syntax highlighting classes.
-
-#### Response Example
-```html
-<pre class="shiki vitesse-dark"><code><span class="line">console.log("Hello World");</span></code></pre>
-```
-```
-
---------------------------------
-
-### Highlight Code via API Route (TypeScript)
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/shiki/README.md
-
-An API route that uses Shiki to highlight code. It initializes a Shiki highlighter with specific themes and languages, then processes incoming code from POST requests to return highlighted HTML. Dependencies include 'shiki/core', 'shiki/engine/oniguruma', and specific theme/language imports.
-
-```typescript
-import {
-  createHighlighterCore
-} from "shiki/core";
-import {
-  createOnigurumaEngine
-} from "shiki/engine/oniguruma";
-
-const highlighter = await createHighlighterCore({
-  engine: createOnigurumaEngine(import("shiki/wasm")),
-  themes: [await import("shiki/themes/vitesse-dark.mjs")],
-  langs: [await import("shiki/langs/ts.mjs")],
-});
-
-export default async ({ req }: { req: Request }) => {
-  const code = await req.text();
-  const html = await highlighter.codeToHtml(code, {
-    lang: "ts",
-    theme: "vitesse-dark",
-  });
-  return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8" },
-  });
-};
-```
-
---------------------------------
-
-### Deploying with CLI
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/deno-deploy.md
-
-Build the application using the deno_deploy preset and deploy using deployctl.
+Builds and uploads your app to Zephyr in one step. If zephyr-agent is missing, Nitro prompts to install it locally and installs it automatically in CI.
 
 ```bash
-# Build with the deno_deploy preset
-NITRO_PRESET=deno_deploy npm run build
-
-# Make sure to run the deployctl command from the output directory
-cd .output
-deployctl deploy --project=my-project server/index.ts
+npx nitro deploy --preset zephyr
 ```
 
 --------------------------------
 
-### Project Dependencies
+### Run command for Koyeb control panel
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/koyeb.md
+
+Enter this command in the Run command field when deploying via the Koyeb control panel, if you did not add a start command to your package.json.
+
+```bash
+node .output/server/index.mjs
+```
+
+--------------------------------
+
+### package.json for TanStack Start SSR with Nitro
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
 
-Required dependencies and devDependencies for a TanStack Start project with Nitro.
+Defines the project's npm scripts and dependencies for a TanStack Start SSR app with Nitro. Includes Vite build/dev/start scripts and packages for React, TanStack Router, and Nitro.
 
 ```json
 {
@@ -499,7 +1313,7 @@ Required dependencies and devDependencies for a TanStack Start project with Nitr
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "latest",
     "@types/react": "^19.2.14",
-    "@types/react-react-dom": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
@@ -510,258 +1324,98 @@ Required dependencies and devDependencies for a TanStack Start project with Nitr
 
 --------------------------------
 
-### HTML Entry Point
+### Cached Handler Example Files
 
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tsr-react.md
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/cached-handler.md
 
-Standard HTML template for the application root.
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nitro + TanStack Router + React</title>
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-```
-
---------------------------------
-
-### Define Middleware for Tracing
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/tracing.md
-
-A simple middleware example that creates a span during the request lifecycle.
+Complete file tree for the cached-handler example: nitro.config.ts, package.json, server.ts, tsconfig.json, and vite.config.ts. The server.ts file uses defineCachedHandler to cache a 500ms operation and bypasses the cache when the URL contains ?skipCache=true.
 
 ```ts
-import { defineMiddleware } from "nitro";
+import { defineConfig } from "nitro";
 
-// A trivial middleware — each request produces its own `middleware` span.
-export default defineMiddleware((event) => {
-  event.context.requestedAt = Date.now();
-});
+export default defineConfig({});
 ```
-
---------------------------------
-
-### Initialize Heroku App
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
-
-Commands to create a new Heroku application and configure the environment.
-
-```bash
-heroku create myapp
-```
-
-```bash
-heroku buildpacks:set heroku/nodejs
-```
-
-```bash
-heroku config:set NITRO_PRESET=heroku
-```
-
---------------------------------
-
-### Using custom frameworks with server.ts
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/9.blog/1.v3-beta.md
-
-Define a custom entry point using frameworks like Hono by exporting the app instance.
-
-```ts
-import { Hono } from "hono";
-
-const app = new Hono();
-app.get("/", (c) => c.text("Hello from Hono!"));
-
-export default app;
-```
-
---------------------------------
-
-### Configure workspaceDir
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Sets the project workspace root directory, useful for monorepo setups.
-
-```ts
-export default defineConfig({
-  workspaceDir: "../", // monorepo root
-});
-```
-
---------------------------------
-
-### Basic API Route Handler
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/api-routes.md
-
-Defines a simple GET endpoint using defineHandler.
-
-```ts
-import { defineHandler } from "nitro";
-
-export default defineHandler(() => "Nitro is amazing!");
-```
-
---------------------------------
-
-### Build and deploy Nitro application
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/genezio.md
-
-Build the project using the genezio preset and deploy it using the Genezio CLI.
-
-```bash
-NITRO_PRESET=genezio npm run build
-```
-
-```bash
-genezio deploy
-```
-
---------------------------------
-
-### Vite Configuration
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tss-react.md
-
-Vite configuration integrating Nitro, TanStack Start, React, and Tailwind CSS.
-
-```js
-import { defineConfig } from "vite";
-import { nitro } from "nitro/vite";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import viteReact from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-
-export default defineConfig({
-  plugins: [tanstackStart(), viteReact(), tailwindcss(), nitro()],
-  resolve: { tsconfigPaths: true },
-  environments: {
-    ssr: { build: { rollupOptions: { input: "./server.ts" } } },
-  },
-});
-```
-
---------------------------------
-
-### Set entry point
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Define a custom entry file for the bundler.
-
-```ts
-export default defineConfig({
-  entry: "./server/entry.ts", // custom entry file
-});
-```
-
---------------------------------
-
-### Build and run Nitro with Deno
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/deno.md
-
-Commands to build the application using the deno_server preset and execute the resulting server file with necessary Deno permissions.
-
-```bash
-# Build with the Deno preset
-NITRO_PRESET=deno_server npm run build
-
-# Start production server
-deno run --allow-net --allow-read --allow-env .output/server/index.mjs
-```
-
---------------------------------
-
-### Configure development server
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Set development server options such as port and file watch paths.
-
-```ts
-export default defineConfig({
-  devServer: {
-    port: 3001,
-    watch: ["./server/plugins"],
-  },
-});
-```
-
---------------------------------
-
-### Configure package.json for Preact SSR
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-preact.md
-
-Defines the project dependencies and scripts required for a Vite-powered Preact SSR setup.
 
 ```json
 {
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "preview": "vite preview",
-    "dev": "vite dev"
+    "dev": "nitro dev",
+    "build": "nitro build"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.5",
-    "@tailwindcss/vite": "^4.2.2",
-    "nitro": "latest",
-    "preact": "^10.29.0",
-    "preact-render-to-string": "^6.6.7",
-    "tailwindcss": "^4.2.2",
-    "vite": "latest"
+    "nitro": "latest"
   }
 }
 ```
 
---------------------------------
+```ts
+import { html } from "nitro";
+import { defineCachedHandler } from "nitro/cache";
 
-### Client Entry Point
+export default defineCachedHandler(
+  async () => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return html`
+      Response generated at ${new Date().toISOString()} (took 500ms)
+      <br />(<a href="?skipCache=true">skip cache</a>)
+    `;
+  },
+  { shouldBypassCache: ({ req }) => req.url.includes("skipCache=true") }
+);
+```
 
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-vue-router.md
-
-Client-side entry point that initializes the Vue application and mounts it to the DOM.
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
 
 ```ts
-import { createSSRApp } from "vue";
-import { RouterView, createRouter, createWebHistory } from "vue-router";
-import { routes } from "./routes.ts";
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
 
-async function main() {
-  const app = createSSRApp(RouterView);
-  const router = createRouter({ history: createWebHistory(), routes });
-  app.use(router);
-
-  await router.isReady();
-  app.mount("#root");
-}
-
-// eslint-disable-next-line unicorn/prefer-top-level-await
-main();
+export default defineConfig({ plugins: [nitro()] });
 ```
 
 --------------------------------
 
-### Implement WebSocket Client in HTML
+### Create a new Upsun project
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/upsun.md
+
+Run this command to create a new project on Upsun.
+
+```bash
+upsun project:create
+```
+
+--------------------------------
+
+### Configure database connection
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
+
+Sets up a default SQLite database connection. Requires experimental.database: true.
+
+```ts
+export default defineConfig({
+  database: {
+    default: {
+      connector: "sqlite",
+      options: { name: "db" },
+    },
+  },
+});
+```
+
+--------------------------------
+
+### WebSocket Client Example (index.html)
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/websocket.md
 
-This HTML file sets up a WebSocket connection to the server and manages real-time message display using petite-vue. It includes logic for connecting, sending messages, and formatting JSON payloads.
+This HTML file implements a WebSocket client that connects to a server at '/_ws' using the WebSocket protocol. It provides a chat interface with message sending, ping, and clear functionality. The client uses petite-vue for reactive data binding and Shiki for formatting JSON messages. It automatically connects on page load and handles reconnection by closing the previous connection.
 
 ```html
 <html lang="en" data-theme="dark">
@@ -904,597 +1558,11 @@ This HTML file sets up a WebSocket connection to the server and manages real-tim
 
 --------------------------------
 
-### Fastify Server Entry
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/fastify.md
-
-The server entry point for Fastify. Ensure app.ready() is called and app.routing is exported.
-
-```ts
-import Fastify from "fastify";
-
-const app = Fastify();
-
-app.get("/", () => "Hello, Fastify with Nitro!");
-
-await app.ready();
-
-export default app.routing;
-```
-
---------------------------------
-
-### Create Custom App Runner
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
-
-A server entry point that listens on the nginx socket.
-
-```ts
-import { createServer } from 'node:http'
-import { middleware } from './.output/server/index.mjs'
-
-const server = createServer(middleware)
-
-server.listen('/tmp/nginx.socket') //following the buildpack doc
-```
-
---------------------------------
-
-### Configure Genezio project
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/genezio.md
-
-Create a genezio.yaml file in your project root to define backend paths, language settings, and function handlers.
-
-```yaml
-# The name of the project.
-name: nitro-app
-# The version of the Genezio YAML configuration to parse.
-yamlVersion: 2
-backend:
-  # The root directory of the backend.
-  path: .output/
-  # Information about the backend's programming language.
-  language:
-      # The name of the programming language.
-      name: js
-      # The package manager used by the backend.
-      packageManager: npm
-  # Information about the backend's functions.
-  functions:
-      # The name (label) of the function.
-      - name: nitroServer
-      # The path to the function's code.
-        path: server/
-        # The name of the function handler
-        handler: handler
-        # The entry point for the function.
-        entry: index.mjs
-```
-
---------------------------------
-
-### Define project dependencies and scripts
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/takumi.md
-
-Include takumi-js and necessary build tools in the package.json file.
-
-```json
-{
-  "type": "module",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "node .output/server/index.mjs"
-  },
-  "devDependencies": {
-    "nitro": "latest",
-    "takumi-js": "^2.1.1",
-    "vite": "latest"
-  }
-}
-```
-
---------------------------------
-
-### Configure Storage
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Set up storage drivers, such as Redis, for the application.
-
-```ts
-export default defineConfig({
-  storage: {
-    redis: {
-      driver: "redis",
-      url: "redis://localhost:6379",
-    },
-  },
-});
-```
-
---------------------------------
-
-### Deploy via Koyeb CLI
+### Koyeb CLI login
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/koyeb.md
 
-Command to initialize and deploy a Nitro application from a GitHub repository.
-
-```bash
-koyeb app init <APPLICATION_NAME> \
-   --git github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPOSITORY_NAME> \
-   --git-branch main \
-   --git-run-command "node .output/server/index.mjs" \
-   --ports 3000:http \
-   --routes /:3000 \
-   --env PORT=3000 \
-   --env NITRO_PRESET=koyeb
-```
-
---------------------------------
-
-### Implement Server-side Entry Point
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-solid.md
-
-Uses renderToStringAsync to generate HTML and injects assets into the document structure.
-
-```tsx
-import { renderToStringAsync, HydrationScript } from "solid-js/web";
-import { App } from "./app.jsx";
-
-import clientAssets from "./entry-client?assets=client";
-import serverAssets from "./entry-server?assets=ssr";
-
-export default {
-  async fetch(req: Request): Promise<Response> {
-    const appHTML = await renderToStringAsync(() => <App />);
-    const rootHTML = await renderToStringAsync(() => <Root appHTML={appHTML} />);
-    return new Response(rootHTML, {
-      headers: { "Content-Type": "text/html" },
-    });
-  },
-};
-
-function Root(props: { appHTML?: string }) {
-  const assets = clientAssets.merge(serverAssets);
-  return (
-    <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {assets.css.map((attr: any) => (
-          <link key={attr.href} rel="stylesheet" {...attr} />
-        ))}
-        {assets.js.map((attr: any) => (
-          <link key={attr.href} type="modulepreload" {...attr} />
-        ))}
-      </head>
-      <body>
-        <div id="app" innerHTML={props.appHTML || ""} />
-        <HydrationScript />
-        <script type="module" src={assets.entry} />
-      </body>
-    </html>
-  );
-}
-```
-
---------------------------------
-
-### Implement Client Entry for Hydration
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-vue-router/README.md
-
-Initializes the Vue application on the client side using createWebHistory. It mounts the application to the DOM to enable interactivity and client-side routing.
-
-```typescript
-import { createSSRApp } from "vue";
-import { RouterView, createRouter, createWebHistory } from "vue-router";
-import { routes } from "./routes.ts";
-
-async function main() {
-  const app = createSSRApp(RouterView);
-  const router = createRouter({ history: createWebHistory(), routes });
-  app.use(router);
-
-  await router.isReady();
-  app.mount("#root");
-}
-
-main();
-```
-
---------------------------------
-
-### Define Basic API Route in Nitro
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/api-routes/README.md
-
-Create a simple GET endpoint by placing a file in the api/ directory. The file path automatically determines the URL path of the resulting API endpoint.
-
-```typescript
-import { defineHandler } from "nitro";
-
-export default defineHandler(() => "Nitro is amazing!");
-```
-
---------------------------------
-
-### Define Root Component with Navigation
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-vue-router/README.md
-
-Creates the main application component containing navigation links and the RouterView outlet. Includes scoped styles for layout and active link states.
-
-```vue
-<script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import "./styles.css";
-</script>
-
-<template>
-  <nav>
-    <ul>
-      <li><RouterLink to="/" exact-active-class="active">Home</RouterLink></li>
-      <li><RouterLink to="/about" active-class="active">About</RouterLink></li>
-    </ul>
-  </nav>
-  <RouterView />
-</template>
-
-<style scoped>
-nav { background: white; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); padding: 1rem; }
-nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2rem; max-width: 800px; margin: 0 auto; }
-nav a { color: #666; text-decoration: none; }
-nav a:hover { color: #333; }
-nav a.active { color: #646cff; }
-</style>
-```
-
---------------------------------
-
-### Initialize Server Plugin
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/heroku.md
-
-A Nitro plugin to signal that the application is ready by creating an initialization file.
-
-```ts
-import fs from "node:fs"
-import { definePlugin } from "nitro"
-
-export default definePlugin((nitroApp) => {
-   if((process.env.NODE_ENV || 'development') != 'development') {
-      fs.openSync('/tmp/app-initialized', 'w')
-   }
-})
-```
-
---------------------------------
-
-### Handle HTTP Methods via File Suffixes
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/api-routes/README.md
-
-Restrict handlers to specific HTTP methods by appending the method name to the filename. This allows for clean separation of logic for GET, POST, and other request types.
-
-```typescript
-import { defineHandler } from "nitro";
-
-// GET handler (api/test.get.ts)
-export default defineHandler(() => "Test get handler");
-
-// POST handler (api/test.post.ts)
-export default defineHandler(async (event) => {
-  const body = await event.req.json();
-  return {
-    message: "Test post handler",
-    body
-  };
-});
-```
-
---------------------------------
-
-### Deploying with GitHub Actions
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/deno-deploy.md
-
-Automate deployment by adding a workflow file to your repository.
-
-```yaml
-name: deno-deploy
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - run: corepack enable
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install
-      - run: pnpm build
-        env:
-          NITRO_PRESET: deno_deploy
-      - name: Deploy to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: my-project
-          entrypoint: server/index.ts
-          root: .output
-```
-
---------------------------------
-
-### Configure Vite for Nitro Plugin
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-trpc/README.md
-
-Configures Vite to use the Nitro plugin and routes tRPC requests to the specified handler file. This setup ensures that all requests matching the '/trpc/**' pattern are directed to './server/trpc.ts'.
-
-```typescript
-import {
-  defineConfig
-} from "vite";
-import {
-  nitro
-} from "nitro/vite";
-
-export default defineConfig({
-  plugins: [
-    nitro({
-      routes: {
-        "/trpc/**": "./server/trpc.ts",
-      },
-    }),
-  ],
-});
-```
-
---------------------------------
-
-### Implement Server Entry for Vue SSR
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-vue-router/README.md
-
-Configures the server-side handler to render Vue components to strings. It utilizes createMemoryHistory for routing and unhead for managing document head elements like stylesheets and scripts.
-
-```typescript
-import { createSSRApp } from "vue";
-import { renderToString } from "vue/server-renderer";
-import { RouterView, createMemoryHistory, createRouter } from "vue-router";
-import { createHead, transformHtmlTemplate } from "unhead/server";
-import { routes } from "./routes.ts";
-import clientAssets from "./entry-client.ts?assets=client";
-
-async function handler(request: Request): Promise<Response> {
-  const app = createSSRApp(RouterView);
-  const router = createRouter({ history: createMemoryHistory(), routes });
-  app.use(router);
-
-  const url = new URL(request.url);
-  const href = url.href.slice(url.origin.length);
-
-  await router.push(href);
-  await router.isReady();
-
-  const assets = clientAssets.merge(
-    ...(await Promise.all(
-      router.currentRoute.value.matched
-        .map((to) => to.meta.assets)
-        .filter(Boolean)
-        .map((fn) => (fn as any)().then((m: any) => m.default))
-    ))
-  );
-
-  const head = createHead();
-  head.push({
-    link: [
-      ...assets.css.map((attrs: any) => ({ rel: "stylesheet", ...attrs })),
-      ...assets.js.map((attrs: any) => ({ rel: "modulepreload", ...attrs })),
-    ],
-    script: [{ type: "module", src: clientAssets.entry }],
-  });
-
-  const renderedApp = await renderToString(app);
-  const html = await transformHtmlTemplate(head, htmlTemplate(renderedApp));
-
-  return new Response(html, {
-    headers: { "Content-Type": "text/html;charset=utf-8" },
-  });
-}
-
-function htmlTemplate(body: string): string {
-  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Vue Router Custom Framework</title>\n</head>\n<body>\n  <div id="root">${body}</div>\n</body>\n</html>`;
-}
-
-export default { fetch: handler };
-```
-
---------------------------------
-
-### Run Database Migrations with Nitro Tasks
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/database/README.md
-
-This example shows how to define a Nitro task for running database migrations. It utilizes `useDatabase()` to access the database and execute SQL statements for schema changes, keeping migration logic separate from request handlers.
-
-```typescript
-import { defineTask } from "nitro/task";
-import { useDatabase } from "nitro/database";
-
-export default defineTask({
-  meta: {
-    description: "Run database migrations",
-  },
-  async run() {
-    const db = useDatabase();
-
-    console.log("Running database migrations...");
-
-    // Create users table
-    await db.sql`DROP TABLE IF EXISTS users`;
-    await db.sql`CREATE TABLE IF NOT EXISTS users ("id" TEXT PRIMARY KEY, "firstName" TEXT, "lastName" TEXT, "email" TEXT)`;
-
-    return {
-      result: "Database migrations complete!",
-    };
-  },
-});
-```
-
---------------------------------
-
-### Configure server entry point
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Specify a custom entry point for the server or disable the default one.
-
-```ts
-export default defineConfig({
-  serverEntry: "./server.ts",
-});
-```
-
---------------------------------
-
-### Configure Vite for Nitro SSR
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-ssr-vue-router/README.md
-
-This snippet shows how to integrate the Nitro Vite plugin into your Vite configuration. It defines separate build environments for the client and server, specifying entry points for each. The `patchVueExclude` function is a workaround for a known issue with the Vue plugin.
-
-```javascript
-import vue from "@vitejs/plugin-vue";
-import { defineConfig } from "vite";
-import devtoolsJson from "vite-plugin-devtools-json";
-import { nitro } from "nitro/vite";
-
-export default defineConfig((_env) => ({
-  plugins: [patchVueExclude(vue(), /\?assets/), devtoolsJson(), nitro()],
-  environments: {
-    client: { build: { rollupOptions: { input: "./app/entry-client.ts" } } },
-    ssr: { build: { rollupOptions: { input: "./app/entry-server.ts" } } },
-  },
-}));
-
-// Workaround https://github.com/vitejs/vite-plugin-vue/issues/677
-function patchVueExclude(plugin, exclude) {
-  const original = plugin.transform.handler;
-  plugin.transform.handler = function (...args) {
-    if (exclude.test(args[1])) return;
-    return original.call(this, ...args);
-  };
-  return plugin;
-}
-```
-
---------------------------------
-
-### Preview build output
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/standard.md
-
-Locally preview the generated build output using the srvx utility.
-
-```bash
-cd .output
-npx srvx --prod ./
-```
-
---------------------------------
-
-### Create tRPC Router and Fetch Handler
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-trpc/README.md
-
-Defines a tRPC router with 'get' query and 'inc' mutation procedures for a counter. It exports the router and uses tRPC's fetch adapter to handle incoming requests. The 'AppRouter' type is exported for client-side type inference.
-
-```typescript
-import {
-  initTRPC
-} from "@trpc/server";
-import {
-  fetchRequestHandler
-} from "@trpc/server/adapters/fetch";
-
-let counter = 0;
-
-const t = initTRPC.create();
-
-export const appRouter = t.router({
-  get: t.procedure.query(() => {
-    return {
-      value: counter
-    };
-  }),
-
-  inc: t.procedure.mutation(() => {
-    counter++;
-    return {
-      value: counter
-    };
-  }),
-});
-
-export type AppRouter = typeof appRouter;
-
-export default {
-  async fetch(request: Request): Promise<Response> {
-    return fetchRequestHandler({
-      endpoint: "/trpc",
-      req: request,
-      router: appRouter,
-    });
-  },
-};
-```
-
---------------------------------
-
-### Package Dependencies and Scripts
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/elysia.md
-
-Configuration for package.json including dependencies and build scripts.
-
-```json
-{
-  "type": "module",
-  "scripts": {
-    "build": "nitro build",
-    "dev": "nitro dev"
-  },
-  "devDependencies": {
-    "elysia": "^1.4.28",
-    "nitro": "latest"
-  }
-}
-```
-
---------------------------------
-
-### Login to Koyeb CLI
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/koyeb.md
-
-Command to authenticate the local environment with the Koyeb CLI.
+Log into your account with the Koyeb CLI. Paste your API credentials when prompted.
 
 ```bash
 koyeb login
@@ -1502,404 +1570,139 @@ koyeb login
 
 --------------------------------
 
-### HTML Page with Server-Side Rendering and Client Interactivity
+### Shiki server-side highlighting example files
 
-Source: https://github.com/nitrojs/nitro/blob/main/examples/vite-trpc/README.md
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/shiki.md
 
-An HTML page demonstrating server-side rendering for the initial counter value and client-side updates. It uses a `<script server>` block for initial data fetching and a `<script setup>` block for handling user interactions like incrementing the counter.
+Complete example files for server-side syntax highlighting with Shiki in Nitro. The HTML page uses a server script to call the /api/highlight endpoint, which returns highlighted HTML. The Nitro config sets serverDir to './' so the API route is picked up from the api folder. The Vite config adds the Nitro plugin. The API route uses Shiki's core highlighter with the oniguruma engine and the vitesse-dark theme.
 
 ```html
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <title>tRPC Counter</title>
-    <style>
-      body {
-        font-family: system-ui, sans-serif;
-        background: #0f1115;
-        color: #e5e7eb;
-        display: grid;
-        place-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-
-      .box {
-        background: #181b22;
-        padding: 24px 32px;
-        border-radius: 10px;
-        text-align: center;
-        min-width: 200px;
-      }
-
-      button {
-        background: #2563eb;
-        border: none;
-        color: white;
-        padding: 8px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-
-      button:hover {
-        background: #1d4ed8;
-      }
-
-      .value {
-        font-size: 36px;
-        margin: 12px 0;
-      }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hello World Snippet</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="box">
-      <div>Counter</div>
-      <div class="value" id="value">
-        <script server>
-          // Server-side Rendering
-          const {
-            result
-          } = await serverFetch("/trpc/get").then(r => r.json())
-          echo(result?.data?.value)
-        </script>
-      </div>
-      <button id="inc">Increment</button>
+    <div class="card" role="region" aria-label="Code snippet">
+      <div class="label">JavaScript</div>
+      <script server>
+        const hl = (code) =>
+          serverFetch("/api/highlight", {
+            method: "POST",
+            body: code,
+          });
+      </script>
+      <pre><code>{{{ hl(`console.log("💚 Simple is beautiful!");`) }}}</code></pre>
     </div>
-
-    <script setup>
-      const valueEl = document.getElementById("value");
-      const incBtn = document.getElementById("inc");
-
-      async function call(path, body) {
-        const res = await fetch(`/trpc/${path}`, {
-          method: body ? "POST" : "GET",
-          headers: {
-            "content-type": "application/json"
-          },
-          body: body ? JSON.stringify(body) : undefined,
-        });
-
-        const json = await res.json();
-        return json.result.data;
-      }
-
-      async function refresh() {
-        const data = await call("get");
-        valueEl.textContent = data.value;
-      }
-
-      incBtn.onclick = async () => {
-        const data = await call("inc", {});
-        valueEl.textContent = data.value;
-      };
-
-      refresh();
-    </script>
   </body>
 </html>
 ```
 
---------------------------------
+```ts
+import { defineConfig } from "nitro";
 
-### Project Configuration
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-tsr-react.md
-
-Configuration files for package dependencies, TypeScript, and Vite build settings.
+export default defineConfig({
+  serverDir: "./",
+});
+```
 
 ```json
 {
   "type": "module",
   "scripts": {
-    "build": "vite build",
     "dev": "vite dev",
-    "preview": "vite preview"
+    "build": "vite build"
   },
   "devDependencies": {
-    "@tanstack/react-router": "^1.168.8",
-    "@tanstack/react-router-devtools": "^1.166.11",
-    "@tanstack/router-plugin": "^1.167.9",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
     "nitro": "latest",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "vite": "latest"
+    "shiki": "latest"
   }
+}
+```
+
+```css
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f8fa;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    "Liberation Sans",
+    sans-serif;
+}
+.card {
+  text-align: left;
+  background: #0b1220;
+  color: #e6edf3;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.2);
+  max-width: 90%;
+  width: 520px;
+}
+.label {
+  font-size: 12px;
+  color: #9aa7b2;
+  margin-bottom: 8px;
+}
+pre {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+  font-size: 14px;
+  background: transparent;
+  white-space: pre;
+  overflow: auto;
 }
 ```
 
 ```json
 {
-  "extends": "nitro/tsconfig",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "jsx": "react-jsx",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+  "extends": "nitro/tsconfig"
 }
 ```
 
-```js
+```ts
 import { defineConfig } from "vite";
 import { nitro } from "nitro/vite";
-import react from "@vitejs/plugin-react";
-import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
 export default defineConfig({
-  plugins: [tanstackRouter({ target: "react", autoCodeSplitting: true }), react(), nitro()],
+  plugins: [nitro()],
 });
 ```
-
---------------------------------
-
-### Query Database with SQL Template Literals in Nitro
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/database/README.md
-
-This snippet demonstrates how to use Nitro's `useDatabase()` function to get a database instance and execute SQL queries using template literals. It shows table creation, data insertion, and querying, with automatic SQL injection prevention.
-
-```typescript
-import { defineHandler } from "nitro";
-import { useDatabase } from "nitro/database";
-
-export default defineHandler(async () => {
-  const db = useDatabase();
-
-  // Create users table
-  await db.sql`DROP TABLE IF EXISTS users`;
-  await db.sql`CREATE TABLE IF NOT EXISTS users ("id" TEXT PRIMARY KEY, "firstName" TEXT, "lastName" TEXT, "email" TEXT)`;
-
-  // Add a new user
-  const userId = String(Math.round(Math.random() * 10_000));
-  await db.sql`INSERT INTO users VALUES (${userId}, 'John', 'Doe', '')`;
-
-  // Query for users
-  const { rows } = await db.sql`SELECT * FROM users WHERE id = ${userId}`;
-
-  return {
-    rows,
-  };
-});
-```
-
---------------------------------
-
-### Build with the standard preset
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/10.runtimes/standard.md
-
-Use the NITRO_PRESET environment variable to configure the build process for the standard runtime.
-
-```bash
-NITRO_PRESET=standard npm run build
-```
-
---------------------------------
-
-### Server Entry Point for Streaming
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-html.md
-
-Handles incoming requests by fetching data and returning a ReadableStream that emits words with a specified delay.
 
 ```ts
-import { fetch } from "nitro";
+import { createHighlighterCore } from "shiki/core";
+import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
-export default {
-  async fetch() {
-    const quote = (await fetch("/quote").then((res) => res.json())) as {
-      text: string;
-    };
-    return tokenizedStream(quote.text, 50);
-  },
-};
+const highlighter = await createHighlighterCore({
+  engine: createOnigurumaEngine(import("shiki/wasm")),
+  themes: [await import("shiki/themes/vitesse-dark.mjs")],
+  langs: [await import("shiki/langs/ts.mjs")],
+});
 
-function tokenizedStream(text: string, delay: number): ReadableStream<Uint8Array> {
-  const tokens = text.split(" ");
-  return new ReadableStream({
-    start(controller) {
-      let index = 0;
-      function push() {
-        if (index < tokens.length) {
-          const word = tokens[index++] + (index < tokens.length ? " " : "");
-          controller.enqueue(new TextEncoder().encode(word));
-          setTimeout(push, delay);
-        } else {
-          controller.close();
-        }
-      }
-      push();
-    },
+export default async ({ req }: { req: Request }) => {
+  const code = await req.text();
+  const html = await highlighter.codeToHtml(code, {
+    lang: "ts",
+    theme: "vitesse-dark",
   });
-}
-```
-
---------------------------------
-
-### Define Server Entry with Frameworks
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/index.md
-
-Export a framework instance from server.ts to handle requests before routes are matched. Use server.node.ts for Node-style (req, res) frameworks.
-
-```ts
-import { H3 } from "h3";
-
-const app = new H3();
-
-app.get("/", () => "⚡️ Hello from H3!");
-
-export default app;
-```
-
-```ts
-import { Hono } from "hono";
-
-const app = new Hono();
-
-app.get("/", (c) => c.text("🔥 Hello from Hono!"));
-
-export default app;
-```
-
-```ts
-import { Elysia } from "elysia";
-
-const app = new Elysia();
-
-app.get("/", () => "🦊 Hello from Elysia!");
-
-export default app.compile();
-```
-
-```ts
-import Express from "express";
-
-const app = Express();
-
-app.use("/", (_req, res) => {
-  res.send("Hello from Express with Nitro!");
-});
-
-export default app;
-```
-
---------------------------------
-
-### Configure Node.js Server Entry with Fastify
-
-Source: https://github.com/nitrojs/nitro/blob/main/examples/fastify/README.md
-
-This snippet demonstrates how to set up the server entry point for a Node.js environment using Fastify. It initializes a Fastify app, defines a basic route, and prepares the app for use by Nitro. The `.node.ts` suffix ensures this file is specific to Node.js runtimes.
-
-```typescript
-import Fastify from "fastify";
-
-const app = Fastify();
-
-app.get("/", () => "Hello, Fastify with Nitro!");
-
-await app.ready();
-
-export default app.routing;
-```
-
---------------------------------
-
-### Server-side Entry Point
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-ssr-react.md
-
-Handles incoming requests and streams the rendered React component with assets.
-
-```tsx
-import "./styles.css";
-import { renderToReadableStream } from "react-dom/server.edge";
-import { App } from "./app.tsx";
-
-import clientAssets from "./entry-client?assets=client";
-import serverAssets from "./entry-server?assets=ssr";
-
-export default {
-  async fetch(_req: Request) {
-    const assets = clientAssets.merge(serverAssets);
-    return new Response(
-      await renderToReadableStream(
-        <html lang="en">
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            {assets.css.map((attr: any) => (
-              <link key={attr.href} rel="stylesheet" {...attr} />
-            ))}
-            {assets.js.map((attr: any) => (
-              <link key={attr.href} type="modulepreload" {...attr} />
-            ))}
-            <script type="module" src={assets.entry} />
-          </head>
-          <body id="app">
-            <App />
-          </body>
-        </html>
-      ),
-      { headers: { "Content-Type": "text/html;charset=utf-8" } }
-    );
-  },
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
 };
-```
-
---------------------------------
-
-### Deploy using EdgeOne CLI
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/2.deploy/20.providers/edgeone.md
-
-Command to build and deploy the project via the EdgeOne CLI.
-
-```bash
-edgeone pages deploy
-```
-
---------------------------------
-
-### Configure Server Assets
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Bundles assets for access within server logic.
-
-```ts
-export default defineConfig({
-  serverAssets: [
-    {
-      baseName: "templates",
-      dir: "./templates", // bundle templates/ as server assets
-    },
-  ],
-});
-```
-
---------------------------------
-
-### Configure Database
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/3.config/0.index.md
-
-Define database connection settings, requiring experimental database support to be enabled.
-
-```ts
-export default defineConfig({
-  database: {
-    default: {
-      connector: "sqlite",
-      options: { name: "db" },
-    },
-  },
-});
 ```
