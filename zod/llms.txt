@@ -121,6 +121,19 @@ git push -u origin <branch>:refs/heads/<branch>
 
 --------------------------------
 
+### Enable default compilation in entrypoint
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
+
+```ts
+// in your entrypoint (or before any schemas are defined)
+import "zod/compile";
+```
+
+--------------------------------
+
 ### z.uuid(params?)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -154,19 +167,6 @@ z.uuidv7();
 // Relaxed UUID-like identifier
 z.guid();
 ```
-```
-
---------------------------------
-
-### Enable default compilation in entrypoint
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
-
-```ts
-// in your entrypoint (or before any schemas are defined)
-import "zod/compile";
 ```
 
 --------------------------------
@@ -1059,6 +1059,20 @@ millis.parse("2020-01-01T06:15:00.123Z"); // Valid
 
 --------------------------------
 
+### Verifying in-place instance validation result
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+
+Parses an instance with okResponse to return the untouched input object reference. The prototype survives and methods remain accessible.
+
+```ts
+const res = await fetch("/api/user");
+
+okResponse.parse(res) === res; // ✅ true
+```
+
+--------------------------------
+
 ### Define any and unknown schemas
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1279,6 +1293,22 @@ z.toJSONSchema(schema, {
 
 --------------------------------
 
+### Set description with .describe() in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+
+```typescript
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
+```
+
+--------------------------------
+
 ### Convert file schema with size and MIME constraints
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1295,22 +1325,6 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 //   minLength: 1,
 //   maxLength: 1048576,
 // }
-```
-
---------------------------------
-
-### Set description with .describe() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
-
-```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
