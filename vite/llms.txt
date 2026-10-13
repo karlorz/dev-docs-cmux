@@ -39,18 +39,6 @@ $ npm install # or pnpm install or yarn install
 
 --------------------------------
 
-### Install SWC plugins with Deno
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Installs @rollup/plugin-swc and @swc/core using Deno as a workaround for lowering native decorators.
-
-```bash
-$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
-```
-
---------------------------------
-
 ### Create and start a Vite dev server with createServer
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -76,11 +64,27 @@ server.bindCLIShortcuts({ print: true })
 
 --------------------------------
 
-### Install Babel decorator plugins with Deno
+### Install Babel decorator plugins
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Installs @rolldown/plugin-babel and @babel/plugin-proposal-decorators using Deno as a workaround for lowering native decorators.
+Install @rolldown/plugin-babel and @babel/plugin-proposal-decorators using your preferred package manager.
+
+```bash
+$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
+
+```bash
+$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+```
 
 ```bash
 $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
@@ -88,14 +92,45 @@ $ deno add -D npm:@rolldown/plugin-babel npm:@babel/plugin-proposal-decorators
 
 --------------------------------
 
-### Install SWC plugins with Bun
+### Scaffold a Vite Project with Bun
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
 
-Installs @rollup/plugin-swc and @swc/core using Bun as a workaround for lowering native decorators.
+Starts interactive scaffolding for a new Vite project using Bun.
 
 ```bash
-$ bun add -D @rollup/plugin-swc @swc/core
+bun create vite
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with Deno
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using Deno.
+
+```bash
+deno init --npm vite
+```
+
+--------------------------------
+
+### Installing CSS pre-processors
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Installs the required pre-processor packages for Sass, Less, or Stylus support in Vite without extra plugins.
+
+```bash
+# .scss and .sass
+npm add -D sass-embedded # or sass
+
+# .less
+npm add -D less
+
+# .styl and .stylus
+npm add -D stylus
 ```
 
 --------------------------------
@@ -128,26 +163,43 @@ $ deno run -A npm:vite
 
 --------------------------------
 
-### Scaffold a Vite Project with Bun
+### configurePreviewServer
 
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
 
-Starts interactive scaffolding for a new Vite project using Bun.
+Configures the Vite preview server instance. Called before internal middlewares are installed, with support for returning a post-hook callback to install middlewares afterward.
 
-```bash
-bun create vite
+```APIDOC
+### configurePreviewServer
+
+#### Signature
+`(server: PreviewServer) => (() => void) | void | Promise<(() => void) | void>`
+
+#### Parameters
+- `server` (`PreviewServer`) - The preview server instance.
+
+#### Returns
+- `(() => void) | void | Promise<(() => void) | void>` - Optionally returns a function called after internal middlewares are installed.
+
+#### Details
+- **Kind:** `async`, `sequential`
+- **Scope:** Global
+- Hook is called before other middlewares are installed. Return a post hook callback function if middleware should be injected after internal middlewares.
+
+#### Example
+```js
+const myPlugin = () => ({
+  name: 'configure-preview-server',
+  configurePreviewServer(server) {
+    // return a post hook that is called after other middlewares are installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
+  },
+})
 ```
-
---------------------------------
-
-### Scaffold a Vite Project with Deno
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using Deno.
-
-```bash
-deno init --npm vite
 ```
 
 --------------------------------
@@ -164,93 +216,14 @@ vite preview [root]
 
 --------------------------------
 
-### Install SWC plugins with npm
+### Scaffold a Vite Project with PNPM
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
 
-Installs @rollup/plugin-swc and @swc/core using npm as a workaround for lowering native decorators.
-
-```bash
-$ npm install -D @rollup/plugin-swc @swc/core
-```
-
---------------------------------
-
-### Install SWC plugins with pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Installs @rollup/plugin-swc and @swc/core using pnpm as a workaround for lowering native decorators.
+Starts interactive scaffolding for a new Vite project using PNPM.
 
 ```bash
-$ pnpm add -D @rollup/plugin-swc @swc/core
-```
-
---------------------------------
-
-### Installing CSS pre-processors
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Installs the required pre-processor packages for Sass, Less, or Stylus support in Vite without extra plugins.
-
-```bash
-# .scss and .sass
-npm add -D sass-embedded # or sass
-
-# .less
-npm add -D less
-
-# .styl and .stylus
-npm add -D stylus
-```
-
---------------------------------
-
-### Install Babel decorator plugins with Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Installs @rolldown/plugin-babel and @babel/plugin-proposal-decorators using Bun as a workaround for lowering native decorators.
-
-```bash
-$ bun add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
---------------------------------
-
-### Install SWC plugins with Yarn
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Installs @rollup/plugin-swc and @swc/core using Yarn as a workaround for lowering native decorators.
-
-```bash
-$ yarn add -D @rollup/plugin-swc @swc/core
-```
-
---------------------------------
-
-### Install Babel decorator plugins with npm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Installs @rolldown/plugin-babel and @babel/plugin-proposal-decorators using npm as a workaround for lowering native decorators.
-
-```bash
-$ npm install -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
-```
-
---------------------------------
-
-### Install Babel decorator plugins with pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
-
-Installs @rolldown/plugin-babel and @babel/plugin-proposal-decorators using pnpm as a workaround for lowering native decorators.
-
-```bash
-$ pnpm add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+pnpm create vite
 ```
 
 --------------------------------
@@ -299,62 +272,6 @@ Output generated in outDir after running vite build when manifest is enabled, ma
     "css": ["assets/foo-5UjPuW-k.css"]
   }
 }
-```
-
---------------------------------
-
-### Scaffold a Vite Project with PNPM
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using PNPM.
-
-```bash
-pnpm create vite
-```
-
---------------------------------
-
-### configurePreviewServer
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Hook for configuring the preview server and injecting custom middlewares before or after internal middlewares are installed. It accepts the PreviewServer instance and can return a post-hook function.
-
-```APIDOC
-## configurePreviewServer
-
-### Description
-Configures the preview server. Called before other middlewares are installed. Return a function to run after internal middlewares are installed.
-
-### Type
-`(server: PreviewServer) => (() => void) | void | Promise<(() => void) | void>`
-
-### Kind
-`async`, `sequential`
-
-### Scope
-Global
-
-### Parameters
-- **server** (`PreviewServer`) - The preview server instance.
-
-### Return Value
-- `(() => void) | void | Promise<(() => void) | void>` - An optional post hook function or promise of a post hook function called after internal middlewares are installed.
-
-### Example
-```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
-```
 ```
 
 --------------------------------
@@ -419,22 +336,6 @@ npm add -D esbuild
 
 --------------------------------
 
-### Import and initialize WebAssembly modules using ?init
-
-Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite3.md
-
-Import a WebAssembly file using the ?init query suffix and invoke the default export to instantiate the module.
-
-```javascript
-import init from './example.wasm?init'
-
-init().then((instance) => {
-  instance.exports.test()
-})
-```
-
---------------------------------
-
 ### Install Vite CLI manually
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -463,66 +364,46 @@ $ deno add -D npm:vite
 
 --------------------------------
 
-### Scaffold Vite project using npm
+### Import and initialize WebAssembly modules using ?init
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite3.md
 
-Initializes a new Vite project interactively using npm. Follow the terminal prompts to select a framework and variant.
+Import a WebAssembly file using the ?init query suffix and invoke the default export to instantiate the module.
 
-```bash
-$ npm create vite@latest
+```javascript
+import init from './example.wasm?init'
+
+init().then((instance) => {
+  instance.exports.test()
+})
 ```
 
 --------------------------------
 
-### Install Babel decorator plugins with Yarn
+### Install SWC decorator plugins
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/migration.md
 
-Installs @rolldown/plugin-babel and @babel/plugin-proposal-decorators using Yarn as a workaround for lowering native decorators.
+Install @rollup/plugin-swc and @swc/core across supported package managers to enable SWC-based decorator lowering.
 
 ```bash
-$ yarn add -D @rolldown/plugin-babel @babel/plugin-proposal-decorators
+$ npm install -D @rollup/plugin-swc @swc/core
 ```
-
---------------------------------
-
-### Scaffold Vite project using Deno
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Deno's npm package execution.
 
 ```bash
-$ deno init --npm vite
+$ yarn add -D @rollup/plugin-swc @swc/core
 ```
-
---------------------------------
-
-### Initialize a new Vite application
-
-Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
-
-Scaffolds a new Vite-powered application. Requires Node.js version 12 or higher.
 
 ```bash
-npm init @vitejs/app
+$ pnpm add -D @rollup/plugin-swc @swc/core
 ```
-
---------------------------------
-
-### Run a staging build with custom mode and .env.staging file
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-Overrides the default production mode during build using the --mode flag and loads matching variables from .env.staging.
 
 ```bash
-vite build --mode staging
+$ bun add -D @rollup/plugin-swc @swc/core
 ```
 
-```[.env.staging]
-VITE_APP_TITLE=My App (staging)
+```bash
+$ deno add -D npm:@rollup/plugin-swc npm:@swc/core
 ```
 
 --------------------------------
@@ -535,18 +416,6 @@ Installs terser as a development dependency. Required for minification when usin
 
 ```sh
 npm add -D terser
-```
-
---------------------------------
-
-### Build the app for production
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Builds the app for production. By default, build output files are placed in the dist directory for deployment.
-
-```bash
-$ npm run build
 ```
 
 --------------------------------
@@ -587,6 +456,162 @@ vite --profile --open
 
 --------------------------------
 
+### Scaffold Vite project using npm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using npm. Follow the terminal prompts to select a framework and variant.
+
+```bash
+$ npm create vite@latest
+```
+
+--------------------------------
+
+### Scaffold Vite project using Deno
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Deno's npm package execution.
+
+```bash
+$ deno init --npm vite
+```
+
+--------------------------------
+
+### Initialize a new Vite application
+
+Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite2.md
+
+Scaffolds a new Vite-powered application. Requires Node.js version 12 or higher.
+
+```bash
+npm init @vitejs/app
+```
+
+--------------------------------
+
+### Overview of .env file loading hierarchy
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+Lists the standard .env filenames Vite loads depending on the current mode and local override status.
+
+```text
+.env                # loaded in all cases
+.env.local          # loaded in all cases, ignored by git
+.env.[mode]         # only loaded in specified mode
+.env.[mode].local   # only loaded in specified mode, ignored by git
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with Yarn
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using Yarn.
+
+```bash
+yarn create vite
+```
+
+--------------------------------
+
+### Configure middleware using configurePreviewServer
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Injects custom middleware after internal middlewares are installed by returning a post hook function from configurePreviewServer.
+
+```js
+const myPlugin = () => ({
+  name: 'configure-preview-server',
+  configurePreviewServer(server) {
+    // return a post hook that is called after other middlewares are
+    // installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
+  },
+})
+```
+
+--------------------------------
+
+### Build for Staging Mode and Configure .env.staging
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+Override the default build mode using the --mode flag and provide matching environment variables in .env.staging.
+
+```bash
+vite build --mode staging
+```
+
+```.env.staging
+VITE_APP_TITLE=My App (staging)
+```
+
+--------------------------------
+
+### Build the app for production
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Builds the app for production. By default, build output files are placed in the dist directory for deployment.
+
+```bash
+$ npm run build
+```
+
+--------------------------------
+
+### Inject post-middleware via configureServer hook
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Return a function from configureServer to register custom middlewares that execute after internal middlewares are installed.
+
+```javascript
+const myPlugin = () => ({
+  name: 'configure-server',
+  configureServer(server) {
+    // return a post hook that is called after internal middlewares are
+    // installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
+  },
+})
+```
+
+--------------------------------
+
+### Attach pre-middleware via configureServer hook
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Adds custom middlewares to the Vite connect application that execute before internal middlewares are installed.
+
+```javascript
+const myPlugin = () => ({
+  name: 'configure-server',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      // custom handle request...
+    })
+  },
+})
+```
+
+--------------------------------
+
 ### Instantiate and execute code using ModuleRunner
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
@@ -610,6 +635,63 @@ const moduleRunner = new ModuleRunner(
 )
 
 await moduleRunner.import('/src/entry-point.js')
+```
+
+--------------------------------
+
+### Configure type-aware lint rules in .oxlintrc.json
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/README.md
+
+Enables type-aware linting with the react, typescript, and oxc plugins in .oxlintrc.json for production applications after installing oxlint-tsgolint.
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with NPM
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using NPM. Requires Node.js version 20.19+ or 22.12+.
+
+```bash
+npm create vite@latest
+```
+
+--------------------------------
+
+### createFetchableDevEnvironment(name, config, options)
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
+
+Creates a FetchableDevEnvironment instance that communicates with its runtime via the Fetch API. Useful for runtimes that cannot run Vite directly.
+
+```APIDOC
+### createFetchableDevEnvironment(name, config, options)
+
+Creates a new `FetchableDevEnvironment` instance configured with a request handler.
+
+#### Parameters
+- **name** (`string`) - Environment name.
+- **config** (`ResolvedConfig`) - The resolved Vite configuration.
+- **options** (`object`)
+  - **handleRequest** (`(request: Request) => Promise<Response> | Response`) - Required function to handle incoming `Request` objects and return a `Response`.
+
+#### Returns
+- `FetchableDevEnvironment` - The created fetchable dev environment instance.
 ```
 
 --------------------------------
@@ -644,14 +726,22 @@ init().then((instance) => {
 
 --------------------------------
 
-### Scaffold a Vite Project with Yarn
+### Forwarded unhandled error server terminal output
 
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
 
-Starts interactive scaffolding for a new Vite project using Yarn.
+Example of enhanced terminal formatting displayed by Vite when an unhandled browser error is forwarded to the server console.
 
-```bash
-yarn create vite
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
@@ -668,25 +758,43 @@ $ bun create vite my-vue-app --template vue
 
 --------------------------------
 
-### Inject post-middleware using configurePreviewServer
+### Access WebAssembly Module via URL import
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
 
-Inject custom middleware after internal middlewares are installed on the Vite preview server by returning a post-hook function.
+Uses the ?url query suffix to get the resolved asset URL for explicit instantiation using WebAssembly.instantiateStreaming.
 
-```javascript
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
+```js
+import 'vite/client'
+// ---cut---
+import wasmUrl from 'foo.wasm?url'
+
+const main = async () => {
+  const responsePromise = fetch(wasmUrl)
+  const { module, instance } =
+    await WebAssembly.instantiateStreaming(responsePromise)
+  /* ... */
+}
+
+main()
+```
+
+--------------------------------
+
+### Configure default Vite npm scripts in package.json
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Default npm scripts in a scaffolded Vite project for starting the dev server, building for production, and previewing the build locally.
+
+```json
+{
+  "scripts": {
+    "dev": "vite", // start dev server, aliases: `vite dev`, `vite serve`
+    "build": "vite build", // build for production
+    "preview": "vite preview" // locally preview production build
+  }
+}
 ```
 
 --------------------------------
@@ -702,26 +810,4 @@ $ vite build
 building for production...
 dist/my-lib.js      0.08 kB / gzip: 0.07 kB
 dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
-```
-
---------------------------------
-
-### Configure type-aware lint rules in .oxlintrc.json
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/README.md
-
-Enables type-aware linting with the react, typescript, and oxc plugins in .oxlintrc.json for production applications after installing oxlint-tsgolint.
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
 ```
