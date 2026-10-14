@@ -24,18 +24,6 @@ bun dev [directory]
 
 --------------------------------
 
-### Install OpenCode using Bun
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Install OpenCode globally using Bun.
-
-```bash
-bun install -g opencode-ai
-```
-
---------------------------------
-
 ### Start development server with npm run dev
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/console/app/README.md
@@ -51,6 +39,18 @@ npm run dev -- --open
 
 --------------------------------
 
+### Install OpenCode using Bun
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Install OpenCode globally using Bun.
+
+```bash
+bun install -g opencode-ai
+```
+
+--------------------------------
+
 ### Install @opencode/sdk
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/sdk/cloudflare.mdx
@@ -59,6 +59,26 @@ Installs the OpenCode SDK package via Bun.
 
 ```sh
 bun add @opencode/sdk
+```
+
+--------------------------------
+
+### Handle plugin lifecycle with setup and cleanup
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+
+`setup` runs when the plugin loads and can optionally return a cleanup callback function that executes upon unloading.
+
+```ts
+import { Plugin } from "@opencode/plugin"
+
+export default Plugin.define({
+  id: "example",
+  setup(ctx) {
+    console.log(`loaded in OpenCode ${ctx.app.version}`)
+    return () => console.log("unloaded")
+  },
+})
 ```
 
 --------------------------------
@@ -163,38 +183,6 @@ mise use -g github:anomalyco/opencode
 
 --------------------------------
 
-### Manage plugin lifecycle with setup and cleanup
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
-
-The `setup` hook runs when the plugin loads and can return a teardown function that executes when the plugin is unloaded.
-
-```ts
-import { Plugin } from "@opencode/plugin"
-
-export default Plugin.define({
-  id: "example",
-  setup(ctx) {
-    console.log(`loaded in OpenCode ${ctx.app.version}`)
-    return () => console.log("unloaded")
-  },
-})
-```
-
---------------------------------
-
-### Start OpenCode server for desktop app connection
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
-
-Starts the server in WSL listening on 0.0.0.0 at port 4096 to allow external desktop app connections.
-
-```bash
-opencode serve --hostname 0.0.0.0 --port 4096
-```
-
---------------------------------
-
 ### Install OpenCode using pnpm
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -219,6 +207,18 @@ opencode plugin <module>
 
 --------------------------------
 
+### Start minimal interface with opencode mini
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
+
+Starts the minimal interactive interface instead of the full-screen TUI.
+
+```bash
+$ opencode mini
+```
+
+--------------------------------
+
 ### Install CLI with Bun
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
@@ -239,6 +239,18 @@ Install OpenCode on macOS and Linux using the official OpenCode tap.
 
 ```bash
 brew install anomalyco/tap/opencode
+```
+
+--------------------------------
+
+### Install GitHub agent with opencode github install
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+
+Sets up the necessary GitHub Actions workflow and guides configuration in your repository.
+
+```bash
+opencode github install
 ```
 
 --------------------------------
@@ -275,18 +287,6 @@ PluginBoot background fiber
 
 --------------------------------
 
-### Install GitHub agent with opencode github install
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
-
-Sets up the necessary GitHub Actions workflow and guides configuration in your repository.
-
-```bash
-opencode github install
-```
-
---------------------------------
-
 ### Run opencode serve
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
@@ -295,6 +295,51 @@ Starts the API and web server.
 
 ```bash
 $ opencode serve
+```
+
+--------------------------------
+
+### TextNode Range Methods
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-use-figjam/references/edit-text.md
+
+SDK methods on TextNode for getting and setting properties across a specific character range (start to end indices).
+
+```APIDOC
+## TextNode Range Methods
+
+### Description
+Methods available on `TextNode` instances to apply mixed styling, fonts, fills, hyperlinks, and list options to specific character ranges.
+
+### Methods
+- `textNode.setRangeFontName(start, end, fontName)`
+- `textNode.setRangeFontSize(start, end, size)`
+- `textNode.setRangeFills(start, end, fills)`
+- `textNode.setRangeTextDecoration(start, end, decoration)`
+- `textNode.setRangeTextCase(start, end, textCase)`
+- `textNode.setRangeLetterSpacing(start, end, spacing)`
+- `textNode.setRangeLineHeight(start, end, lineHeight)`
+- `textNode.setRangeHyperlink(start, end, hyperlink)`
+- `textNode.setRangeListOptions(start, end, listOptions)`
+- `textNode.setRangeIndentation(start, end, indentation)`
+- `textNode.getRangeFontName(start, end)`
+- `textNode.getRangeFontSize(start, end)`
+
+### Usage Examples
+```javascript
+// Make "Hello" bold (characters 0-5)
+textNode.setRangeFontName(0, 5, { family: 'Inter', style: 'Bold' });
+
+// Make "World" red (characters 6-11)
+textNode.setRangeFills(6, 11, [{ type: 'SOLID', color: { r: 1, g: 0, b: 0 } }]);
+
+// Change size of "World"
+textNode.setRangeFontSize(6, 11, 24);
+
+// Get properties for a range
+const fontAtStart = textNode.getRangeFontName(0, 1);
+const sizeAtEnd = textNode.getRangeFontSize(10, 11);
+```
 ```
 
 --------------------------------
@@ -338,24 +383,6 @@ Analyzes the codebase and generates an AGENTS.md file in the project root.
 
 --------------------------------
 
-### Build and run packaged startup benchmarks with bench:startup
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/desktop/README.md
-
-Builds an unpacked directory distribution and benchmarks startup performance from process spawn to renderer idle. Supports warm/cold service runs, A/B build comparison, CPU profiling, and profile seeding.
-
-```bash
-OPENCODE_CHANNEL=dev bun run build && bunx electron-builder --win --dir --config electron-builder.config.ts
-bun run bench:startup -- --runs 5                                  # warm service (started once, reused by every launch)
-bun run bench:startup -- --runs 5 --compare dist/other/OpenCode\ Dev.exe   # A/B: alternate launches of two builds
-bun run bench:startup -- --service cold                            # each launch spawns the service
-bun run bench:startup -- --fresh                                   # first launch after an install (profile wiped each time)
-bun run bench:startup -- --profile-main --profile-renderer --trace # CPU profiles and a Chromium startup trace
-bun run bench:startup -- --seed "%APPDATA%\ai.opencode.desktop.dev"   # restore tabs and drafts from an existing profile
-```
-
---------------------------------
-
 ### Wildcard pattern matching on resource in opencode.json
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/policies.mdx
@@ -379,6 +406,24 @@ Applies a wildcard pattern using * to match zero or more characters in the resou
 
 --------------------------------
 
+### Build and run packaged startup benchmarks with bench:startup
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/desktop/README.md
+
+Builds an unpacked directory distribution and benchmarks startup performance from process spawn to renderer idle. Supports warm/cold service runs, A/B build comparison, CPU profiling, and profile seeding.
+
+```bash
+OPENCODE_CHANNEL=dev bun run build && bunx electron-builder --win --dir --config electron-builder.config.ts
+bun run bench:startup -- --runs 5                                  # warm service (started once, reused by every launch)
+bun run bench:startup -- --runs 5 --compare dist/other/OpenCode\ Dev.exe   # A/B: alternate launches of two builds
+bun run bench:startup -- --service cold                            # each launch spawns the service
+bun run bench:startup -- --fresh                                   # first launch after an install (profile wiped each time)
+bun run bench:startup -- --profile-main --profile-renderer --trace # CPU profiles and a Chromium startup trace
+bun run bench:startup -- --seed "%APPDATA%\ai.opencode.desktop.dev"   # restore tabs and drafts from an existing profile
+```
+
+--------------------------------
+
 ### Launch Vite TUI live development session with bun
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/cli/dev/README.md
@@ -387,6 +432,19 @@ Starts the CLI and its TUI via Vite and solid-refresh from the repository root, 
 
 ```sh
 bun run dev:vite:live /path/to/project
+```
+
+--------------------------------
+
+### Start OpenCode CLI Session
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/tui.mdx
+
+Navigate to the target project directory and launch OpenCode.
+
+```bash
+cd ~/code/my-project
+opencode
 ```
 
 --------------------------------
@@ -401,6 +459,18 @@ Create an instance of opencode to start both a server and a client.
 import { createOpencode } from "@opencode-ai/sdk"
 
 const { client } = await createOpencode()
+```
+
+--------------------------------
+
+### Install CLI with curl
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+
+Installs the OpenCode CLI using curl via the official install script.
+
+```bash
+curl -fsSL https://opencode.ai/v2/install | bash
 ```
 
 --------------------------------
@@ -420,18 +490,6 @@ $ /connect
 │  ...
 │  ● Other
 └
-```
-
---------------------------------
-
-### Install CLI with curl
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
-
-Installs the OpenCode CLI using curl via the official install script.
-
-```bash
-curl -fsSL https://opencode.ai/v2/install | bash
 ```
 
 --------------------------------
@@ -456,6 +514,18 @@ sudo pacman -S opencode            # Arch Linux (Stable)
 paru -S opencode-bin               # Arch Linux (Latest from AUR)
 mise use -g opencode               # Any OS
 nix run nixpkgs#opencode           # or github:anomalyco/opencode for latest dev branch
+```
+
+--------------------------------
+
+### Install OpenCode using curl install script
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+The easiest way to install OpenCode 1 via shell script.
+
+```bash
+curl -fsSL https://opencode.ai/install | bash
 ```
 
 --------------------------------
@@ -534,14 +604,16 @@ export default setup
 
 --------------------------------
 
-### Install OpenCode using curl install script
+### Install OpenCode CLI to Custom Directory
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
 
-The easiest way to install OpenCode 1 via shell script.
+Override the target installation directory using OPENCODE_INSTALL_DIR or XDG_BIN_DIR environment variables when executing the install script.
 
 ```bash
-curl -fsSL https://opencode.ai/install | bash
+# Examples
+OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
+XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
 ```
 
 --------------------------------
@@ -558,16 +630,14 @@ Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/
 
 --------------------------------
 
-### Install OpenCode CLI to Custom Directory
+### List installed plugins
 
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
 
-Override the target installation directory using OPENCODE_INSTALL_DIR or XDG_BIN_DIR environment variables when executing the install script.
+Displays all plugins installed in the current environment.
 
 ```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+$ opencode plugin list
 ```
 
 --------------------------------
@@ -593,18 +663,6 @@ await client.session.prompt({
   sessionID: session.id,
   text: "Review the current changes",
 })
-```
-
---------------------------------
-
-### List installed plugins
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
-
-Displays all plugins installed in the current environment.
-
-```bash
-$ opencode plugin list
 ```
 
 --------------------------------
@@ -635,25 +693,6 @@ GET
 
 --------------------------------
 
-### Directory structure for configuration precedence example
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/config.mdx
-
-Demonstrates nested configuration locations discovered from current working directory to filesystem root.
-
-```text
-~/.config/opencode/opencode.json
-
-/home/user/projects/acme/
-├── opencode.json
-└── packages/
-    └── web/
-        ├── opencode.json
-        └── src/
-```
-
---------------------------------
-
 ### Add a custom LSP server with command and extensions
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/lsp.mdx
@@ -670,6 +709,18 @@ Define a new LSP entry by specifying the startup `command` array and the file `e
     }
   }
 }
+```
+
+--------------------------------
+
+### Start OpenCode server for desktop app connection
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
+
+Starts the server in WSL listening on 0.0.0.0 at port 4096 to allow external desktop app connections.
+
+```bash
+opencode serve --hostname 0.0.0.0 --port 4096
 ```
 
 --------------------------------
@@ -750,18 +801,6 @@ opencode.server.close()
 
 --------------------------------
 
-### Install @opencode-ai/sdk via npm
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
-
-Install the opencode JavaScript/TypeScript SDK package from npm.
-
-```bash
-npm install @opencode-ai/sdk
-```
-
---------------------------------
-
 ### Declare Store.main from desktop settings file
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-extensions/README.md
@@ -771,6 +810,50 @@ Defines a main-process synchronous store imported from a desktop settings file k
 ```ts
 // The saved hosts, which main keeps; stored before in the desktop settings file.
 servers: Store.main(Schema.Array(SshConfig), [], { settings: "ssh.servers" }),
+```
+
+--------------------------------
+
+### Example model identifier
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/models.mdx
+
+Example model identifier entry selected from /models.
+
+```text
+anthropic/claude-sonnet-4-5
+```
+
+--------------------------------
+
+### Illustrate configuration hierarchy across directories
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/config.mdx
+
+Demonstrates layout for configuration resolution across system, global, root project, and package directories.
+
+```text
+/etc/opencode/opencode.json
+~/.config/opencode/opencode.json
+
+/home/user/projects/acme/
+├── opencode.json
+└── packages/
+    └── web/
+        ├── opencode.json
+        └── src/
+```
+
+--------------------------------
+
+### Install @opencode-ai/sdk via npm
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
+
+Install the opencode JavaScript/TypeScript SDK package from npm.
+
+```bash
+npm install @opencode-ai/sdk
 ```
 
 --------------------------------
@@ -799,6 +882,18 @@ $ opencode plugin add @example/opencode-tui
 
 --------------------------------
 
+### View help with opencode run --help
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
+
+Displays all subcommands and supported flags for the run command.
+
+```bash
+$ opencode run --help
+```
+
+--------------------------------
+
 ### Install OpenCode on Arch Linux
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -812,14 +907,15 @@ paru -S opencode-bin              # Arch Linux (Latest from AUR)
 
 --------------------------------
 
-### View help with opencode run --help
+### Créer un thème spécifique au projet
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/fr/themes.mdx
 
-Displays all subcommands and supported flags for the run command.
+Crée le dossier .opencode/themes à la racine du projet et initialise un fichier de thème local.
 
 ```bash
-$ opencode run --help
+mkdir -p .opencode/themes
+vim .opencode/themes/my-theme.json
 ```
 
 --------------------------------
@@ -832,19 +928,6 @@ Install OpenCode globally using the npm package manager.
 
 ```bash
 npm install -g opencode-ai
-```
-
---------------------------------
-
-### Créer un thème spécifique au projet
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/fr/themes.mdx
-
-Crée le dossier .opencode/themes à la racine du projet et initialise un fichier de thème local.
-
-```bash
-mkdir -p .opencode/themes
-vim .opencode/themes/my-theme.json
 ```
 
 --------------------------------
@@ -873,85 +956,4 @@ Views all subcommands and flags available for the mini command.
 
 ```bash
 $ opencode mini --help
-```
-
---------------------------------
-
-### GET /session/:id/diff
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
-
-Get file diffs for a given session, optionally filtered by message ID.
-
-```APIDOC
-## GET /session/:id/diff
-
-### Description
-Get the diff for this session.
-
-### Method
-GET
-
-### Endpoint
-`/session/:id/diff`
-
-### Parameters
-#### Path Parameters
-- **id** (string) - Required - The ID of the session
-
-#### Query Parameters
-- **messageID** - Optional
-
-### Response
-#### Success Response (200)
-- Returns `FileDiff[]`
-```
-
---------------------------------
-
-### Restart background service with opencode service start
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/web.mdx
-
-Start the background service after making configuration changes.
-
-```bash
-$ opencode service start
-```
-
---------------------------------
-
-### Start an OpenCode session
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/tui.mdx
-
-Navigate to the project directory and launch OpenCode to start a new TUI session.
-
-```bash
-cd ~/code/my-project
-opencode
-```
-
---------------------------------
-
-### View upgrade help with opencode upgrade --help
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
-
-Displays all subcommands and flags available for the upgrade command.
-
-```bash
-$ opencode upgrade --help
-```
-
---------------------------------
-
-### Install CLI with AUR (paru)
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
-
-Installs the OpenCode beta package from the Arch User Repository using paru.
-
-```bash
-paru -S opencode-beta
 ```
