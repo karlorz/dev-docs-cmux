@@ -104,6 +104,18 @@ bun create vite
 
 --------------------------------
 
+### Scaffold a Vite Project with Deno
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using Deno.
+
+```bash
+deno init --npm vite
+```
+
+--------------------------------
+
 ### Installing CSS pre-processors
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -119,18 +131,6 @@ npm add -D less
 
 # .styl and .stylus
 npm add -D stylus
-```
-
---------------------------------
-
-### Scaffold a Vite Project with Deno
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using Deno.
-
-```bash
-deno init --npm vite
 ```
 
 --------------------------------
@@ -159,6 +159,30 @@ $ bunx vite
 
 ```bash
 $ deno run -A npm:vite
+```
+
+--------------------------------
+
+### Preview production build with vite preview
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+
+Locally previews the production build by starting a server in the build directory. Run vite build beforehand to ensure the output directory is up-to-date.
+
+```bash
+vite preview [root]
+```
+
+--------------------------------
+
+### Start Dev Server with CPU Profiling
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Starts the Vite dev server with the built-in Node.js inspector enabled and opens the app in the browser to create a CPU profile.
+
+```bash
+vite --profile --open
 ```
 
 --------------------------------
@@ -204,14 +228,18 @@ const myPlugin = () => ({
 
 --------------------------------
 
-### Preview production build with vite preview
+### Configure server.open with custom pathname
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
 
-Locally previews the production build by starting a server in the build directory. Run vite build beforehand to ensure the output directory is up-to-date.
+Specify a pathname to automatically open in the browser when the dev server starts.
 
-```bash
-vite preview [root]
+```js
+export default defineConfig({
+  server: {
+    open: '/docs/index.html',
+  },
+})
 ```
 
 --------------------------------
@@ -284,6 +312,18 @@ Executes the original config file directly so breakpoints in the config file and
 
 ```bash
 vite --configLoader native
+```
+
+--------------------------------
+
+### Perform dynamic import with variables
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Demonstrates dynamic imports with variable file paths. Note that variables only match file names one level deep, and imports must start with ./, ../, or # and include a file extension.
+
+```ts
+const module = await import(`./dir/${file}.js`)
 ```
 
 --------------------------------
@@ -420,6 +460,18 @@ npm add -D terser
 
 --------------------------------
 
+### Scaffold Vite project using npm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using npm. Follow the terminal prompts to select a framework and variant.
+
+```bash
+$ npm create vite@latest
+```
+
+--------------------------------
+
 ### Install unreleased Vite commit with pkg.pr.new
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -444,26 +496,22 @@ $ bun add -D https://pkg.pr.new/vite@SHA
 
 --------------------------------
 
-### Scaffold Vite project using npm
+### Configure multiple HTML entry points for multi-page build
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Initializes a new Vite project interactively using npm. Follow the terminal prompts to select a framework and variant.
+Specify multiple `.html` files as entry points in `vite.config.js` using `input` mappings.
 
-```bash
-$ npm create vite@latest
-```
+```javascript
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
 
---------------------------------
-
-### Start Vite dev server with profiling
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
-
-Starts the Vite dev server with the built-in Node.js inspector and opens the browser. After the application finishes loading, press 'p' in the terminal to stop the inspector and 'q' to stop the server.
-
-```bash
-vite --profile --open
+export default defineConfig({
+  input: {
+    main: resolve(import.meta.dirname, 'index.html'),
+    nested: resolve(import.meta.dirname, 'nested/index.html'),
+  },
+})
 ```
 
 --------------------------------
@@ -558,18 +606,6 @@ VITE_APP_TITLE=My App (staging)
 
 --------------------------------
 
-### Build the app for production
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Builds the app for production. By default, build output files are placed in the dist directory for deployment.
-
-```bash
-$ npm run build
-```
-
---------------------------------
-
 ### Inject post-middleware via configureServer hook
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -612,6 +648,18 @@ const myPlugin = () => ({
 
 --------------------------------
 
+### Build the app for production
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Builds the app for production. By default, build output files are placed in the dist directory for deployment.
+
+```bash
+$ npm run build
+```
+
+--------------------------------
+
 ### Configure type-aware lint rules in .oxlintrc.json
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/README.md
@@ -630,6 +678,18 @@ Enables type-aware linting with the react, typescript, and oxc plugins in .oxlin
     "react/only-export-components": ["warn", { "allowConstantExport": true }]
   }
 }
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with NPM
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using NPM. Requires Node.js version 20.19+ or 22.12+.
+
+```bash
+npm create vite@latest
 ```
 
 --------------------------------
@@ -657,18 +717,6 @@ const moduleRunner = new ModuleRunner(
 )
 
 await moduleRunner.import('/src/entry-point.js')
-```
-
---------------------------------
-
-### Scaffold a Vite Project with NPM
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using NPM. Requires Node.js version 20.19+ or 22.12+.
-
-```bash
-npm create vite@latest
 ```
 
 --------------------------------
@@ -704,56 +752,6 @@ Initializes a new Vite project interactively using pnpm. Follow the terminal pro
 
 ```bash
 $ pnpm create vite
-```
-
---------------------------------
-
-### Forwarded unhandled error server terminal output
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-Example of enhanced terminal formatting displayed by Vite when an unhandled browser error is forwarded to the server console.
-
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
-```
-
---------------------------------
-
-### Manually initialize WebAssembly with ?init
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Imports a .wasm file using the ?init query suffix to receive an initialization function that resolves to a WebAssembly.Instance.
-
-```js
-import 'vite/client'
-// ---cut---
-import init from './example.wasm?init'
-
-init().then((instance) => {
-  instance.exports.test()
-})
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
-
-```bash
-$ bun create vite my-vue-app --template vue
 ```
 
 --------------------------------
@@ -799,15 +797,30 @@ Default npm scripts in a scaffolded Vite project for starting the dev server, bu
 
 --------------------------------
 
-### Build Library with Vite CLI
+### Manually initialize WebAssembly with ?init
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
 
-Execute vite build to produce production bundle artifacts for distribution.
+Imports a .wasm file using the ?init query suffix to receive an initialization function that resolves to a WebAssembly.Instance.
 
-```shell
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```js
+import 'vite/client'
+// ---cut---
+import init from './example.wasm?init'
+
+init().then((instance) => {
+  instance.exports.test()
+})
+```
+
+--------------------------------
+
+### Example EISDIR error on unsupported file systems
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Demonstrates the EISDIR error encountered when watching files on filesystems that lack file system event support, such as VirtualBox shared folders.
+
+```text
+Error: EISDIR: illegal operation on a directory, watch 'C:/Users/me/project/vite.config.js'
 ```
