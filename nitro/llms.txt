@@ -735,6 +735,77 @@ Defines the project as an ES module, with build and dev scripts, and lists fasti
 
 --------------------------------
 
+### Custom Renderer Example Files
+
+Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/renderer.md
+
+Complete example files for a custom renderer in Nitro: configuration, renderer handler, and API route. The renderer uses Nitro's internal fetch to call the API route without network overhead.
+
+```ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  serverDir: "./",
+  renderer: { handler: "./renderer" },
+});
+```
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build"
+  },
+  "devDependencies": {
+    "nitro": "latest"
+  }
+}
+```
+
+```ts
+import { fetch } from "nitro";
+
+export default async function renderer({ url }: { req: Request; url: URL }) {
+  const apiRes = await fetch("/api/hello").then((res) => res.text());
+  return new Response(
+    /* html */ `<!DOCTYPE html>
+    <html>
+    <head>
+      <title>Custom Renderer</title>
+    </head>
+    <body>
+      <h1>Hello from custom renderer!</h1>
+      <p>Current path: ${url.pathname}</p>
+      <p>API says: ${apiRes}</p>
+    </body>
+    </html>`,
+    { headers: { "content-type": "text/html; charset=utf-8" } }
+  );
+}
+```
+
+```json
+{
+  "extends": "nitro/tsconfig"
+}
+```
+
+```ts
+import { defineConfig } from "vite";
+import { nitro } from "nitro/vite";
+
+export default defineConfig({ plugins: [nitro()] });
+```
+
+```ts
+import { defineHandler } from "nitro";
+
+export default defineHandler(() => "Nitro is amazing!");
+```
+
+--------------------------------
+
 ### Global styles in app/index.css
 
 Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/vite-rsc.md
@@ -854,77 +925,6 @@ button:focus-visible {
   color: #888;
   text-align: left;
 }
-```
-
---------------------------------
-
-### Custom Renderer Example Files
-
-Source: https://github.com/nitrojs/nitro/blob/main/docs/4.examples/renderer.md
-
-Complete example files for a custom renderer in Nitro: configuration, renderer handler, and API route. The renderer uses Nitro's internal fetch to call the API route without network overhead.
-
-```ts
-import { defineConfig } from "nitro";
-
-export default defineConfig({
-  serverDir: "./",
-  renderer: { handler: "./renderer" },
-});
-```
-
-```json
-{
-  "type": "module",
-  "scripts": {
-    "dev": "nitro dev",
-    "build": "nitro build"
-  },
-  "devDependencies": {
-    "nitro": "latest"
-  }
-}
-```
-
-```ts
-import { fetch } from "nitro";
-
-export default async function renderer({ url }: { req: Request; url: URL }) {
-  const apiRes = await fetch("/api/hello").then((res) => res.text());
-  return new Response(
-    /* html */ `<!DOCTYPE html>
-    <html>
-    <head>
-      <title>Custom Renderer</title>
-    </head>
-    <body>
-      <h1>Hello from custom renderer!</h1>
-      <p>Current path: ${url.pathname}</p>
-      <p>API says: ${apiRes}</p>
-    </body>
-    </html>`,
-    { headers: { "content-type": "text/html; charset=utf-8" } }
-  );
-}
-```
-
-```json
-{
-  "extends": "nitro/tsconfig"
-}
-```
-
-```ts
-import { defineConfig } from "vite";
-import { nitro } from "nitro/vite";
-
-export default defineConfig({ plugins: [nitro()] });
-```
-
-```ts
-import { defineHandler } from "nitro";
-
-export default defineHandler(() => "Nitro is amazing!");
 ```
 
 --------------------------------
