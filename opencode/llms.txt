@@ -10,26 +10,6 @@ Guided setup for creating or updating AGENTS.md.
 
 --------------------------------
 
-### Example directory structure for config discovery
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/config.mdx
-
-For example, start OpenCode from /home/user/projects/acme/packages/web.
-
-```text
-/etc/opencode/opencode.json
-~/.config/opencode/opencode.json
-
-/home/user/projects/acme/
-├── opencode.json
-└── packages/
-    └── web/
-        ├── opencode.json
-        └── src/
-```
-
---------------------------------
-
 ### Start development environment
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/desktop/README.md
@@ -83,6 +63,26 @@ npm run dev -- --open
 
 --------------------------------
 
+### Example directory tree for config discovery
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/config.mdx
+
+OpenCode searches from the current directory to the filesystem root. This example shows the directory structure when starting from /home/user/projects/acme/packages/web.
+
+```text
+/etc/opencode/opencode.json
+~/.config/opencode/opencode.json
+
+/home/user/projects/acme/
+├── opencode.json
+└── packages/
+    └── web/
+        ├── opencode.json
+        └── src/
+```
+
+--------------------------------
+
 ### Install @opencode/client and effect
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/client/effect.mdx
@@ -131,18 +131,6 @@ hermes model
 
 --------------------------------
 
-### Install @opencode/sdk
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/sdk/cloudflare.mdx
-
-Installs the OpenCode SDK package via Bun.
-
-```sh
-bun add @opencode/sdk
-```
-
---------------------------------
-
 ### Return a cleanup function from setup
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/cli.mdx
@@ -154,6 +142,18 @@ setup(context) {
   const stop = context.data.on("session.execution.succeeded", () => {})
   return () => stop()
 }
+```
+
+--------------------------------
+
+### Install @opencode/sdk
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/sdk/cloudflare.mdx
+
+Installs the OpenCode SDK package via Bun.
+
+```sh
+bun add @opencode/sdk
 ```
 
 --------------------------------
@@ -178,18 +178,6 @@ Runs the `opencode serve` command to start the API and web server.
 
 ```bash
 $ opencode serve
-```
-
---------------------------------
-
-### Install OpenCode CLI with Homebrew
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
-
-Install the OpenCode CLI using Homebrew.
-
-```bash
-brew install anomalyco/tap/opencode-v2
 ```
 
 --------------------------------
@@ -242,29 +230,16 @@ bun install -g opencode-ai
 
 --------------------------------
 
-### Read ctx.app.version in setup
+### Set custom installation directory with OPENCODE_INSTALL_DIR or XDG_BIN_DIR
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
 
-The plugin context is essentially an OpenCode server client; ctx.app.version is available during setup.
-
-```typescript
-setup(ctx) {
-  console.log(ctx.app.version)
-}
-```
-
---------------------------------
-
-### Export API key and start Codex
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/console/harnesses/codex.mdx
-
-Create the key under Keys in the Console, then export it and start Codex.
+The install script respects $OPENCODE_INSTALL_DIR first, then $XDG_BIN_DIR, then $HOME/bin, and falls back to $HOME/.opencode/bin. Use these examples to override the installation path.
 
 ```bash
-export OPENCODE_API_KEY="oc_sk_..."
-codex
+# Examples
+OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/v2/install | bash
+XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/v2/install | bash
 ```
 
 --------------------------------
@@ -297,20 +272,6 @@ PluginBoot background fiber
         → Catalog internally rebuilds
           → Catalog.Event.Updated
             → Frontend.refetchCatalog()
-```
-
---------------------------------
-
-### Set custom installation directory with OPENCODE_INSTALL_DIR or XDG_BIN_DIR
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-The install script respects $OPENCODE_INSTALL_DIR first, then $XDG_BIN_DIR, then $HOME/bin, and falls back to $HOME/.opencode/bin. Use these examples to override the installation path.
-
-```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/v2/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/v2/install | bash
 ```
 
 --------------------------------
@@ -402,6 +363,25 @@ const sizeAtEnd = textNode.getRangeFontSize(10, 11);
 
 --------------------------------
 
+### Define a basic plugin with setup
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+
+Plugins under `.opencode/plugins/` are loaded automatically. The `setup` function runs when the plugin loads and can perform initialization tasks.
+
+```typescript
+import { Plugin } from "@opencode/plugin"
+
+export default Plugin.define({
+  id: "example",
+  async setup(ctx) {
+    await ctx.storage.set("loaded", true)
+  },
+})
+```
+
+--------------------------------
+
 ### Configure Virtual Framebuffer for Headless Environments
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/bs/troubleshooting.mdx
@@ -430,20 +410,16 @@ opencode
 
 --------------------------------
 
-### List and get agents using Effect
+### Manage command-based connection attempts
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
 
-Use this to read all agents or fetch a specific agent by ID. The example logs the count of agents and the name of the 'build' agent.
+Use this to start, check status, or cancel a command-based connection attempt for an integration. The example uses the 'acme' integration with the 'cli' method.
 
 ```typescript
-effect: (ctx) =>
-  Effect.gen(function* () {
-    const agent = ctx.agent
-    const agents = yield* agent.list().pipe(Effect.orDie)
-    const build = yield* agent.get({ agentID: Agent.ID.make("build") }).pipe(Effect.orDie)
-    yield* Effect.logInfo("agents", { count: agents.data.length, build: build.data.name })
-  }),
+const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
+const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
+await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -458,6 +434,24 @@ Create an instance of opencode to start both a server and a client.
 import { createOpencode } from "@opencode-ai/sdk"
 
 const { client } = await createOpencode()
+```
+
+--------------------------------
+
+### List and get agents using Effect
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+
+Use this to read all agents or fetch a specific agent by ID. The example logs the count of agents and the name of the 'build' agent.
+
+```typescript
+effect: (ctx) =>
+  Effect.gen(function* () {
+    const agent = ctx.agent
+    const agents = yield* agent.list().pipe(Effect.orDie)
+    const build = yield* agent.get({ agentID: Agent.ID.make("build") }).pipe(Effect.orDie)
+    yield* Effect.logInfo("agents", { count: agents.data.length, build: build.data.name })
+  }),
 ```
 
 --------------------------------
@@ -500,23 +494,17 @@ Use the `mcp` option in opencode.json to configure MCP servers. The example show
 
 --------------------------------
 
-### List and get providers using Effect
+### Manage OAuth connection attempts
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
 
-Use this to read all available providers or fetch a specific provider by ID. The example logs the count of providers and the name of the 'anthropic' provider.
+Use this to start, check status, complete, or cancel an OAuth connection attempt for an integration. The example demonstrates the full flow for the GitHub integration.
 
 ```typescript
-effect: (ctx) =>
-  Effect.gen(function* () {
-    const provider = ctx.provider
-    const providers = yield* provider.list().pipe(Effect.orDie)
-    const anthropic = yield* provider.get({ providerID: Provider.ID.make("anthropic") }).pipe(Effect.orDie)
-    yield* Effect.logInfo("providers", {
-      providers: providers.data.length,
-      anthropic: anthropic.data.name,
-    })
-  }),
+const attempt = await ctx.integration.oauth.connect({ integrationID: "github", methodID: "oauth" })
+const status = await ctx.integration.oauth.status({ integrationID: "github", attemptID: attempt.data.attemptID })
+await ctx.integration.oauth.complete({ integrationID: "github", attemptID: attempt.data.attemptID, code })
+await ctx.integration.oauth.cancel({ integrationID: "github", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -546,6 +534,27 @@ await client.session.prompt({
 
 --------------------------------
 
+### List and get providers using Effect
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+
+Use this to read all available providers or fetch a specific provider by ID. The example logs the count of providers and the name of the 'anthropic' provider.
+
+```typescript
+effect: (ctx) =>
+  Effect.gen(function* () {
+    const provider = ctx.provider
+    const providers = yield* provider.list().pipe(Effect.orDie)
+    const anthropic = yield* provider.get({ providerID: Provider.ID.make("anthropic") }).pipe(Effect.orDie)
+    yield* Effect.logInfo("providers", {
+      providers: providers.data.length,
+      anthropic: anthropic.data.name,
+    })
+  }),
+```
+
+--------------------------------
+
 ### List available models and default selection
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
@@ -559,45 +568,6 @@ effect: (ctx) =>
     const models = yield* model.list().pipe(Effect.orDie)
     const selected = yield* model.default().pipe(Effect.orDie)
     yield* Effect.logInfo("models", { count: models.data.length, selected: selected.data?.name })
-  }),
-```
-
---------------------------------
-
-### Store, read, and remove JSON values with Effect storage
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
-
-Use ctx.storage to set, get, and remove durable JSON values scoped to the plugin ID. The example sets a settings object, retrieves it, logs it, and removes it.
-
-```ts
-effect: (ctx) =>
-  Effect.gen(function* () {
-    const storage = ctx.storage
-    yield* storage.set("settings", { strict: true })
-    const settings = yield* storage.get("settings")
-    yield* Effect.logInfo("settings", { settings })
-    yield* storage.remove("settings")
-  }),
-```
-
---------------------------------
-
-### Scan storage keys by prefix with cursor pagination
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
-
-Use storage.scan with a prefix and limit to retrieve entries. The example scans for keys starting with 'cache/', then uses the next cursor to fetch the next page, and logs the total count.
-
-```ts
-effect: (ctx) =>
-  Effect.gen(function* () {
-    const storage = ctx.storage
-    const first = yield* storage.scan({ prefix: "cache/", limit: 100 })
-    const second = first.next
-      ? yield* storage.scan({ prefix: "cache/", after: first.next, limit: 100 })
-      : { entries: [] }
-    yield* Effect.logInfo("cache entries", { count: first.entries.length + second.entries.length })
   }),
 ```
 
@@ -623,66 +593,36 @@ Define a new LSP entry by specifying the startup `command` array and the file `e
 
 --------------------------------
 
-### Read VCS repository information and status
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
-
-Use this to read repository information, working-copy status, branches, and file diffs. The example shows how to access the VCS service from the context and call methods like get, branches, status, and diff.
-
-```typescript
-effect: (ctx) =>
-  Effect.gen(function* () {
-    const vcs = ctx.vcs
-    const info = yield* vcs.get().pipe(Effect.orDie)
-    const branches = yield* vcs.branches({ search: "feature", limit: 10 }).pipe(Effect.orDie)
-    const changes = yield* vcs.status().pipe(Effect.orDie)
-    const diff = yield* vcs.diff({ mode: "working", context: 3 }).pipe(Effect.orDie)
-    yield* Effect.logInfo("vcs", { branch: info.data.branch.current, files: changes.data.length })
-  }),
-```
-
---------------------------------
-
-### Return a cleanup function from setup
+### List and inspect integrations and active credentials
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
 
-setup runs when the plugin loads; the returned function runs when the plugin unloads. ctx.app.version is available in the context.
+Use this to retrieve a list of integrations, get details for a specific integration, check the active connection, and resolve the credential for that connection. The example shows how to access the integration context methods.
 
 ```typescript
-import { Plugin } from "@opencode/plugin"
-
-export default Plugin.define({
-  id: "example",
-  setup(ctx) {
-    console.log(`loaded in OpenCode ${ctx.app.version}`)
-    return () => console.log("unloaded")
-  },
-})
+const integrations = await ctx.integration.list()
+const github = await ctx.integration.get({ integrationID: "github" })
+const connection = await ctx.integration.connection.active("github")
+const credential = connection ? await ctx.integration.connection.resolve(connection) : undefined
 ```
 
 --------------------------------
 
-### Launch Vite TUI live development session with bun
+### Store, read, and remove JSON values with Effect storage
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/cli/dev/README.md
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
 
-Starts the CLI and its TUI via Vite and solid-refresh from the repository root, connecting directly to the installed server. Component edits trigger hot updates while the backend remains active across syntax error retries and full reloads.
+Use ctx.storage to set, get, and remove durable JSON values scoped to the plugin ID. The example sets a settings object, retrieves it, logs it, and removes it.
 
-```sh
-bun run dev:vite:live /path/to/project
-```
-
---------------------------------
-
-### Install OpenCode using the shell script
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Quickly install OpenCode via the official install script. Note that this binary can conflict with or replace an OpenCode 2 installation.
-
-```bash
-curl -fsSL https://opencode.ai/install | bash
+```ts
+effect: (ctx) =>
+  Effect.gen(function* () {
+    const storage = ctx.storage
+    yield* storage.set("settings", { strict: true })
+    const settings = yield* storage.get("settings")
+    yield* Effect.logInfo("settings", { settings })
+    yield* storage.remove("settings")
+  }),
 ```
 
 --------------------------------
@@ -723,14 +663,168 @@ opencode.server.close()
 
 --------------------------------
 
-### Install OpenCode CLI with curl
+### Scan storage keys by prefix with cursor pagination
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+
+Use storage.scan with a prefix and limit to retrieve entries. The example scans for keys starting with 'cache/', then uses the next cursor to fetch the next page, and logs the total count.
+
+```ts
+effect: (ctx) =>
+  Effect.gen(function* () {
+    const storage = ctx.storage
+    const first = yield* storage.scan({ prefix: "cache/", limit: 100 })
+    const second = first.next
+      ? yield* storage.scan({ prefix: "cache/", after: first.next, limit: 100 })
+      : { entries: [] }
+    yield* Effect.logInfo("cache entries", { count: first.entries.length + second.entries.length })
+  }),
+```
+
+--------------------------------
+
+### Read VCS repository information and status
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+
+Use this to read repository information, working-copy status, branches, and file diffs. The example shows how to access the VCS service from the context and call methods like get, branches, status, and diff.
+
+```typescript
+effect: (ctx) =>
+  Effect.gen(function* () {
+    const vcs = ctx.vcs
+    const info = yield* vcs.get().pipe(Effect.orDie)
+    const branches = yield* vcs.branches({ search: "feature", limit: 10 }).pipe(Effect.orDie)
+    const changes = yield* vcs.status().pipe(Effect.orDie)
+    const diff = yield* vcs.diff({ mode: "working", context: 3 }).pipe(Effect.orDie)
+    yield* Effect.logInfo("vcs", { branch: info.data.branch.current, files: changes.data.length })
+  }),
+```
+
+--------------------------------
+
+### Launch Vite TUI live development session with bun
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/cli/dev/README.md
+
+Starts the CLI and its TUI via Vite and solid-refresh from the repository root, connecting directly to the installed server. Component edits trigger hot updates while the backend remains active across syntax error retries and full reloads.
+
+```sh
+bun run dev:vite:live /path/to/project
+```
+
+--------------------------------
+
+### Access setup context properties
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/cli.mdx
+
+The setup function receives configuration, app metadata, the current location, the OpenCode client, cached data, theme tokens, the OpenTUI renderer, and UI APIs. Use context.options for plugin options and context.data.location.default() as a fallback location.
+
+```typescript
+setup(context) {
+  const compact = context.options.compact === true
+  const location = context.location ?? context.data.location.default()
+  const version = context.app.version
+  const channel = context.app.channel
+  const client = context.client
+  const renderer = context.renderer
+  const theme = context.theme
+}
+```
+
+--------------------------------
+
+### Install OpenCode using the shell script
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Quickly install OpenCode via the official install script. Note that this binary can conflict with or replace an OpenCode 2 installation.
+
+```bash
+curl -fsSL https://opencode.ai/install | bash
+```
+
+--------------------------------
+
+### Plugin lifecycle with cleanup function
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+
+`setup` runs when the plugin loads. It may return a cleanup function that runs when the plugin unloads.
+
+```typescript
+import { Plugin } from "@opencode/plugin"
+
+export default Plugin.define({
+  id: "example",
+  setup(ctx) {
+    console.log(`loaded in OpenCode ${ctx.app.version}`)
+    return () => console.log("unloaded")
+  },
+})
+```
+
+--------------------------------
+
+### Install OpenCode CLI via AUR
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
 
-Install the OpenCode CLI using the curl installer script.
+Install the OpenCode CLI from the AUR using paru. This installs the opencode-beta package.
+
+```bash
+paru -S opencode-beta
+```
+
+--------------------------------
+
+### Declare main process store imported from settings using Store.main
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-extensions/README.md
+
+Creates a main process store that loads synchronously and imports initial state from a desktop settings key.
+
+```ts
+// The saved hosts, which main keeps; stored before in the desktop settings file.
+servers: Store.main(Schema.Array(SshConfig), [], { settings: "ssh.servers" }),
+```
+
+--------------------------------
+
+### Install OpenCode CLI via Homebrew
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+
+Install the OpenCode CLI using Homebrew. This is one of several supported installation methods.
+
+```bash
+brew install anomalyco/tap/opencode-v2
+```
+
+--------------------------------
+
+### Install OpenCode CLI via curl
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+
+Install the OpenCode CLI using the curl script. This is one of several supported installation methods.
 
 ```bash
 curl -fsSL https://opencode.ai/v2/install | bash
+```
+
+--------------------------------
+
+### Créer un thème spécifique au projet
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/fr/themes.mdx
+
+Crée le dossier .opencode/themes à la racine du projet et initialise un fichier de thème local.
+
+```bash
+mkdir -p .opencode/themes
+vim .opencode/themes/my-theme.json
 ```
 
 --------------------------------
@@ -756,94 +850,6 @@ GET
 ### Response
 #### Success Response (200)
 - `Path`
-```
-
---------------------------------
-
-### Access setup context properties
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/cli.mdx
-
-The setup function receives configuration, app metadata, the current location, the OpenCode client, cached data, theme tokens, the OpenTUI renderer, and UI APIs. Use context.options for plugin options and context.data.location.default() as a fallback location.
-
-```typescript
-setup(context) {
-  const compact = context.options.compact === true
-  const location = context.location ?? context.data.location.default()
-  const version = context.app.version
-  const channel = context.app.channel
-  const client = context.client
-  const renderer = context.renderer
-  const theme = context.theme
-}
-```
-
---------------------------------
-
-### Install OpenCode CLI with mise
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
-
-Install the OpenCode CLI globally using mise. Requires mise 2026.10.9 or later; older versions install OpenCode 1.
-
-```bash
-mise use -g opencode
-```
-
---------------------------------
-
-### Install @effect/platform-node
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/client/effect.mdx
-
-Install the required dependency for the Node-only service entrypoint.
-
-```sh
-bun add @effect/platform-node
-```
-
---------------------------------
-
-### Declare main process store imported from settings using Store.main
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-extensions/README.md
-
-Creates a main process store that loads synchronously and imports initial state from a desktop settings key.
-
-```ts
-// The saved hosts, which main keeps; stored before in the desktop settings file.
-servers: Store.main(Schema.Array(SshConfig), [], { settings: "ssh.servers" }),
-```
-
---------------------------------
-
-### Créer un thème spécifique au projet
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/fr/themes.mdx
-
-Crée le dossier .opencode/themes à la racine du projet et initialise un fichier de thème local.
-
-```bash
-mkdir -p .opencode/themes
-vim .opencode/themes/my-theme.json
-```
-
---------------------------------
-
-### Create a keymap layer after an await in setup
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/cli.mdx
-
-Call layer from setup, including after an await, or from a component. The layer is removed when the plugin is disabled, reloaded, fails setup, or when the creating component is disposed.
-
-```ts
-async setup(context) {
-  const settings = await loadSettings()
-  context.keymap.layer(() => ({
-    mode: "global",
-    commands: [{ id: "acme.sync", title: "Sync Acme", palette: true, run: () => sync(settings) }],
-  }))
-}
 ```
 
 --------------------------------
@@ -876,28 +882,12 @@ cd /path/to/project
 
 --------------------------------
 
-### Install OpenCode CLI with AUR
+### Install @effect/platform-node
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/client/effect.mdx
 
-Install the OpenCode CLI from the AUR using paru.
+Install the required dependency for the Node-only service entrypoint.
 
-```bash
-paru -S opencode-beta
-```
-
---------------------------------
-
-### Define extension setup function
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-extensions/README.md
-
-Implements synchronous extension setup using typed context to access dependencies, loaded stores, translations, and contribute commands to the registry.
-
-```ts
-const setup: Setup<typeof definition> = (ctx) => {
-  const changes = ctx.uses.changes // Accessor<Live<Changes>>
-  const prefs = ctx.stores.prefs.value // loaded before setup
-  ctx.add(Command, { id: "open", title: ctx.t("open"), run: () => ctx.layout.settings(ctx.id) })
-}
+```sh
+bun add @effect/platform-node
 ```
