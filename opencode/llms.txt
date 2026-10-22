@@ -36,6 +36,26 @@ bun dev [directory]
 
 --------------------------------
 
+### Example directory tree for config discovery
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/config.mdx
+
+For example, start OpenCode from /home/user/projects/acme/packages/web.
+
+```text
+/etc/opencode/opencode.json
+~/.config/opencode/opencode.json
+
+/home/user/projects/acme/
+├── opencode.json
+└── packages/
+    └── web/
+        ├── opencode.json
+        └── src/
+```
+
+--------------------------------
+
 ### Install the GitHub agent in your repository
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
@@ -59,26 +79,6 @@ npm run dev
 
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
-```
-
---------------------------------
-
-### Example directory tree for config discovery
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/config.mdx
-
-OpenCode searches from the current directory to the filesystem root. This example shows the directory structure when starting from /home/user/projects/acme/packages/web.
-
-```text
-/etc/opencode/opencode.json
-~/.config/opencode/opencode.json
-
-/home/user/projects/acme/
-├── opencode.json
-└── packages/
-    └── web/
-        ├── opencode.json
-        └── src/
 ```
 
 --------------------------------
@@ -226,6 +226,28 @@ Install the OpenCode package globally using Bun.
 
 ```bash
 bun install -g opencode-ai
+```
+
+--------------------------------
+
+### Install OpenCode via curl script and package managers
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Use the curl script for a quick install, or choose a package manager like npm, brew, pacman, paru, mise, or nix. Remove versions older than 0.1.x before installing.
+
+```bash
+# YOLO
+curl -fsSL https://opencode.ai/v2/install | bash
+
+# Package managers
+npm i -g @opencode/cli@latest      # or bun/pnpm/yarn
+brew install anomalyco/tap/opencode-v2 # macOS and Linux (recommended, always up to date)
+brew install opencode              # macOS and Linux (official brew formula, updated less)
+sudo pacman -S opencode            # Arch Linux (Stable)
+paru -S opencode-beta              # Arch Linux (Latest from AUR)
+mise use -g opencode               # Any OS
+nix run github:anomalyco/opencode  # Nix
 ```
 
 --------------------------------
@@ -410,20 +432,6 @@ opencode
 
 --------------------------------
 
-### Manage command-based connection attempts
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
-
-Use this to start, check status, or cancel a command-based connection attempt for an integration. The example uses the 'acme' integration with the 'cli' method.
-
-```typescript
-const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
-const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
-await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
-```
-
---------------------------------
-
 ### Initialize client with createOpencode
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
@@ -452,6 +460,20 @@ effect: (ctx) =>
     const build = yield* agent.get({ agentID: Agent.ID.make("build") }).pipe(Effect.orDie)
     yield* Effect.logInfo("agents", { count: agents.data.length, build: build.data.name })
   }),
+```
+
+--------------------------------
+
+### Manage command-based connection attempts
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+
+Use this to start, check status, or cancel a command-based connection attempt for an integration. The example uses the 'acme' integration with the 'cli' method.
+
+```typescript
+const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
+const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
+await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -494,17 +516,23 @@ Use the `mcp` option in opencode.json to configure MCP servers. The example show
 
 --------------------------------
 
-### Manage OAuth connection attempts
+### List and get providers using Effect
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
 
-Use this to start, check status, complete, or cancel an OAuth connection attempt for an integration. The example demonstrates the full flow for the GitHub integration.
+Use this to read all available providers or fetch a specific provider by ID. The example logs the count of providers and the name of the 'anthropic' provider.
 
 ```typescript
-const attempt = await ctx.integration.oauth.connect({ integrationID: "github", methodID: "oauth" })
-const status = await ctx.integration.oauth.status({ integrationID: "github", attemptID: attempt.data.attemptID })
-await ctx.integration.oauth.complete({ integrationID: "github", attemptID: attempt.data.attemptID, code })
-await ctx.integration.oauth.cancel({ integrationID: "github", attemptID: attempt.data.attemptID })
+effect: (ctx) =>
+  Effect.gen(function* () {
+    const provider = ctx.provider
+    const providers = yield* provider.list().pipe(Effect.orDie)
+    const anthropic = yield* provider.get({ providerID: Provider.ID.make("anthropic") }).pipe(Effect.orDie)
+    yield* Effect.logInfo("providers", {
+      providers: providers.data.length,
+      anthropic: anthropic.data.name,
+    })
+  }),
 ```
 
 --------------------------------
@@ -534,23 +562,17 @@ await client.session.prompt({
 
 --------------------------------
 
-### List and get providers using Effect
+### Manage OAuth connection attempts
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
 
-Use this to read all available providers or fetch a specific provider by ID. The example logs the count of providers and the name of the 'anthropic' provider.
+Use this to start, check status, complete, or cancel an OAuth connection attempt for an integration. The example demonstrates the full flow for the GitHub integration.
 
 ```typescript
-effect: (ctx) =>
-  Effect.gen(function* () {
-    const provider = ctx.provider
-    const providers = yield* provider.list().pipe(Effect.orDie)
-    const anthropic = yield* provider.get({ providerID: Provider.ID.make("anthropic") }).pipe(Effect.orDie)
-    yield* Effect.logInfo("providers", {
-      providers: providers.data.length,
-      anthropic: anthropic.data.name,
-    })
-  }),
+const attempt = await ctx.integration.oauth.connect({ integrationID: "github", methodID: "oauth" })
+const status = await ctx.integration.oauth.status({ integrationID: "github", attemptID: attempt.data.attemptID })
+await ctx.integration.oauth.complete({ integrationID: "github", attemptID: attempt.data.attemptID, code })
+await ctx.integration.oauth.cancel({ integrationID: "github", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -593,21 +615,6 @@ Define a new LSP entry by specifying the startup `command` array and the file `e
 
 --------------------------------
 
-### List and inspect integrations and active credentials
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
-
-Use this to retrieve a list of integrations, get details for a specific integration, check the active connection, and resolve the credential for that connection. The example shows how to access the integration context methods.
-
-```typescript
-const integrations = await ctx.integration.list()
-const github = await ctx.integration.get({ integrationID: "github" })
-const connection = await ctx.integration.connection.active("github")
-const credential = connection ? await ctx.integration.connection.resolve(connection) : undefined
-```
-
---------------------------------
-
 ### Store, read, and remove JSON values with Effect storage
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/effect.mdx
@@ -635,6 +642,21 @@ Starts the server in WSL listening on 0.0.0.0 at port 4096 to allow external des
 
 ```bash
 opencode serve --hostname 0.0.0.0 --port 4096
+```
+
+--------------------------------
+
+### List and inspect integrations and active credentials
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/index.mdx
+
+Use this to retrieve a list of integrations, get details for a specific integration, check the active connection, and resolve the credential for that connection. The example shows how to access the integration context methods.
+
+```typescript
+const integrations = await ctx.integration.list()
+const github = await ctx.integration.get({ integrationID: "github" })
+const connection = await ctx.integration.connection.active("github")
+const credential = connection ? await ctx.integration.connection.resolve(connection) : undefined
 ```
 
 --------------------------------
@@ -804,6 +826,19 @@ brew install anomalyco/tap/opencode-v2
 
 --------------------------------
 
+### Créer un thème spécifique au projet
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/fr/themes.mdx
+
+Crée le dossier .opencode/themes à la racine du projet et initialise un fichier de thème local.
+
+```bash
+mkdir -p .opencode/themes
+vim .opencode/themes/my-theme.json
+```
+
+--------------------------------
+
 ### Install OpenCode CLI via curl
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
@@ -816,15 +851,18 @@ curl -fsSL https://opencode.ai/v2/install | bash
 
 --------------------------------
 
-### Créer un thème spécifique au projet
+### Create a new SolidStart project
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/fr/themes.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/console/app/README.md
 
-Crée le dossier .opencode/themes à la racine du projet et initialise un fichier de thème local.
+Initialize a new SolidStart project in the current working directory or a specified folder using npm init.
 
 ```bash
-mkdir -p .opencode/themes
-vim .opencode/themes/my-theme.json
+# create a new project in the current directory
+npm init solid@latest
+
+# create a new project in my-app
+npm init solid@latest my-app
 ```
 
 --------------------------------
@@ -854,22 +892,6 @@ GET
 
 --------------------------------
 
-### Create a new SolidStart project
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/console/app/README.md
-
-Initialize a new SolidStart project in the current working directory or a specified folder using npm init.
-
-```bash
-# create a new project in the current directory
-npm init solid@latest
-
-# create a new project in my-app
-npm init solid@latest my-app
-```
-
---------------------------------
-
 ### Navigate to project directory
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -878,16 +900,4 @@ Change directory to the target project before starting OpenCode.
 
 ```bash
 cd /path/to/project
-```
-
---------------------------------
-
-### Install @effect/platform-node
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/client/effect.mdx
-
-Install the required dependency for the Node-only service entrypoint.
-
-```sh
-bun add @effect/platform-node
 ```
