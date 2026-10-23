@@ -11,18 +11,6 @@ pnpm dev --filter website
 
 --------------------------------
 
-### Install dependencies
-
-Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
-
-Install project dependencies using pnpm.
-
-```bash
-pnpm install
-```
-
---------------------------------
-
 ### Install @streamdown/math plugin
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/usage.mdx
@@ -35,18 +23,6 @@ npm install @streamdown/math
 
 --------------------------------
 
-### Install all Streamdown plugins
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/usage.mdx
-
-Install the plugin packages for syntax highlighting, diagrams, math, and CJK support.
-
-```bash
-npm install @streamdown/code @streamdown/mermaid @streamdown/math @streamdown/cjk
-```
-
---------------------------------
-
 ### Install @streamdown/mermaid plugin
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/usage.mdx
@@ -55,6 +31,18 @@ Install only the mermaid plugin for diagrams.
 
 ```bash
 npm install @streamdown/mermaid
+```
+
+--------------------------------
+
+### Install all Streamdown plugins
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/usage.mdx
+
+Install the plugin packages for syntax highlighting, diagrams, math, and CJK support.
+
+```bash
+npm install @streamdown/code @streamdown/mermaid @streamdown/math @streamdown/cjk
 ```
 
 --------------------------------
@@ -83,20 +71,6 @@ npm install shiki
 
 --------------------------------
 
-### Conventional commit examples
-
-Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
-
-Examples of conventional commit messages used in the project.
-
-```text
-feat: add support for custom code block themes
-fix: resolve markdown parsing issue with nested lists
-docs: update README with new API examples
-```
-
---------------------------------
-
 ### Install @streamdown/cjk plugin
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/usage.mdx
@@ -105,6 +79,65 @@ Install only the cjk plugin for CJK support.
 
 ```bash
 npm install @streamdown/cjk
+```
+
+--------------------------------
+
+### Install AntV Infographic package
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/custom-renderers.mdx
+
+Install the @antv/infographic package required for the AntV Infographic renderer.
+
+```bash
+npm install @antv/infographic
+```
+
+--------------------------------
+
+### Install @streamdown/code
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/code.mdx
+
+Install the @streamdown/code plugin via npm.
+
+```bash
+npm install @streamdown/code
+```
+
+--------------------------------
+
+### Git graph example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Visualize Git workflows using gitGraph. This example shows commits, branches, and merges.
+
+```markdown
+```mermaid
+gitGraph
+    commit
+    commit
+    branch develop
+    checkout develop
+    commit
+    commit
+    checkout main
+    merge develop
+    commit
+```
+```
+
+--------------------------------
+
+### Install dependencies
+
+Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
+
+Install project dependencies using pnpm.
+
+```bash
+pnpm install
 ```
 
 --------------------------------
@@ -136,67 +169,27 @@ export default function Page() {
 
 --------------------------------
 
-### Install AntV Infographic package
+### Install Remend via npm
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/custom-renderers.mdx
+Source: https://github.com/vercel/streamdown/blob/main/packages/remend/README.md
 
-Install the @antv/infographic package required for the AntV Infographic renderer.
-
-```bash
-npm install @antv/infographic
-```
-
---------------------------------
-
-### Git graph example
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
-
-Visualize Git workflows using gitGraph. This example shows commits, branches, and merges.
-
-```markdown
-```mermaid
-gitGraph
-    commit
-    commit
-    branch develop
-    checkout develop
-    commit
-    commit
-    checkout main
-    merge develop
-    commit
-```
-```
-
---------------------------------
-
-### Install @streamdown/code
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/code.mdx
-
-Install the @streamdown/code plugin via npm.
+Install the remend package using npm.
 
 ```bash
-npm install @streamdown/code
+npm i remend
 ```
 
 --------------------------------
 
-### Rust Language Example
+### List Item Detection - Markdown Example
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/termination.mdx
 
-Example Rust code block computing the sum of a vector. Demonstrates syntax highlighting for Rust.
+Shows how the parser avoids closing formatting markers at the start of list items, preventing premature closure of bold formatting.
 
 ```markdown
-```rust
-fn main() {
-    let numbers = vec![1, 2, 3, 4, 5];
-    let sum: i32 = numbers.iter().sum();
-    println!("Sum: {}", sum);
-}
-```
+- **
+- Item with bold marker only
 ```
 
 --------------------------------
@@ -230,75 +223,6 @@ export default function Page() {
 
 --------------------------------
 
-### Install Remend via npm
-
-Source: https://github.com/vercel/streamdown/blob/main/packages/remend/README.md
-
-Install the remend package using npm.
-
-```bash
-npm i remend
-```
-
---------------------------------
-
-### URL transform example
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/configuration.mdx
-
-Demonstrates using the urlTransform prop to proxy image URLs through a CDN. The example shows how to intercept the 'src' key and return a proxied URL, falling back to defaultUrlTransform for other cases.
-
-```tsx
-import { Streamdown, defaultUrlTransform } from 'streamdown';
-
-// Proxy all image URLs through your CDN
-<Streamdown
-  urlTransform={(url, key, node) => {
-    if (key === 'src') {
-      return `https://your-cdn.com/proxy?url=${encodeURIComponent(url)}`;
-    }
-    return defaultUrlTransform(url, key, node);
-  }}
->
-  {markdown}
-</Streamdown>
-```
-
---------------------------------
-
-### Python Language Example
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
-
-Example Python code block generating a Fibonacci sequence. Demonstrates syntax highlighting for Python.
-
-```markdown
-```python
-def fibonacci(n: int) -> list[int]:
-    """Generate Fibonacci sequence up to n terms."""
-    fib = [0, 1]
-    for i in range(2, n):
-        fib.append(fib[i-1] + fib[i-2])
-    return fib
-
-print(fibonacci(10))
-```
-```
-
---------------------------------
-
-### Install Streamdown with npm
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/getting-started.mdx
-
-Install the Streamdown package directly using npm.
-
-```bash
-npm i streamdown
-```
-
---------------------------------
-
 ### Gantt chart example
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
@@ -323,45 +247,50 @@ gantt
 
 --------------------------------
 
-### TypeScript Language Example
+### Install Streamdown
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+Source: https://github.com/vercel/streamdown/blob/main/skills/streamdown/SKILL.md
 
-Example TypeScript code block showing an interface and an async function. Demonstrates syntax highlighting for TypeScript.
+Install the core Streamdown package via npm.
 
-```markdown
-```typescript
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-async function fetchUser(id: number): Promise<User> {
-  const response = await fetch(`/api/users/${id}`);
-  return response.json();
-}
-```
+```bash
+npm install streamdown
 ```
 
 --------------------------------
 
-### remark-gfm example
+### Install Streamdown with npm
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/index.mdx
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/getting-started.mdx
 
-Shows Markdown syntax supported by the remark-gfm plugin, including tables, task lists, and strikethrough text.
+Install the Streamdown package directly using npm.
+
+```bash
+npm i streamdown
+```
+
+--------------------------------
+
+### Mixed content example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
+
+This markdown example shows mixed CJK and English text with bold formatting, demonstrating seamless integration of both languages.
 
 ```markdown
-| Feature | Supported |
-|---------|-----------|
-| Tables  | ✓         |
-| Tasks   | ✓         |
+**重要提示（Important Notice）：**请注意。
+```
 
-- [x] Completed task
-- [ ] Pending task
+--------------------------------
 
-~~Strikethrough text~~
+### Relative link example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/security.mdx
+
+Example Markdown link that is resolved against the configured defaultOrigin.
+
+```markdown
+[Relative link](/docs/guide)
 ```
 
 --------------------------------
@@ -387,14 +316,22 @@ stateDiagram-v2
 
 --------------------------------
 
-### Mixed content example
+### remark-gfm example
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/index.mdx
 
-This markdown example shows mixed CJK and English text with bold formatting, demonstrating seamless integration of both languages.
+Shows Markdown syntax supported by the remark-gfm plugin, including tables, task lists, and strikethrough text.
 
 ```markdown
-**重要提示（Important Notice）：**请注意。
+| Feature | Supported |
+|---------|-----------|
+| Tables  | ✓         |
+| Tasks   | ✓         |
+
+- [x] Completed task
+- [ ] Pending task
+
+~~Strikethrough text~~
 ```
 
 --------------------------------
@@ -411,14 +348,45 @@ $$\int f(x) \, dx$$
 
 --------------------------------
 
-### Inline code example with backticks
+### Adding Context to Equations
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
 
-Shows how to write inline code in Markdown using backticks. The example uses the `useState` hook in React.
+Demonstrates how to add explanatory text around equations. The example states the Pythagorean theorem and then shows the equation with variables defined.
 
 ```markdown
-Use the `useState` hook to manage state in React.
+The Pythagorean theorem states that for a right triangle:
+
+$$
+a^2 + b^2 = c^2
+$$
+
+where $$a$$ and $$b$$ are the legs and $$c$$ is the hypotenuse.
+```
+
+--------------------------------
+
+### Sequence diagram example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Visualize interactions between different actors or systems using a sequenceDiagram. This example shows participants and message arrows.
+
+```markdown
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Server
+    participant Database
+
+    User->>Browser: Enter URL
+    Browser->>Server: HTTP Request
+    Server->>Database: Query data
+    Database-->>Server: Return results
+    Server-->>Browser: HTTP Response
+    Browser-->>User: Display page
+```
 ```
 
 --------------------------------
@@ -436,15 +404,498 @@ Markdown task list with checked and unchecked items.
 
 --------------------------------
 
-### List Item Detection - Markdown Example
+### Pie chart example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Display proportional data using a pie chart. This example shows a pie title and data entries with labels and values.
+
+```markdown
+```mermaid
+pie title Project Time Distribution
+    "Development" : 45
+    "Testing" : 20
+    "Documentation" : 15
+    "Meetings" : 20
+```
+```
+
+--------------------------------
+
+### Caret examples
+
+Source: https://github.com/vercel/streamdown/blob/main/skills/streamdown/references/features.md
+
+Shows block and circle caret styles. Both caret prop and isAnimating must be set; caret disappears when streaming stops.
+
+```tsx
+// Block caret (▋) - terminal style
+<Streamdown caret="block" isAnimating={isLoading}>{content}</Streamdown>
+
+// Circle caret (●) - subtle style
+<Streamdown caret="circle" isAnimating={isLoading}>{content}</Streamdown>
+```
+
+--------------------------------
+
+### Inline vs Block Math Example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
+
+Demonstrates the difference between inline and block math. Inline math uses single dollar signs on the same line, while block math uses double dollar signs on separate lines with newlines.
+
+```markdown
+This is inline $$E = mc^2$$ math.
+
+$$
+E = mc^2
+$$
+
+This is block math.
+```
+
+--------------------------------
+
+### Breaking Complex Equations into Steps
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
+
+Shows how to break a complex equation into multiple steps for readability. The example presents the quadratic formula and its completed square form.
+
+```markdown
+Start with the equation:
+
+$$
+f(x) = ax^2 + bx + c
+$$
+
+Complete the square:
+
+$$
+f(x) = a\left(x + \frac{b}{2a}\right)^2 + c - \frac{b^2}{4a}
+$$
+```
+
+--------------------------------
+
+### Class diagram example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Document object-oriented designs using classDiagram. This example defines User and Post classes with attributes and relationships.
+
+```markdown
+```mermaid
+classDiagram
+    class User {
+        +String name
+        +String email
+        +login()
+        +logout()
+    }
+    class Post {
+        +String title
+        +String content
+        +Date createdAt
+        +publish()
+    }
+    User "1" --> "*" Post: creates
+```
+```
+
+--------------------------------
+
+### Advanced configuration with createCjkPlugin (app/page.tsx)
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
+
+For advanced configuration, use the createCjkPlugin function to create a plugin instance. This example shows a Next.js page component that renders markdown with the plugin.
+
+```tsx
+import { Streamdown } from "streamdown";
+import { createCjkPlugin } from "@streamdown/cjk";
+
+const cjk = createCjkPlugin();
+
+export default function Page() {
+  return (
+    <Streamdown plugins={{ cjk }}>
+      {markdown}
+    </Streamdown>
+  );
+}
+```
+
+--------------------------------
+
+### Install @streamdown/code Plugin
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+
+Install the code plugin required for syntax highlighting. Without it, code blocks render as plain text.
+
+```bash
+npm install @streamdown/code
+```
+
+--------------------------------
+
+### Using Block Math for Complex Expressions
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
+
+Shows when to use block math instead of inline math for complex expressions. The example contrasts a simple slope formula with a complex integral, recommending block display for the latter.
+
+```markdown
+✅ Good: The slope is $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
+
+❌ Avoid: $$\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}$$ in the middle of text
+
+✅ Better:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+```
+
+--------------------------------
+
+### Flowchart example with graph TD
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Create flowcharts to visualize processes and workflows. This example uses a top-down graph with decision nodes and labeled edges.
+
+```markdown
+```mermaid
+graph TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[Car]
+```
+```
+
+--------------------------------
+
+### Install and use the math plugin in chat.tsx
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
+
+Import the math plugin and KaTeX CSS, then pass the plugin to the Streamdown component. Requires the @streamdown/math package and katex CSS.
+
+```tsx
+import { math } from '@streamdown/math';
+import 'katex/dist/katex.min.css';
+
+<Streamdown plugins={{ math }}>
+  {markdown}
+</Streamdown>
+```
+
+--------------------------------
+
+### Example usage of data-streamdown selectors
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/styling.mdx
+
+Practical CSS example showing how to customize headings, links, code blocks, tables, and blockquotes using the `data-streamdown` attribute. Includes hover states and gradient backgrounds.
+
+```css
+/* Custom heading styles */
+[data-streamdown="heading-1"] {
+  color: #1a202c;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+[data-streamdown="heading-2"] {
+  color: #2d3748;
+  margin-top: 2rem;
+}
+
+/* Custom link appearance */
+[data-streamdown="link"] {
+  color: #3182ce;
+  text-decoration: none;
+  border-bottom: 1px solid #90cdf4;
+  transition: border-color 0.2s;
+}
+
+[data-streamdown="link"]:hover {
+  border-bottom-color: #3182ce;
+}
+
+/* Custom code block styling */
+[data-streamdown="code-block"] {
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom table styling */
+[data-streamdown="table"] {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+[data-streamdown="table-header"] {
+  background: linear-gradient(to bottom, #f7fafc, #edf2f7);
+}
+
+/* Custom blockquote styling */
+[data-streamdown="blockquote"] {
+  background-color: #f7fafc;
+  border-left-color: #4299e1;
+  border-radius: 0.25rem;
+}
+```
+
+--------------------------------
+
+### Focused Diagrams: User Authentication and Data Fetching
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Shows the recommended practice of breaking complex diagrams into smaller, focused ones. The example includes two separate Mermaid flowcharts: one for user authentication and one for data fetching, each with a descriptive heading.
+
+```markdown
+✅ Good: Multiple small diagrams
+
+## User Authentication Flow
+
+```mermaid
+graph LR
+    A[Login] --> B{Valid?}
+    B -->|Yes| C[Dashboard]
+    B -->|No| D[Error]
+```
+
+## Data Fetching Flow
+
+```mermaid
+graph LR
+    A[Request] --> B[API]
+    B --> C[Database]
+    C --> B
+    B --> D[Response]
+```
+```
+
+--------------------------------
+
+### Add Context: Sequence Diagram with Description
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Shows how to add a descriptive paragraph before a Mermaid sequence diagram to provide context. The example includes a sequence diagram for authentication and a follow-up sentence explaining the outcome.
+
+```markdown
+Here's the authentication flow for our application:
+
+```mermaid
+sequenceDiagram
+    User->>App: Enter credentials
+    App->>Server: Authenticate
+    Server-->>App: Token
+    App-->>User: Success
+```
+
+The server validates credentials and returns a JWT token.
+```
+
+--------------------------------
+
+### Rust Code Block Example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+
+Example of a Rust code block that sums a vector of numbers. Demonstrates syntax highlighting for Rust.
+
+```markdown
+```rust
+fn main() {
+    let numbers = vec![1, 2, 3, 4, 5];
+    let sum: i32 = numbers.iter().sum();
+    println!("Sum: {}", sum);
+}
+```
+```
+
+--------------------------------
+
+### Code Block Awareness - Markdown Example
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/termination.mdx
 
-Shows how the parser avoids closing formatting markers at the start of list items, preventing premature closure of bold formatting.
+Demonstrates that formatting within complete code blocks is left untouched, as shown by the Python code block.
 
 ```markdown
-- **
-- Item with bold marker only
+```python
+def foo():
+    # This **won't** be treated as incomplete bold
+    return "bar"
+```
+```
+
+--------------------------------
+
+### rehype-raw example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/index.mdx
+
+Shows Markdown with raw HTML elements that are preserved and rendered by the rehype-raw plugin.
+
+```markdown
+This is **Markdown** with <span style="color: red">raw HTML</span>.
+
+<details>
+  <summary>Click to expand</summary>
+  Hidden content here
+</details>
+```
+
+--------------------------------
+
+### Vega-Lite chart markdown example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/custom-renderers.mdx
+
+Example markdown code block that the AI can output to render a Vega-Lite bar chart. The renderer from the reusing built-in components section is a complete implementation.
+
+```markdown
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 200,
+  "data": {
+    "values": [
+      {"month": "Jan", "revenue": 28},
+      {"month": "Feb", "revenue": 55},
+      {"month": "Mar", "revenue": 43}
+    ]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "month", "type": "nominal"},
+    "y": {"field": "revenue", "type": "quantitative"}
+  }
+}
+```
+```
+
+--------------------------------
+
+### Bold text with punctuation - supported examples
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
+
+These markdown examples show bold text with various ideographic punctuation marks (Japanese, Chinese, Korean) that work correctly with the CJK plugin.
+
+```markdown
+**日本語の文章（括弧付き）。**この文が後に続いても大丈夫です。
+**中文文本（带括号）。**这句子继续也没问题。
+**한국어 구문(괄호 포함)**을 강조.
+```
+
+--------------------------------
+
+### TypeScript Code Block Example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+
+Example of a TypeScript code block with an interface and async function. Demonstrates syntax highlighting for TypeScript.
+
+```markdown
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+async function fetchUser(id: number): Promise<User> {
+  const response = await fetch(`/api/users/${id}`);
+  return response.json();
+}
+```
+```
+
+--------------------------------
+
+### Example markdown with safe and unsafe links
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/security.mdx
+
+Example markdown demonstrating the link restriction: safe links work normally, unsafe links are rewritten to the defaultOrigin and render as [blocked].
+
+```markdown
+[Safe link](https://github.com/vercel/streamdown)
+[Unsafe link](https://malicious-site.com)
+```
+
+--------------------------------
+
+### System prompt for custom source tag
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/components.mdx
+
+Instructs the AI to output a <source> tag with an id attribute and text content. This is the prompt that produces the markdown example below.
+
+```text
+When referencing a source, use: <source id="123">Source Title</source>
+```
+
+--------------------------------
+
+### Get CSS Path with getStyles
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
+
+Retrieve the CSS path for KaTeX styles programmatically. Call 'getStyles()' on the math plugin to get the path string 'katex/dist/katex.min.css'. The optional chaining '?.' handles cases where the method may not exist.
+
+```tsx
+import { math } from '@streamdown/math';
+
+const cssPath = math.getStyles?.();
+// "katex/dist/katex.min.css"
+```
+
+--------------------------------
+
+### React to animation state with callbacks
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/animation.mdx
+
+Uses onAnimationStart and onAnimationEnd to log when streaming starts and ends. Callbacks are suppressed in mode="static" and should be memoized with useCallback to avoid unnecessary effect re-runs.
+
+```tsx
+import { Streamdown } from "streamdown";
+import "streamdown/styles.css";
+import { useCallback } from "react";
+
+export default function Page() {
+  const handleAnimationStart = useCallback(() => {
+    console.log("Streaming started");
+  }, []);
+
+  const handleAnimationEnd = useCallback(() => {
+    console.log("Streaming ended");
+  }, []);
+
+  return (
+    <Streamdown
+      animated
+      isAnimating={status === "streaming"}
+      onAnimationStart={handleAnimationStart}
+      onAnimationEnd={handleAnimationEnd}
+    >
+      {markdown}
+    </Streamdown>
+  );
+}
 ```
 
 --------------------------------
@@ -475,6 +926,62 @@ function StreamingChat() {
 
 --------------------------------
 
+### Markdown output with custom source tag
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/components.mdx
+
+Example markdown that the AI outputs after following the system prompt. Contains a <source> tag with an id attribute and text content.
+
+```markdown
+According to the documentation <source id="abc">Getting Started Guide</source>, you should...
+```
+
+--------------------------------
+
+### GFM table example
+
+Source: https://github.com/vercel/streamdown/blob/main/skills/streamdown/references/features.md
+
+Markdown table with alignment. GFM tables are included by default via remark-gfm.
+
+```markdown
+| Left | Center | Right |
+|:-----|:------:|------:|
+| A    | B      | C     |
+```
+
+--------------------------------
+
+### Usage with Remark and Unified
+
+Source: https://github.com/vercel/streamdown/blob/main/packages/remend/README.md
+
+Run Remend on the raw Markdown string before passing it to the unified/remark pipeline. This example shows the full pipeline: remend, then remark-parse, remark-rehype, and rehype-stringify.
+
+```typescript
+import remend from "remend";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+
+const streamedMarkdown = "This is **incomplete bold";
+
+// Run Remend first to complete incomplete syntax
+const completedMarkdown = remend(streamedMarkdown);
+
+// Then process with unified
+const file = await unified()
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeStringify)
+  .process(completedMarkdown);
+
+console.log(String(file));
+```
+
+--------------------------------
+
 ### Create math plugin (@streamdown/math)
 
 Source: https://github.com/vercel/streamdown/blob/main/skills/streamdown/references/api.md
@@ -495,18 +1002,6 @@ math.getStyles(); // Returns "katex/dist/katex.min.css"
 
 ```tsx
 import 'katex/dist/katex.min.css';
-```
-
---------------------------------
-
-### Run tests
-
-Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
-
-Run the test suite to ensure everything is working.
-
-```bash
-pnpm test
 ```
 
 --------------------------------
@@ -550,138 +1045,120 @@ Use `- [ ]` for unchecked and `- [x]` for checked items. Renders as an interacti
 
 --------------------------------
 
-### Run all tests with coverage and UI
+### Basic GFM table with alignment
 
-Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/gfm.mdx
 
-Commands to run all tests, tests with coverage, tests with UI, and tests in watch mode from the package directory.
+Markdown table with header separator and alignment colons. The first example shows default left alignment; the second shows left, center, and right alignment using colons in the separator row.
 
-```bash
-# Run all tests
-pnpm test
+```markdown
+| Feature | Supported | Notes |
+|---------|-----------|-------|
+| Tables | ✅ | Full support |
+| Task Lists | ✅ | Interactive |
+| Strikethrough | ✅ | ~~Like this~~ |
+```
 
-# Run tests with coverage
-pnpm test:coverage
-
-# Run tests with UI
-pnpm test:ui
-
-# Run tests in watch mode (in package directory)
-cd packages/streamdown
-pnpm vitest
+```markdown
+| Left | Center | Right |
+|:-----|:------:|------:|
+| A | B | C |
+| 1 | 2 | 3 |
 ```
 
 --------------------------------
 
-### Build all packages
-
-Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
-
-Build all packages in the monorepo. This is required before running tests.
-
-```bash
-pnpm build
-```
-
---------------------------------
-
-### Clone the repository
-
-Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
-
-Clone your fork of the repository and navigate into the project directory.
-
-```bash
-git clone https://github.com/your-username/streamdown.git
-cd streamdown
-```
-
---------------------------------
-
-### Adding Context to Equations
+### Incomplete Equation Example
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
 
-Demonstrates how to add explanatory text around equations. The example states the Pythagorean theorem and then shows the equation with variables defined.
+Shows an unterminated block-level equation. The parser adds the closing '$$' delimiter during streaming to ensure proper rendering even before the equation is complete.
 
 ```markdown
-The Pythagorean theorem states that for a right triangle:
-
 $$
-a^2 + b^2 = c^2
-$$
-
-where $$a$$ and $$b$$ are the legs and $$c$$ is the hypotenuse.
+E = mc^
 ```
 
 --------------------------------
 
-### Class diagram example
+### Create plugin with createMermaidPlugin factory
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
 
-Document object-oriented designs using classDiagram. This example defines User and Post classes with attributes and relationships.
+Uses the createMermaidPlugin factory function for advanced configuration. The example creates a plugin instance with a dark theme and monospace font family, which can then be passed to Streamdown's plugins prop.
 
-```markdown
-```mermaid
-classDiagram
-    class User {
-        +String name
-        +String email
-        +login()
-        +logout()
-    }
-    class Post {
-        +String title
-        +String content
-        +Date createdAt
-        +publish()
-    }
-    User "1" --> "*" Post: creates
-```
+```tsx
+import { createMermaidPlugin } from '@streamdown/mermaid';
+
+const mermaid = createMermaidPlugin({
+  config: {
+    theme: 'dark',
+    fontFamily: 'monospace',
+  },
+});
 ```
 
 --------------------------------
 
-### Inline vs Block Math Example
+### Inline Code Example
 
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
 
-Demonstrates the difference between inline and block math. Inline math uses single dollar signs on the same line, while block math uses double dollar signs on separate lines with newlines.
+Shows how to use backticks for inline code in Markdown, which receives subtle styling with monospace font, background color, rounded corners, and padding.
 
 ```markdown
-This is inline $$E = mc^2$$ math.
-
-$$
-E = mc^2
-$$
-
-This is block math.
+Use the `useState` hook to manage state in React.
 ```
 
 --------------------------------
 
-### Sequence diagram example
+### Setup: chat.tsx with @streamdown/mermaid plugin
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
 
-Visualize interactions between different actors or systems using a sequenceDiagram. This example shows participants and message arrows.
+Import the mermaid plugin from '@streamdown/mermaid' and pass it to the Streamdown component's plugins prop. Without this plugin, mermaid code blocks render as plain code instead of diagrams.
+
+```tsx
+import { mermaid } from '@streamdown/mermaid';
+
+<Streamdown plugins={{ mermaid }}>
+  {markdown}
+</Streamdown>
+```
+
+--------------------------------
+
+### Python Code Block Example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/code-blocks.mdx
+
+Example of a Python code block with a Fibonacci sequence generator. Demonstrates syntax highlighting for Python.
 
 ```markdown
-```mermaid
-sequenceDiagram
-    participant User
-    participant Browser
-    participant Server
-    participant Database
+```python
+def fibonacci(n: int) -> list[int]:
+    """Generate Fibonacci sequence up to n terms."""
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i-1] + fib[i-2])
+    return fib
 
-    User->>Browser: Enter URL
-    Browser->>Server: HTTP Request
-    Server->>Database: Query data
-    Database-->>Server: Return results
-    Server-->>Browser: HTTP Response
-    Browser-->>User: Display page
+print(fibonacci(10))
 ```
+```
+
+--------------------------------
+
+### Conventional commit examples
+
+Source: https://github.com/vercel/streamdown/blob/main/CONTRIBUTING.md
+
+Example commit messages following the conventional commits format for features, bug fixes, and documentation updates.
+
+```text
+feat: add support for custom code block themes
+fix: resolve markdown parsing issue with nested lists
+docs: update README with new API examples
 ```
 
 --------------------------------
@@ -718,63 +1195,6 @@ erDiagram
 
 --------------------------------
 
-### Pie chart example
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
-
-Display proportional data using a pie chart. This example shows a pie title and data entries with labels and values.
-
-```markdown
-```mermaid
-pie title Project Time Distribution
-    "Development" : 45
-    "Testing" : 20
-    "Documentation" : 15
-    "Meetings" : 20
-```
-```
-
---------------------------------
-
-### Flowchart example with graph TD
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
-
-Create flowcharts to visualize processes and workflows. This example uses a top-down graph with decision nodes and labeled edges.
-
-```markdown
-```mermaid
-graph TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[Car]
-```
-```
-
---------------------------------
-
-### Using Block Math for Complex Expressions
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
-
-Shows when to use block math instead of inline math for complex expressions. The example contrasts a simple slope formula with a complex integral, recommending block display for the latter.
-
-```markdown
-✅ Good: The slope is $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
-
-❌ Avoid: $$\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}$$ in the middle of text
-
-✅ Better:
-
-$$
-\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
-$$
-```
-
---------------------------------
-
 ### Strikethrough with punctuation - supported examples
 
 Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
@@ -785,73 +1205,6 @@ These markdown examples show strikethrough with ideographic punctuation in Japan
 ~~削除されたテキスト（括弧付き）。~~この文は正しいです。
 ~~删除的文字（带括号）。~~这个句子是正确的。
 ~~이 텍스트(괄호 포함)~~를 삭제합니다.
-```
-
---------------------------------
-
-### Focused Diagrams: User Authentication and Data Fetching
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
-
-Shows the recommended practice of breaking complex diagrams into smaller, focused ones. The example includes two separate Mermaid flowcharts: one for user authentication and one for data fetching, each with a descriptive heading.
-
-```markdown
-✅ Good: Multiple small diagrams
-
-## User Authentication Flow
-
-```mermaid
-graph LR
-    A[Login] --> B{Valid?}
-    B -->|Yes| C[Dashboard]
-    B -->|No| D[Error]
-```
-
-## Data Fetching Flow
-
-```mermaid
-graph LR
-    A[Request] --> B[API]
-    B --> C[Database]
-    C --> B
-    B --> D[Response]
-```
-```
-
---------------------------------
-
-### Example markdown for link restriction
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/security.mdx
-
-Example markdown demonstrating the link restriction: the safe link works normally, while the unsafe link renders as [blocked].
-
-```markdown
-[Safe link](https://github.com/vercel/streamdown)
-[Unsafe link](https://malicious-site.com)
-```
-
---------------------------------
-
-### Advanced configuration with createCjkPlugin (app/page.tsx)
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
-
-For advanced configuration, use the createCjkPlugin function to create a plugin instance. This example shows a Next.js page component that renders markdown with the plugin.
-
-```tsx
-import { Streamdown } from "streamdown";
-import { createCjkPlugin } from "@streamdown/cjk";
-
-const cjk = createCjkPlugin();
-
-export default function Page() {
-  return (
-    <Streamdown plugins={{ cjk }}>
-      {markdown}
-    </Streamdown>
-  );
-}
 ```
 
 --------------------------------
@@ -870,30 +1223,19 @@ These markdown examples show italic text with ideographic punctuation in Japanes
 
 --------------------------------
 
-### Caret examples
+### Matrices in math expressions
 
-Source: https://github.com/vercel/streamdown/blob/main/skills/streamdown/references/features.md
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/math.mdx
 
-Shows block and circle caret styles. Both caret prop and isAnimating must be set; caret disappears when streaming stops.
-
-```tsx
-// Block caret (▋) - terminal style
-<Streamdown caret="block" isAnimating={isLoading}>{content}</Streamdown>
-
-// Circle caret (●) - subtle style
-<Streamdown caret="circle" isAnimating={isLoading}>{content}</Streamdown>
-```
-
---------------------------------
-
-### Single Tilde Escape Example
-
-Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/termination.mdx
-
-Shows how single `~` between word characters is escaped to prevent GFM from misinterpreting it as strikethrough. For example, `20~25°C` renders as `20~25°C` instead of applying strikethrough.
+Use the bmatrix environment to render matrices.
 
 ```markdown
-20~25°C
+$$
+\begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}
+$$
 ```
 
 --------------------------------
@@ -926,4 +1268,192 @@ Override markdown elements by passing a components object to the Streamdown comp
 >
   {markdown}
 </Streamdown>
+```
+
+--------------------------------
+
+### AI migration prompt (prompt.md)
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/migrate.mdx
+
+Use this prompt with an AI coding assistant to automate the migration from react-markdown to Streamdown. It instructs the assistant to replace imports, remove built-in plugins and custom components, update Tailwind config, and delete redundant wrapper files.
+
+```markdown
+Can you update this repo to use Streamdown instead of React Markdown.
+
+Migration instructions:
+
+- Replace `import ReactMarkdown from "react-markdown"` (or equivalent) with `import { Streamdown } from "streamdown"`
+- If type `Options` is used from react-markdown, create a new type `type Options = ComponentPropsWithoutRef<typeof Streamdown>`
+- If type `Components` is used from react-markdown, create a new type `type Components = ComponentPropsWithoutRef<typeof Streamdown>['components']`
+- If any of the following plugins are used, you can remove them as they're built in to Streamdown: rehype-harden, rehype-katex, rehype-raw, remark-cjk-friendly, remark-cjk-friendly-gfm-strikethrough, remark-gfm, remark-math. However, check that they're not being used elsewhere first.
+- If code blocks or mermaid components exist, you can remove them too as they're built in to Streamdown. This may involve also uninstalling shiki / react-syntax-highlighter from the package.json.
+- If the project is using a tailwind.config file, add the following to the `content` array: `'./node_modules/streamdown/dist/*.js',` (ensuring the node modules path is correct).
+- If the project is using Tailwind 4 globals.css, add the following near the top under imports: `@source "../node_modules/streamdown/dist/*.js";` (ensuring the node modules path is correct).
+- If the old ReactMarkdown component has custom components e.g. p tags, li tags, etc. you can delete them all. These are prestyled in Streamdown.
+- If the old ReactMarkdown component uses `prose` classes, you can remove them too.
+- When updating deps, use the local package manager as defined by the `packageManager` field in package.json or the lockfile e.g. pnpm-lock.yaml = pnpm.
+- When installing Streamdown, use the latest versions of the packages (`streamdown`, `@streamdown/code`, etc.)
+- If the old ReactMarkdown component is memoized / a "MemoizedReactMarkdown" (or equivalent) component exists, remove the memoization. Streamdown does this internally.
+- **Final step: Check if the markdown wrapper file is now redundant. If it just re-exports Streamdown without any custom props, styling, or logic, delete the wrapper file and import Streamdown directly where needed.**
+```
+
+--------------------------------
+
+### Single Tilde Escape Example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/termination.mdx
+
+Shows how single `~` between word characters is escaped to prevent GFM from misinterpreting it as strikethrough. For example, `20~25°C` renders as `20~25°C` instead of applying strikethrough.
+
+```markdown
+20~25°C
+```
+
+--------------------------------
+
+### Use useIsCodeFenceIncomplete to show placeholder while streaming
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/mermaid.mdx
+
+Use this hook to detect when the Mermaid code fence is incomplete and show a loading placeholder instead of rendering the diagram prematurely. This prevents expensive re-renders and flickering during streaming.
+
+```tsx
+import { Streamdown, useIsCodeFenceIncomplete } from "streamdown";
+import { mermaid } from "@streamdown/mermaid";
+
+const MyMermaidBlock = ({ children }) => {
+  const isIncomplete = useIsCodeFenceIncomplete();
+
+  if (isIncomplete) {
+    return (
+      <div className="animate-pulse bg-muted h-48 rounded-lg flex items-center justify-center">
+        <span className="text-muted-foreground">Loading diagram...</span>
+      </div>
+    );
+  }
+
+  // Only render Mermaid once the code block is fully received
+  return <Mermaid chart={children} />;
+};
+```
+
+--------------------------------
+
+### Static Mode with Configuration (app/blog/[slug]/page.tsx)
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/usage.mdx
+
+This example shows static mode with additional configuration: custom syntax highlighting themes via `shikiTheme` and Mermaid theme configuration. All standard Streamdown props work in static mode, including custom components and plugin configuration.
+
+```tsx
+<Streamdown
+  mode="static"
+  plugins={{
+    code: code,
+    mermaid: mermaid,
+  }}
+  shikiTheme={['github-light', 'github-dark']}
+  mermaid={{ config: { theme: 'neutral' } }}
+>
+  {content}
+</Streamdown>
+```
+
+--------------------------------
+
+### AntV Infographic markdown example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/custom-renderers.mdx
+
+Example markdown code block that the AI can output to render an infographic using the AntV DSL. The DSL defines a list-row-horizontal-icon-arrow infographic with data items.
+
+```markdown
+```infographic
+infographic list-row-horizontal-icon-arrow
+data
+  title Product Development Lifecycle
+  desc Complete process from requirements to launch
+  items
+    - label Research
+      value 15
+      desc User interviews and competitive analysis
+      icon mdi/account-search
+    - label Design
+      value 42
+      desc Interaction prototype and visual design
+      icon mdi/palette
+    - label Development
+      value 65
+      desc Implementation and testing
+      icon mdi/code-tags
+    - label Launch
+      value 100
+      desc Official release and user feedback
+      icon mdi/rocket-launch
+```
+```
+
+--------------------------------
+
+### Custom config with createMathPlugin
+
+Source: https://github.com/vercel/streamdown/blob/main/skills/streamdown/references/plugins.md
+
+Create a custom math plugin with single dollar text math enabled and a custom error color.
+
+```tsx
+import { createMathPlugin } from '@streamdown/math';
+
+const math = createMathPlugin({
+  singleDollarTextMath: true, // Enable $...$ syntax (default: false)
+  errorColor: '#ff0000',
+});
+```
+
+--------------------------------
+
+### Enable animation with animated and isAnimating props
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/animation.mdx
+
+Import the animation CSS and set the `animated` prop. The `isAnimating` prop controls when the animation is active; when `false`, the animate plugin is excluded from the rehype pipeline entirely, so completed messages render as plain text with no extra `<span>` wrappers.
+
+```tsx
+import { Streamdown } from "streamdown";
+import "streamdown/styles.css";
+
+export default function Page() {
+  return (
+    <Streamdown animated isAnimating={status === "streaming"}>
+      {markdown}
+    </Streamdown>
+  );
+}
+```
+
+--------------------------------
+
+### Bold text with punctuation - failing example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/plugins/cjk.mdx
+
+This markdown example demonstrates the problem where emphasis markers adjacent to ideographic punctuation fail to be recognized, causing formatting to break. Without CJK-friendly parsing, the text renders as plain text instead of bold.
+
+```markdown
+**この文は太字になりません（This won't be bolded）。**この文のせいで（It is due to this sentence）。
+```
+
+--------------------------------
+
+### Soft line break example
+
+Source: https://github.com/vercel/streamdown/blob/main/apps/website/content/docs/gfm.mdx
+
+Shows that single newlines in a paragraph are rendered as spaces in GFM.
+
+```markdown
+This is line one
+This is line two
+This is line three
 ```

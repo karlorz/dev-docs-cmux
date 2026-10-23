@@ -171,6 +171,22 @@ Received: "left"
 
 --------------------------------
 
+### Suite location example
+
+Source: https://main.vitest.dev/api/advanced/test-suite
+
+Example showing how the location of a suite is defined, with the suite starting at line 3, column 1.
+
+```typescript
+import { describe } from 'vitest'
+
+describe('the validation works correctly', () => {
+  // ...
+})
+```
+
+--------------------------------
+
 ### Vitest run output with time metrics
 
 Source: https://main.vitest.dev/guide/profiling-test-performance
@@ -216,6 +232,95 @@ export function teardown() {
 
 --------------------------------
 
+### globalSetup with named exports (setup/teardown)
+
+Source: https://main.vitest.dev/config/globalsetup
+
+Defines a global setup file using named exports 'setup' and 'teardown'. The setup function receives a test project as its first argument. Teardown runs after all test files finish, or before process exit in watch mode.
+
+```js
+export function setup(project) {
+  console.log('setup')
+}
+
+export function teardown() {
+  console.log('teardown')
+}
+```
+
+--------------------------------
+
+### onTestRunStart example reporter
+
+Source: https://main.vitest.dev/api/advanced/reporters
+
+Example implementation of onTestRunStart that logs the number of test files scheduled to run. The specifications array is readonly and informational only.
+
+```ts
+import type { Reporter, TestSpecification } from 'vitest/node'
+
+class MyReporter implements Reporter {
+  onTestRunStart(specifications: TestSpecification[]) {
+    console.log(specifications.length, 'test files will run')
+  }
+}
+
+export default new MyReporter()
+```
+
+--------------------------------
+
+### Configure setupFiles in vitest.config.js and extend expect in test/setup.js
+
+Source: https://main.vitest.dev/guide/learn/setup-teardown
+
+Configure Vitest to run a setup file before every test file. The setup file extends the expect API with custom matchers. Setup files run in a separate phase before test collection, unlike beforeAll which runs once per file.
+
+```js
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    setupFiles: ['./test/setup.js'],
+  },
+})
+```
+
+```js
+// This runs before every test file
+import { expect } from 'vitest'
+import { customMatchers } from './custom-matchers.js'
+
+expect.extend(customMatchers)
+```
+
+--------------------------------
+
+### Setup file with global initialization guard
+
+Source: https://main.vitest.dev/config/setupfiles
+
+Use this setup file to run initialization logic once per test file when isolation is disabled. It checks a global flag to avoid repeating heavy setup, resets hooks with afterEach, and sets a global variable for tests.
+
+```ts
+import { config } from '@some-testing-lib'
+
+if (!globalThis.setupInitialized) {
+  config.plugins = [myCoolPlugin]
+  computeHeavyThing()
+  globalThis.setupInitialized = true
+}
+
+// hooks reset before each test file
+afterEach(() => {
+  cleanup()
+})
+
+globalThis.resetBeforeEachTest = true
+```
+
+--------------------------------
+
 ### Install WebdriverIO provider
 
 Source: https://main.vitest.dev/guide/browser
@@ -240,6 +345,49 @@ bun add -D vitest @vitest/browser-webdriverio
 
 --------------------------------
 
+### TAP flat reporter output example
+
+Source: https://main.vitest.dev/guide/reporters
+
+Example TAP flat report output showing test suites as a flat list.
+
+```bash
+TAP version 13
+1..2
+not ok 1 - __tests__/test-file-1.test.ts > first test file > 2 + 2 should equal 4 # time=11.00ms
+    ---
+    error:
+        name: "AssertionError"
+        message: "expected 5 to be 4 // Object.is equality"
+    at: "/root-directory/__tests__/test-file-1.test.ts:20:28"
+    actual: "5"
+    expected: "4"
+    ...
+ok 2 - __tests__/test-file-1.test.ts > first test file > 4 - 2 should equal 2 # time=0.00ms
+```
+
+--------------------------------
+
+### Example module with answer import
+
+Source: https://main.vitest.dev/guide/mocking/modules
+
+Example module that imports and calls the `answer` function. Used to demonstrate mocking behavior in Vitest.
+
+```ts
+import { answer } from './example.js'
+
+export function question() {
+  if (answer() === 42) {
+    return 'Ultimate Question of Life, the Universe, and Everything'
+  }
+
+  return 'Unknown Question'
+}
+```
+
+--------------------------------
+
 ### Example output of vitest list
 
 Source: https://main.vitest.dev/guide/cli
@@ -250,6 +398,128 @@ Example output of the 'vitest list' command showing the hierarchical test names.
 describe > some-test
 describe > some-test > test 1
 describe > some-test > test 2
+```
+
+--------------------------------
+
+### vi.runOnlyPendingTimersAsync example
+
+Source: https://main.vitest.dev/api/vi
+
+Example usage of vi.runOnlyPendingTimersAsync. It sets up timers and then awaits the method, logging 2, 3, 3, 1 in that order.
+
+```ts
+setTimeout(() => {
+  console.log(1)
+}, 100)
+setTimeout(() => {
+  Promise.resolve().then(() => {
+    console.log(2)
+    setInterval(() => {
+      console.log(3)
+    }, 40)
+  })
+}, 10)
+
+await vi.runOnlyPendingTimersAsync()
+
+// log: 2
+// log: 3
+// log: 3
+// log: 1
+```
+
+--------------------------------
+
+### Install Vitest UI with npm
+
+Source: https://main.vitest.dev/guide/ui
+
+Install the optional Vitest UI package as a dev dependency.
+
+```bash
+npm i -D @vitest/ui
+```
+
+--------------------------------
+
+### vi.setConfig example
+
+Source: https://main.vitest.dev/api/vi
+
+Example of vi.setConfig with supported options. Only options that affect the current test file are supported; sequence only supports hooks.
+
+```ts
+vi.setConfig({
+  allowOnly: true,
+  testTimeout: 10_000,
+  hookTimeout: 10_000,
+  clearMocks: true,
+  restoreMocks: true,
+  fakeTimers: {
+    now: new Date(2021, 11, 19),
+    // supports the whole object
+  },
+  maxConcurrency: 10,
+  sequence: {
+    hooks: 'stack'
+    // supports only "sequence.hooks"
+  }
+})
+```
+
+--------------------------------
+
+### Example output of vitest list --filesOnly
+
+Source: https://main.vitest.dev/guide/cli
+
+Example output of 'vitest list --filesOnly' showing the test file paths.
+
+```txt
+tests/test1.test.ts
+tests/test2.test.ts
+```
+
+--------------------------------
+
+### TAP reporter output example
+
+Source: https://main.vitest.dev/guide/reporters
+
+Example TAP report output showing nested test suite hierarchy.
+
+```bash
+TAP version 13
+1..1
+not ok 1 - __tests__/test-file-1.test.ts # time=14.00ms {
+    1..1
+    not ok 1 - first test file # time=13.00ms {
+        1..2
+        not ok 1 - 2 + 2 should equal 4 # time=11.00ms
+            ---
+            error:
+                name: "AssertionError"
+                message: "expected 5 to be 4 // Object.is equality"
+            at: "/root-directory/__tests__/test-file-1.test.ts:20:28"
+            actual: "5"
+            expected: "4"
+            ...
+        ok 2 - 4 - 2 should equal 2 # time=1.00ms
+    }
+}
+```
+
+--------------------------------
+
+### Install Vitest with bun
+
+Source: https://main.vitest.dev/guide/index
+
+Install Vitest as a development dependency using bun. Requires Vite >=v6.4.0 and Node >=v22.12.0.
+
+```bash
+bun add -D vitest
 ```
 
 --------------------------------
@@ -321,18 +591,38 @@ test('assert.includeDeepOrderedMembers', () => {
 
 --------------------------------
 
-### Suite location example
+### Install Playwright provider
 
-Source: https://main.vitest.dev/api/advanced/test-suite
+Source: https://main.vitest.dev/guide/browser
 
-Example showing how the location of a suite is defined, with the suite starting at line 3, column 1.
+Install the Playwright provider for browser testing. Recommended for CI and local testing because it supports parallel execution.
 
-```typescript
-import { describe } from 'vitest'
+```bash
+npm install -D vitest @vitest/browser-playwright
+```
 
-describe('the validation works correctly', () => {
-  // ...
-})
+```bash
+yarn add -D vitest vite @vitest/browser-playwright
+```
+
+```bash
+pnpm add -D vitest @vitest/browser-playwright
+```
+
+```bash
+bun add -D vitest @vitest/browser-playwright
+```
+
+--------------------------------
+
+### Install Vitest with deno
+
+Source: https://main.vitest.dev/guide/index
+
+Install Vitest as a development dependency using deno. Requires Vite >=v6.4.0 and Node >=v22.12.0.
+
+```bash
+deno add -D vitest
 ```
 
 --------------------------------
@@ -357,6 +647,44 @@ pnpm add -D vitest @vitest/browser-preview
 
 ```bash
 bun add -D vitest @vitest/browser-preview
+```
+
+--------------------------------
+
+### createVitest usage example
+
+Source: https://main.vitest.dev/guide/advanced
+
+JavaScript example showing how to import and call createVitest from 'vitest/node'. It creates a Vitest instance with watch disabled.
+
+```js
+import { createVitest } from 'vitest/node'
+
+const vitest = await createVitest('test', {
+  watch: false,
+})
+```
+
+--------------------------------
+
+### Example DOM for getByRole
+
+Source: https://main.vitest.dev/api/browser/locators
+
+Example DOM structure used to demonstrate locating elements by their implicit ARIA roles.
+
+```html
+<h3>Sign up</h3>
+<label>
+  Login
+  <input type="text" />
+</label>
+<label>
+  Password
+  <input type="password" />
+</label>
+<br/>
+<button>Submit</button>
 ```
 
 --------------------------------
@@ -401,26 +729,6 @@ import { assert, test } from 'vitest'
 test('assert.includeDeepOrderedMembers', () => {
   assert.includeDeepOrderedMembers([{ a: 1 }, { b: 2 }, { c: 3 }], [{ a: 1 }, { b: 2 }], 'include deep ordered members')
 })
-```
-
---------------------------------
-
-### onTestRunStart example reporter
-
-Source: https://main.vitest.dev/api/advanced/reporters
-
-Example implementation of onTestRunStart that logs the number of test files scheduled to run. The specifications array is readonly and informational only.
-
-```ts
-import type { Reporter, TestSpecification } from 'vitest/node'
-
-class MyReporter implements Reporter {
-  onTestRunStart(specifications: TestSpecification[]) {
-    console.log(specifications.length, 'test files will run')
-  }
-}
-
-export default new MyReporter()
 ```
 
 --------------------------------
@@ -697,24 +1005,6 @@ Environment  jsdom was created 40 times · 23.80s total, 79% of tracked time
 
 --------------------------------
 
-### globalSetup with named exports (setup/teardown)
-
-Source: https://main.vitest.dev/config/globalsetup
-
-Defines a global setup file using named exports 'setup' and 'teardown'. The setup function receives a test project as its first argument. Teardown runs after all test files finish, or before process exit in watch mode.
-
-```js
-export function setup(project) {
-  console.log('setup')
-}
-
-export function teardown() {
-  console.log('teardown')
-}
-```
-
---------------------------------
-
 ### toHaveBeenNthCalledWith spy example
 
 Source: https://main.vitest.dev/api/expect
@@ -738,32 +1028,6 @@ test('first call of spy function called with right params', () => {
 
   expect(buySpy).toHaveBeenNthCalledWith(1, 'apples', 10)
 })
-```
-
---------------------------------
-
-### Configure setupFiles in vitest.config.js and extend expect in test/setup.js
-
-Source: https://main.vitest.dev/guide/learn/setup-teardown
-
-Configure Vitest to run a setup file before every test file. The setup file extends the expect API with custom matchers. Setup files run in a separate phase before test collection, unlike beforeAll which runs once per file.
-
-```js
-import { defineConfig } from 'vitest/config'
-
-export default defineConfig({
-  test: {
-    setupFiles: ['./test/setup.js'],
-  },
-})
-```
-
-```js
-// This runs before every test file
-import { expect } from 'vitest'
-import { customMatchers } from './custom-matchers.js'
-
-expect.extend(customMatchers)
 ```
 
 --------------------------------
@@ -1289,4 +1553,245 @@ const provider = {
 } satisfies BenchmarkProvider
 
 export default provider
+```
+
+--------------------------------
+
+### vi.runOnlyPendingTimers example
+
+Source: https://main.vitest.dev/api/vi
+
+Example usage of vi.runOnlyPendingTimers. It runs only the pending timers, logging 1 once.
+
+```ts
+let i = 0
+setInterval(() => console.log(++i), 50)
+
+vi.runOnlyPendingTimers()
+
+// log: 1
+```
+
+--------------------------------
+
+### Install Vitest with npm, yarn, pnpm, bun, or deno
+
+Source: https://main.vitest.dev/guide
+
+Install Vitest using your preferred package manager. The yarn command also installs Vite. Vitest requires Vite >=v6.4.0 and Node >=v22.12.0.
+
+```bash
+npm install -D vitest
+```
+
+```bash
+yarn add -D vitest vite
+```
+
+```bash
+pnpm add -D vitest
+```
+
+```bash
+bun add -D vitest
+```
+
+```bash
+deno add -D vitest
+```
+
+--------------------------------
+
+### Provide data to tests via inject (example.test.ts)
+
+Source: https://main.vitest.dev/config/globalsetup
+
+Shows how to read data provided by global setup in a test file using the 'inject' function from vitest. The test asserts that the provided value equals 3000.
+
+```ts
+import { inject } from 'vitest'
+
+inject('wsPort') === 3000
+```
+
+--------------------------------
+
+### onTestsRerun usage example
+
+Source: https://main.vitest.dev/api/advanced/test-project
+
+Example usage of onTestsRerun, logging the specs when tests are scheduled to rerun.
+
+```ts
+project.onTestsRerun((specs) => {
+  console.log(specs)
+})
+```
+
+--------------------------------
+
+### Start the Playwright Docker server
+
+Source: https://main.vitest.dev/config/browser/playwright
+
+Command to start the Docker Compose services defined in docker-compose.yml.
+
+```sh
+docker compose up -d
+```
+
+--------------------------------
+
+### onHookStart(beforeAll)
+
+Source: https://main.vitest.dev/api/advanced/reporters
+
+Called when a beforeAll hook starts. This method is part of the reporter lifecycle.
+
+```APIDOC
+## onHookStart(beforeAll)
+
+### Description
+Called when a beforeAll hook starts.
+
+### Method
+Reporter lifecycle method
+
+### Parameters
+None
+
+### Response
+None
+```
+
+--------------------------------
+
+### Answer class example
+
+Source: https://main.vitest.dev/guide/mocking/modules
+
+Example class used to demonstrate state sharing between instances and prototypes when mocked.
+
+```ts
+export class Answer {
+  constructor(value) {
+    this._value = value
+  }
+
+  value() {
+    return this._value
+  }
+}
+```
+
+--------------------------------
+
+### vi.runAllTimers example
+
+Source: https://main.vitest.dev/api/vi
+
+Example usage of vi.runAllTimers. It runs all timers, including the interval that clears itself after three logs.
+
+```ts
+let i = 0
+setTimeout(() => console.log(++i))
+const interval = setInterval(() => {
+  console.log(++i)
+  if (i === 3) {
+    clearInterval(interval)
+  }
+}, 50)
+
+vi.runAllTimers()
+
+// log: 1
+// log: 2
+// log: 3
+```
+
+--------------------------------
+
+### Istanbul provider instrumentation example
+
+Source: https://main.vitest.dev/guide/coverage
+
+Shows how Istanbul instruments source code by adding coverage counters for branches and functions, and stores them in globalThis.__VITEST_COVERAGE__. The example includes a simplified getUsername function that increments counters on invocation and branch conditions.
+
+```javascript
+// Simplified example of branch and function coverage counters
+const coverage = { // [!code ++]
+  branches: { 1: [0, 0] }, // [!code ++]
+  functions: { 1: 0 }, // [!code ++]
+} // [!code ++]
+
+export function getUsername(id) {
+  // Function coverage increased when this is invoked  // [!code ++]
+  coverage.functions['1']++ // [!code ++]
+
+  if (id == null) {
+    // Branch coverage increased when this is invoked  // [!code ++]
+    coverage.branches['1'][0]++ // [!code ++]
+
+    throw new Error('User ID is required')
+  }
+  // Implicit else coverage increased when if-statement condition not met  // [!code ++]
+  coverage.branches['1'][1]++ // [!code ++]
+
+  return database.getUser(id)
+}
+
+globalThis.__VITEST_COVERAGE__ ||= {} // [!code ++]
+globalThis.__VITEST_COVERAGE__[filename] = coverage // [!code ++]
+```
+
+--------------------------------
+
+### elements() usage examples
+
+Source: https://main.vitest.dev/api/browser/locators
+
+Examples of elements() calls that always succeed, including the empty array case.
+
+```ts
+page.getByText('Hello World').elements() // ✅ [HTMLElement]
+page.getByText('World').elements() // ✅ [HTMLElement]
+page.getByText('Hello', { exact: true }).elements() // ✅ [HTMLElement]
+page.getByText('Hello').elements() // ✅ [HTMLElement, HTMLElement]
+page.getByText('Hello USA').elements() // ✅ []
+```
+
+--------------------------------
+
+### Install OpenTelemetry packages
+
+Source: https://main.vitest.dev/guide/open-telemetry
+
+Install the required OpenTelemetry packages before configuring Vitest's OpenTelemetry integration.
+
+```shell
+npm i @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-proto
+```
+
+--------------------------------
+
+### onBrowserInit
+
+Source: https://main.vitest.dev/api/advanced/reporters
+
+Called when the browser instance is initiated. Receives the project for which the browser is initiated.
+
+```APIDOC
+## onBrowserInit
+
+### Description
+Called when the browser instance is initiated. Receives the project for which the browser is initiated.
+
+### Method
+function
+
+### Signature
+`function onBrowserInit(project: TestProject): Awaitable<void>`
+
+### Parameters
+- **project** (TestProject) - Required - The project for which the browser is initiated. `project.browser` will always be defined when this method is called.
 ```

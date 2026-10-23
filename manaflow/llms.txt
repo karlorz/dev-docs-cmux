@@ -151,6 +151,30 @@ cmux code cmux_abc123
 
 --------------------------------
 
+### Zsh Autocompletion Setup
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
+
+Provides methods for setting up Zsh autocompletion. This includes ensuring compinit is loaded and installing the completion script to the fpath or Homebrew's site-functions directory.
+
+```bash
+echo "autoload -U compinit; compinit" >> ~/.zshrc
+```
+
+```bash
+source <(cmux completion zsh)
+```
+
+```bash
+cmux completion zsh > "${fpath[1]}/_cmux"
+```
+
+```bash
+cmux completion zsh > $(brew --prefix)/share/zsh/site-functions/_cmux
+```
+
+--------------------------------
+
 ### Manual Testing Walkthrough with Manaflow Devbox
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
@@ -213,30 +237,6 @@ cmux destroy test-manual --force
 cmux daemon stop
 
 echo "All tests passed!"
-```
-
---------------------------------
-
-### Zsh Autocompletion Setup
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
-
-Provides methods for setting up Zsh autocompletion. This includes ensuring compinit is loaded and installing the completion script to the fpath or Homebrew's site-functions directory.
-
-```bash
-echo "autoload -U compinit; compinit" >> ~/.zshrc
-```
-
-```bash
-source <(cmux completion zsh)
-```
-
-```bash
-cmux completion zsh > "${fpath[1]}/_cmux"
-```
-
-```bash
-cmux completion zsh > $(brew --prefix)/share/zsh/site-functions/_cmux
 ```
 
 --------------------------------
@@ -862,6 +862,18 @@ Append review tags to changed diff lines in workspace files for automated annota
 
 --------------------------------
 
+### Install cmux Globally
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux/README.md
+
+Install the cmux package globally using npm. This command is used for setting up the tool on your system.
+
+```bash
+npm install -g cmux
+```
+
+--------------------------------
+
 ### Bracket Strategy Example
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/www/scripts/pr-review/README.md
@@ -883,6 +895,19 @@ After performing an action like filling a form field, use 'get value' to verify 
 ```bash
 cmux computer fill @e2 "test@example.com" -w $WS_ID
 cmux computer get value @e2 -w $WS_ID  # Verify it was filled
+```
+
+--------------------------------
+
+### Start the Manaflow Daemon
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Starts the background daemon responsible for managing workspace state and IPC. The output includes the process ID, socket path, and status.
+
+```bash
+cmux daemon start
+# Output: {"pid": 12345, "socket": "/Users/.../.cmux/daemon.sock", "status": "started"}
 ```
 
 --------------------------------
@@ -982,6 +1007,19 @@ cmux --port 8080
 
 --------------------------------
 
+### Get Interactive Elements Snapshot
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Captures a snapshot of interactive elements on the current page within the VM. This is crucial for AI agent interactions.
+
+```bash
+cmux computer snapshot -i -w $WS_ID
+
+```
+
+--------------------------------
+
 ### Get Page Information
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
@@ -1029,6 +1067,147 @@ bun build apps/www/scripts/pr-review/pr-review-inject.ts \
 
 --------------------------------
 
+### VM Lifecycle Commands
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Commands to manage the lifecycle of the Morph Cloud VM, including starting, stopping, checking status, and saving snapshots.
+
+```APIDOC
+## `cmux computer start`
+
+### Description
+Start the Morph Cloud VM.
+
+### Usage
+```bash
+# Start from base snapshot
+cmux computer start -w $WS_ID
+
+# Start from a saved snapshot
+cmux computer start --from=logged-in -w $WS_ID
+
+# Start from specific snapshot ID
+cmux computer start --snapshot=snap_abc123 -w $WS_ID
+```
+
+### Output Example
+```
+Starting Morph VM...
+VM started successfully!
+Status: running
+Instance: morphvm-xyz
+VS Code: https://ws-abc123.morph.so/code/
+VNC:     https://ws-abc123.morph.so/vnc/
+```
+```
+
+```APIDOC
+## `cmux computer stop`
+
+### Description
+Stop the VM.
+
+### Usage
+```bash
+cmux computer stop -w $WS_ID
+
+# Save snapshot before stopping
+cmux computer stop --save=my-state -w $WS_ID
+```
+```
+
+```APIDOC
+## `cmux computer status`
+
+### Description
+Show VM status and URLs.
+
+### Usage
+```bash
+cmux computer status -w $WS_ID
+cmux computer status --json -w $WS_ID
+```
+```
+
+```APIDOC
+## `cmux computer save`
+
+### Description
+Save current state as a snapshot.
+
+### Usage
+```bash
+cmux computer save --name=after-login -w $WS_ID
+```
+```
+
+```APIDOC
+## `cmux computer vnc`
+
+### Description
+Open VNC viewer in browser.
+
+### Usage
+```bash
+cmux computer vnc -w $WS_ID
+```
+```
+
+--------------------------------
+
+### cmux CLI Commands
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/skills/cmux/SKILL.md
+
+Common cmux commands for managing cloud sandboxes. Authenticate, start, access, sync, and manage remote development environments.
+
+```bash
+cmux login                      # Authenticate (opens browser)
+```
+
+```bash
+cmux start ./my-project         # Create sandbox, upload directory → returns ID
+```
+
+```bash
+cmux start .                    # Or use current directory
+```
+
+```bash
+cmux code <id>                  # Open VS Code
+```
+
+```bash
+cmux pty <id>                   # Open terminal session
+```
+
+```bash
+cmux upload <id> ./my-project   # Upload files/directories to sandbox
+```
+
+```bash
+cmux download <id> ./output     # Download files from sandbox
+```
+
+```bash
+cmux computer screenshot <id>   # Take browser screenshot
+```
+
+```bash
+cmux stop <id>                  # Stop sandbox
+```
+
+```bash
+cmux delete <id>                # Delete sandbox
+```
+
+```bash
+cmux ls                         # List all sandboxes
+```
+
+--------------------------------
+
 ### Sync Files Workflow
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/npm/cmux/AGENTS.md
@@ -1042,14 +1221,19 @@ cmux sync cmux_abc123 ./dist --pull  # Pull build output from VM
 
 --------------------------------
 
-### Install cmux Globally
+### Cloudrouter Browser Automation: Snapshot
 
-Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux/README.md
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cloudrouter/README.md
 
-Install the cmux package globally using npm. This command is used for setting up the tool on your system.
+Get the accessibility tree of a sandbox's browser content, optionally filtering for interactive elements. This helps in identifying elements for automation.
 
 ```bash
-npm install -g cmux
+# Get the accessibility tree with element refs
+cloudrouter browser snapshot cr_abc123
+# → @e1 [link] About  @e2 [input] Search  @e3 [button] Submit
+
+# Interactive elements only
+cloudrouter browser snapshot -i cr_abc123
 ```
 
 --------------------------------
@@ -1109,19 +1293,6 @@ Execute the --help flag to view all available command-line options for cmux. Thi
 
 ```bash
 cmux --help
-```
-
---------------------------------
-
-### Start the Manaflow Daemon
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
-
-Starts the background daemon responsible for managing workspace state and IPC. The output includes the process ID, socket path, and status.
-
-```bash
-cmux daemon start
-# Output: {"pid": 12345, "socket": "/Users/.../.cmux/daemon.sock", "status": "started"}
 ```
 
 --------------------------------
@@ -1418,24 +1589,6 @@ app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {
 
 --------------------------------
 
-### Get Morph Cloud VM Status
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
-
-Displays the status and accessible URLs of the Morph Cloud VM. Can output in JSON format.
-
-```bash
-cmux computer status -w $WS_ID
-
-```
-
-```bash
-cmux computer status --json -w $WS_ID
-
-```
-
---------------------------------
-
 ### Open Application in Browser
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
@@ -1449,6 +1602,24 @@ cmux computer app -w $WS_ID               # Auto-detect app port
 
 ```bash
 cmux computer app --port=3000 -w $WS_ID   # Specific port
+
+```
+
+--------------------------------
+
+### Get Morph Cloud VM Status
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Displays the status and accessible URLs of the Morph Cloud VM. Can output in JSON format.
+
+```bash
+cmux computer status -w $WS_ID
+
+```
+
+```bash
+cmux computer status --json -w $WS_ID
 
 ```
 
@@ -1556,95 +1727,6 @@ cloudrouter browser set-credentials <id> <user> <pass> # Set HTTP auth
 
 --------------------------------
 
-### VM Lifecycle Commands
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
-
-Commands to manage the lifecycle of the Morph Cloud VM, including starting, stopping, checking status, and saving snapshots.
-
-```APIDOC
-## `cmux computer start`
-
-### Description
-Start the Morph Cloud VM.
-
-### Usage
-```bash
-# Start from base snapshot
-cmux computer start -w $WS_ID
-
-# Start from a saved snapshot
-cmux computer start --from=logged-in -w $WS_ID
-
-# Start from specific snapshot ID
-cmux computer start --snapshot=snap_abc123 -w $WS_ID
-```
-
-### Output Example
-```
-Starting Morph VM...
-VM started successfully!
-Status: running
-Instance: morphvm-xyz
-VS Code: https://ws-abc123.morph.so/code/
-VNC:     https://ws-abc123.morph.so/vnc/
-```
-```
-
-```APIDOC
-## `cmux computer stop`
-
-### Description
-Stop the VM.
-
-### Usage
-```bash
-cmux computer stop -w $WS_ID
-
-# Save snapshot before stopping
-cmux computer stop --save=my-state -w $WS_ID
-```
-```
-
-```APIDOC
-## `cmux computer status`
-
-### Description
-Show VM status and URLs.
-
-### Usage
-```bash
-cmux computer status -w $WS_ID
-cmux computer status --json -w $WS_ID
-```
-```
-
-```APIDOC
-## `cmux computer save`
-
-### Description
-Save current state as a snapshot.
-
-### Usage
-```bash
-cmux computer save --name=after-login -w $WS_ID
-```
-```
-
-```APIDOC
-## `cmux computer vnc`
-
-### Description
-Open VNC viewer in browser.
-
-### Usage
-```bash
-cmux computer vnc -w $WS_ID
-```
-```
-
---------------------------------
-
 ### Pulling Files from VM with Cmux Sync
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
@@ -1677,19 +1759,6 @@ cmux computer title cmux_abc123   # Output: Example Domain
 
 --------------------------------
 
-### Get Interactive Elements Snapshot
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
-
-Captures a snapshot of interactive elements on the current page within the VM. This is crucial for AI agent interactions.
-
-```bash
-cmux computer snapshot -i -w $WS_ID
-
-```
-
---------------------------------
-
 ### Run Go Unit Tests
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
@@ -1713,70 +1782,6 @@ go test ./internal/browser/... -v
 # Run with coverage
 go test ./... -coverprofile=coverage.out
 go tool cover -html=coverage.out -o coverage.html
-```
-
---------------------------------
-
-### cmux CLI Commands
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/skills/cmux/SKILL.md
-
-Common cmux commands for managing cloud sandboxes. Authenticate, start, access, sync, and manage remote development environments.
-
-```bash
-cmux login                      # Authenticate (opens browser)
-```
-
-```bash
-cmux start ./my-project         # Create sandbox, upload directory → returns ID
-```
-
-```bash
-cmux start .                    # Or use current directory
-```
-
-```bash
-cmux code <id>                  # Open VS Code
-```
-
-```bash
-cmux pty <id>                   # Open terminal session
-```
-
-```bash
-cmux upload <id> ./my-project   # Upload files/directories to sandbox
-```
-
-```bash
-cmux download <id> ./output     # Download files from sandbox
-```
-
-```bash
-cmux computer screenshot <id>   # Take browser screenshot
-```
-
-```bash
-cmux stop <id>                  # Stop sandbox
-```
-
-```bash
-cmux delete <id>                # Delete sandbox
-```
-
-```bash
-cmux ls                         # List all sandboxes
-```
-
---------------------------------
-
-### Navigate Browser to URL
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
-
-Directs the browser to a specified URL. Ensure the browser instance is identified by its ID.
-
-```bash
-cmux computer open cmux_abc123 https://google.com
 ```
 
 --------------------------------
@@ -1818,6 +1823,18 @@ Example structure for adding a new PR to the dataset in `dataset.ts`. Includes f
 
 --------------------------------
 
+### Navigate Browser to URL
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
+
+Directs the browser to a specified URL. Ensure the browser instance is identified by its ID.
+
+```bash
+cmux computer open cmux_abc123 https://google.com
+```
+
+--------------------------------
+
 ### Manual Release Steps
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/crates/cmux-env/README.md
@@ -1847,23 +1864,6 @@ cmux computer fill cmux_abc123 @e1 "user@example.com"
 cmux computer fill cmux_abc123 @e2 "password123"
 cmux computer click cmux_abc123 @e3
 cmux computer screenshot cmux_abc123 result.png
-```
-
---------------------------------
-
-### Cloudrouter Browser Automation: Snapshot
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cloudrouter/README.md
-
-Get the accessibility tree of a sandbox's browser content, optionally filtering for interactive elements. This helps in identifying elements for automation.
-
-```bash
-# Get the accessibility tree with element refs
-cloudrouter browser snapshot cr_abc123
-# → @e1 [link] About  @e2 [input] Search  @e3 [button] Submit
-
-# Interactive elements only
-cloudrouter browser snapshot -i cr_abc123
 ```
 
 --------------------------------
@@ -1965,22 +1965,6 @@ const HeadersSchema = z.object({
 
 --------------------------------
 
-### Local Development Commands for cmux Devbox
-
-Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/internal/README.md
-
-Common commands used for local development with the cmux devbox CLI, including authentication, starting instances, managing code, syncing files, and deleting instances.
-
-```bash
-cmux auth login
-cmux start
-cmux code <id>
-cmux sync <id> .
-cmux delete <id>
-```
-
---------------------------------
-
 ### Create OpenAPI Hono Application and Route
 
 Source: https://github.com/manaflow-ai/manaflow/blob/main/docs-ai/hono-openapi.md
@@ -2036,15 +2020,18 @@ app.doc("/doc", {
 
 --------------------------------
 
-### Open VNC Viewer for VM
+### Local Development Commands for cmux Devbox
 
-Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/internal/README.md
 
-Opens the VNC viewer in the browser for the Morph Cloud VM.
+Common commands used for local development with the cmux devbox CLI, including authentication, starting instances, managing code, syncing files, and deleting instances.
 
 ```bash
-cmux computer vnc -w $WS_ID
-
+cmux auth login
+cmux start
+cmux code <id>
+cmux sync <id> .
+cmux delete <id>
 ```
 
 --------------------------------
@@ -2097,6 +2084,19 @@ if (!vscodeUrl) {
 console.log(`VSCode URL: ${vscodeUrl}`);
 const url = `${vscodeUrl}/?folder=/root/workspace`;
 console.log(`VSCode Workspace URL: ${url}`);
+
+```
+
+--------------------------------
+
+### Open VNC Viewer for VM
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Opens the VNC viewer in the browser for the Morph Cloud VM.
+
+```bash
+cmux computer vnc -w $WS_ID
 
 ```
 
@@ -2184,4 +2184,242 @@ cmux computer status -w $WS_ID
 
 # If commands timeout, try reconnecting
 cmux computer status -w $WS_ID
+```
+
+--------------------------------
+
+### List Running Sandboxes
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cloudrouter/README.md
+
+Lists all currently running sandboxes.
+
+```bash
+# List running sandboxes
+cloudrouter ls
+```
+
+--------------------------------
+
+### Load Initial Sessions
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/crates/cmux-pty/static/index.html
+
+Fetches the list of existing terminal sessions from the server on initial load. Populates the UI with these sessions and activates the first one if none are active.
+
+```javascript
+async function loadSessions() {
+    try {
+        const res = await fetch("/sessions");
+        const data = await res.json();
+        const serverSessions = data.sessions || [];
+
+        // Update count
+        sessionCountEl.textContent = `${serverSessions.length} session${serverSessions.length !== 1 ? 's' : ''}`;
+
+        // Remove sessions that no longer exist
+        for (const [id] of sessions) {
+            if (!serverSessions.find(s => s.id === id)) {
+                removeSession(id, false);
+            }
+        }
+
+        // Add/update sessions
+        for (const info of serverSessions) {
+            if (!sessions.has(info.id)) {
+                addSession(info);
+            } else {
+                updateSessionInfo(info);
+            }
+        }
+        updateEmptyState();
+
+        // Activate first if none active
+        if (!activeId && serverSessions.length > 0) {
+            activateSession(serverSessions[0].id);
+        }
+    } catch (err) {
+        console.error("Failed to load sessions:", err);
+    }
+}
+```
+
+--------------------------------
+
+### Running Go Tests for cmux Devbox
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/internal/README.md
+
+Executes all tests within the packages/cmux-devbox directory using the 'go test' command.
+
+```bash
+cd packages/cmux-devbox
+go test ./...
+```
+
+--------------------------------
+
+### Run the Worker with Bun
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/worker/README.md
+
+Execute the main worker script using the Bun runtime.
+
+```bash
+bun run index.ts
+```
+
+--------------------------------
+
+### cmux CLI VM Lifecycle Commands
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/npm/cmux/AGENTS.md
+
+Commands to create, list, check status, pause, resume, and delete virtual machines.
+
+```bash
+# VM Lifecycle
+cmux start [path]        # Create VM, optionally sync directory
+cmux ls                  # List all VMs
+cmux status <id>         # Show VM details and URLs
+cmux pause <id>          # Pause VM (preserves state, saves cost)
+cmux resume <id>         # Resume paused VM
+cmux delete <id>         # Delete VM permanently
+```
+
+--------------------------------
+
+### Open VS Code for a VM
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
+
+Opens the VS Code environment for a specified virtual machine in your browser. Requires the VM ID.
+
+```bash
+cmux code cmux_abc123
+```
+
+--------------------------------
+
+### Configure cmux-devbox-cli Environment Variables
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Set the required MORPH_API_KEY and optionally override the base snapshot.
+
+```bash
+# Required - Morph Cloud API key
+export MORPH_API_KEY="your-api-key-here"
+
+# Optional - Override base snapshot
+export cmux devbox_BASE_SNAPSHOT="snapshot_3namut0l"
+```
+
+--------------------------------
+
+### Use Waits for Dynamic Content (Bash)
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Employ 'wait' commands to handle dynamic content loading. This ensures that subsequent actions are performed only after the necessary content is available and stable.
+
+```bash
+cmux computer click @e1 -w $WS_ID
+cmux computer wait --text "Loading complete" -w $WS_ID
+cmux computer snapshot -i -w $WS_ID  # Now get fresh refs
+```
+
+--------------------------------
+
+### cmux VM Lifecycle Commands
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
+
+Commands for creating, deleting, pausing, and resuming cloud development VMs.
+
+```bash
+cmux start [path]
+cmux start --snapshot <id>
+cmux delete <id>
+cmux pause <id>
+cmux resume <id>
+```
+
+--------------------------------
+
+### Press Keyboard Key
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/apps/devbox/README.md
+
+Simulates pressing a keyboard key within the VM. Supports special keys and combinations.
+
+```bash
+cmux computer press Enter -w $WS_ID
+
+```
+
+```bash
+cmux computer press Tab -w $WS_ID
+
+```
+
+```bash
+cmux computer press Control+a -w $WS_ID
+
+```
+
+--------------------------------
+
+### HTTP Proxying with Workspace Isolation
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/crates/cmux-proxy/README.md
+
+Shows how to proxy HTTP requests to a specific workspace using X-Cmux-Workspace-Internal and X-Cmux-Port-Internal headers. Proxies to an IP within the 127.18.0.0/8 range.
+
+```bash
+curl -v -H 'X-Cmux-Workspace-Internal: workspace-1' -H 'X-Cmux-Port-Internal: 3000' http://127.0.0.1:8080/api
+```
+
+--------------------------------
+
+### Upload Files to Sandbox
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cloudrouter/README.md
+
+Uploads files from a local directory to a specified sandbox path. Use --watch to automatically re-upload on changes.
+
+```bash
+# Upload files to sandbox
+cloudrouter upload cr_abc123 ./src /home/user/project/src
+```
+
+```bash
+# Watch mode — auto re-upload on changes
+cloudrouter upload cr_abc123 ./src /home/user/project/src --watch
+```
+
+--------------------------------
+
+### cmux Listing and Status Commands
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
+
+Commands to list all VMs and check the status of a specific VM.
+
+```bash
+cmux ls
+cmux status <id>
+```
+
+--------------------------------
+
+### Rebuilding Snapshot with Agent-Browser and Worker
+
+Source: https://github.com/manaflow-ai/manaflow/blob/main/packages/cmux-devbox/README.md
+
+Execute this Python script to rebuild the base snapshot, ensuring agent-browser and the worker daemon are included in new VMs.
+
+```python
+cd /path/to/cmux/apps/devbox/scripts
+python create_base_snapshot.py
 ```
