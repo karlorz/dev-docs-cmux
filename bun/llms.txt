@@ -72,12 +72,12 @@ import { Header } from "./header.js";
 
 ### Install project dependencies
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/remix.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/solidstart.mdx
 
-Navigate into the project directory and install dependencies with bun install.
+Navigate into the newly created project directory and install dependencies with Bun.
 
 ```sh
-cd my-remix-app
+cd my-app
 bun install
 ```
 
@@ -85,12 +85,12 @@ bun install
 
 ### Install project dependencies
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/solidstart.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/remix.mdx
 
-Navigate into the newly created project directory and install dependencies with Bun.
+Navigate into the project directory and install dependencies with bun install.
 
 ```sh
-cd my-app
+cd my-remix-app
 bun install
 ```
 
@@ -225,6 +225,47 @@ Listening on http://localhost:3000/
 
 --------------------------------
 
+### Install a release build of Bun (Homebrew)
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
+
+Install a release build of Bun via Homebrew before starting the build.
+
+```bash
+brew tap oven-sh/bun
+brew install bun
+```
+
+--------------------------------
+
+### Set up toolchains and run homepage benchmarks
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/site/README.md
+
+Sets up required toolchains and repositories, then executes the benchmark suite using a specified Bun binary under test. Supports running full suites, specific sub-benchmarks, or quick smoke tests via environment variables.
+
+```sh
+bench/site/setup-toolchains.sh                      # node, deno, pnpm/yarn/npm, bun release + canary -> $SITEBENCH_HOME/toolchains
+bench/site/setup-repos.sh                           # rolldown/benchmarks clone + deps of bench/express, bench/websocket-server, bench/postgres
+BUN=/abs/path/to/bun bench/site/run-all.sh          # everything: bundler http ws postgres install (~30 min with RUNS=3)
+BUN=/abs/path/to/bun bench/site/run-all.sh http ws  # a subset
+RUNS=1 BUN=... bench/site/run-all.sh                # quick smoke run
+```
+
+--------------------------------
+
+### Install a release build of Bun (npm)
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
+
+Install a release build of Bun globally via npm before starting the build.
+
+```bash
+npm install -g bun
+```
+
+--------------------------------
+
 ### Reported useless path segments example setup
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/import/no-useless-path-segments.mdx
@@ -246,6 +287,31 @@ import { Header } from "../pages/header.js";
 
 --------------------------------
 
+### Configure [install] section in bunfig.toml
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/bunfig.mdx
+
+The `[install]` section configures the behavior of `bun install`. This snippet shows the basic structure.
+
+```toml
+[install]
+# configuration here
+```
+
+--------------------------------
+
+### Reset to a blank starter project
+
+Source: https://github.com/oven-sh/bun/blob/main/test/integration/expo-app/README.md
+
+Moves starter code into the app-example directory and creates a clean app directory for development.
+
+```bash
+npm run reset-project
+```
+
+--------------------------------
+
 ### Valid label references without whitespace
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/markdown/no-invalid-label-refs.mdx
@@ -260,30 +326,30 @@ Read the [guide][], the [guide], or [this][guide].
 
 --------------------------------
 
-### bun install basic usage
+### Initialize project and install @neondatabase/serverless
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/install.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-serverless-postgres.mdx
 
-Install a package by name and version using the bun install command.
+Creates a new project directory, initializes a Bun project with defaults, and adds Neon's serverless driver dependency.
 
-```shell
-bun install <name>@<version>
+```sh
+mkdir bun-neon-postgres
+cd bun-neon-postgres
+bun init -y
+bun add @neondatabase/serverless
 ```
 
 --------------------------------
 
-### Set up toolchains and run homepage benchmarks
+### Install Prisma CLI, Client, and Postgres adapter
 
-Source: https://github.com/oven-sh/bun/blob/main/bench/site/README.md
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
 
-Sets up required toolchains and repositories, then executes the benchmark suite using a specified Bun binary under test. Supports running full suites, specific sub-benchmarks, or quick smoke tests via environment variables.
+Installs the prisma CLI as a development dependency alongside @prisma/client and @prisma/adapter-pg.
 
-```sh
-bench/site/setup-toolchains.sh                      # node, deno, pnpm/yarn/npm, bun release + canary -> $SITEBENCH_HOME/toolchains
-bench/site/setup-repos.sh                           # rolldown/benchmarks clone + deps of bench/express, bench/websocket-server, bench/postgres
-BUN=/abs/path/to/bun bench/site/run-all.sh          # everything: bundler http ws postgres install (~30 min with RUNS=3)
-BUN=/abs/path/to/bun bench/site/run-all.sh http ws  # a subset
-RUNS=1 BUN=... bench/site/run-all.sh                # quick smoke run
+```bash
+bun add -d prisma
+bun add @prisma/client @prisma/adapter-pg
 ```
 
 --------------------------------
@@ -310,29 +376,18 @@ test("starts empty", () => {
 
 --------------------------------
 
-### Reset to a blank starter project
+### Initialize project and install Drizzle and Neon dependencies
 
-Source: https://github.com/oven-sh/bun/blob/main/test/integration/expo-app/README.md
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-drizzle.mdx
 
-Moves starter code into the app-example directory and creates a clean app directory for development.
-
-```bash
-npm run reset-project
-```
-
---------------------------------
-
-### Initialize project and install @neondatabase/serverless
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-serverless-postgres.mdx
-
-Creates a new project directory, initializes a Bun project with defaults, and adds Neon's serverless driver dependency.
+Create a new project directory, initialize it with Bun, and install drizzle-orm, the Neon serverless driver, and drizzle-kit.
 
 ```sh
-mkdir bun-neon-postgres
-cd bun-neon-postgres
+mkdir bun-drizzle-neon
+cd bun-drizzle-neon
 bun init -y
-bun add @neondatabase/serverless
+bun add drizzle-orm @neondatabase/serverless
+bun add -D drizzle-kit
 ```
 
 --------------------------------
@@ -353,15 +408,36 @@ test("adds an item", () => {
 
 --------------------------------
 
-### Install Prisma CLI, Client, and Postgres adapter
+### Example pages directory structure
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/file-system-router.mdx
 
-Installs the prisma CLI as a development dependency alongside @prisma/client and @prisma/adapter-pg.
+Example pages directory structure for Next.js-style routing.
 
-```bash
-bun add -d prisma
-bun add @prisma/client @prisma/adapter-pg
+```txt
+pages
+├── index.tsx
+├── settings.tsx
+├── blog
+│   ├── [slug].tsx
+│   └── index.tsx
+└── [[...catchall]].tsx
+```
+
+--------------------------------
+
+### Start an HTTP server with Bun.serve
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/bun-apis.mdx
+
+Starts an HTTP server using `Bun.serve` with standard `Request` and `Response` objects in server.ts.
+
+```ts
+Bun.serve({
+  fetch(req: Request) {
+    return new Response("Success!");
+  },
+});
 ```
 
 --------------------------------
@@ -378,40 +454,6 @@ import { expect, test } from "@jest/globals";
 test("Adds an item", () => {
   expect(cart.add(item)).toBe(1);
 });
-```
-
---------------------------------
-
-### Initialize project and install Drizzle and Neon dependencies
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-drizzle.mdx
-
-Create a new project directory, initialize it with Bun, and install drizzle-orm, the Neon serverless driver, and drizzle-kit.
-
-```sh
-mkdir bun-drizzle-neon
-cd bun-drizzle-neon
-bun init -y
-bun add drizzle-orm @neondatabase/serverless
-bun add -D drizzle-kit
-```
-
---------------------------------
-
-### Example pages directory structure
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/file-system-router.mdx
-
-Example pages directory structure for Next.js-style routing.
-
-```txt
-pages
-├── index.tsx
-├── settings.tsx
-├── blog
-│   ├── [slug].tsx
-│   └── index.tsx
-└── [[...catchall]].tsx
 ```
 
 --------------------------------
@@ -449,18 +491,31 @@ describe("users", () => {
 
 --------------------------------
 
-### Start an HTTP server with Bun.serve
+### Initialize Prisma with SQLite datasource provider
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/bun-apis.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
 
-Starts an HTTP server using `Bun.serve` with standard `Request` and `Response` objects in server.ts.
+Uses bunx to run prisma init, generating the schema file, migration directory, and writing DATABASE_URL to .env.
 
-```ts
-Bun.serve({
-  fetch(req: Request) {
-    return new Response("Success!");
-  },
-});
+```bash
+bunx --bun prisma init --datasource-provider sqlite
+```
+
+--------------------------------
+
+### Initialize N-API project and install bun-native-plugin
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
+
+Scaffold a new NAPI module using the @napi-rs/cli global package and install the bun-native-plugin crate.
+
+```bash
+bun add -g @napi-rs/cli
+napi new
+```
+
+```bash
+cargo add bun-native-plugin
 ```
 
 --------------------------------
@@ -474,6 +529,20 @@ Example pattern where bitwise flag combining gets reported because the right-han
 ```js
 const mode = flags | Mode.Write;
 
+```
+
+--------------------------------
+
+### Create and initialize project directory
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
+
+Creates a new project directory named prisma-app and initializes it with Bun.
+
+```bash
+mkdir prisma-app
+cd prisma-app
+bun init
 ```
 
 --------------------------------
@@ -495,14 +564,28 @@ test("starts empty", () => {
 
 --------------------------------
 
-### Initialize Prisma with SQLite datasource provider
+### Install Prisma CLI, Client, and LibSQL adapter
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
 
-Uses bunx to run prisma init, generating the schema file, migration directory, and writing DATABASE_URL to .env.
+Installs prisma as a development dependency alongside @prisma/client and @prisma/adapter-libsql.
 
 ```bash
-bunx --bun prisma init --datasource-provider sqlite
+bun add -d prisma
+bun add @prisma/client @prisma/adapter-libsql
+```
+
+--------------------------------
+
+### Initialize a new project with bun init
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/upstash.mdx
+
+Creates a new Bun project directory and navigates into the project root.
+
+```sh
+bun init bun-upstash-redis
+cd bun-upstash-redis
 ```
 
 --------------------------------
@@ -525,33 +608,53 @@ console.log("sent");
 
 --------------------------------
 
-### Initialize N-API project and install bun-native-plugin
+### Set up development environment with Nix flake
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/plugins.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
 
-Scaffold a new NAPI module using the @napi-rs/cli global package and install the bun-native-plugin crate.
-
-```bash
-bun add -g @napi-rs/cli
-napi new
-```
+Use the repository's Nix flake as an alternative to installing dependencies manually. `nix develop` provides all dependencies in an isolated, reproducible environment without requiring sudo; then run `bun bd` to build.
 
 ```bash
-cargo add bun-native-plugin
+nix develop
+bun bd
 ```
 
 --------------------------------
 
-### Create and initialize project directory
+### Add start script to package.json
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
 
-Creates a new project directory named prisma-app and initializes it with Bun.
+Configure a start script in package.json to run the TypeScript entrypoint with Bun.
+
+```json
+{
+  "name": "my-app",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": { // [!code ++]
+    "start": "bun run index.ts" // [!code ++]
+  }, // [!code ++]
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  }
+}
+```
+
+--------------------------------
+
+### Install dependencies with Bun
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/expect-to-equal/README.md
+
+Install the benchmark dependencies using Bun package manager.
 
 ```bash
-mkdir prisma-app
-cd prisma-app
-bun init
+bun install
 ```
 
 --------------------------------
@@ -570,40 +673,26 @@ node_modules
 
 --------------------------------
 
-### Install Prisma CLI, Client, and LibSQL adapter
+### Scaffold a baseline React app with --react
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/init.mdx
 
-Installs prisma as a development dependency alongside @prisma/client and @prisma/adapter-libsql.
+Creates a baseline React project setup.
 
 ```bash
-bun add -d prisma
-bun add @prisma/client @prisma/adapter-libsql
+bun init --react
 ```
 
 --------------------------------
 
-### Install dependencies with Bun
+### Run the project with bun run
 
-Source: https://github.com/oven-sh/bun/blob/main/bench/expect-to-equal/README.md
+Source: https://github.com/oven-sh/bun/blob/main/src/runtime/cli/init/README.default.md
 
-Install the benchmark dependencies using Bun package manager.
+Run this command to start the project's entry point.
 
 ```bash
-bun install
-```
-
---------------------------------
-
-### Initialize a new project with bun init
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/upstash.mdx
-
-Creates a new Bun project directory and navigates into the project root.
-
-```sh
-bun init bun-upstash-redis
-cd bun-upstash-redis
+bun run {[entryPoint]s}
 ```
 
 --------------------------------
@@ -659,44 +748,6 @@ bun test test/js/bun/secrets.test.ts
 
 --------------------------------
 
-### Scaffold a baseline React app with --react
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/init.mdx
-
-Creates a baseline React project setup.
-
-```bash
-bun init --react
-```
-
---------------------------------
-
-### Add start script to package.json
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
-
-Configure a start script in package.json to run the TypeScript entrypoint with Bun.
-
-```json
-{
-  "name": "my-app",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "scripts": { // [!code ++]
-    "start": "bun run index.ts" // [!code ++]
-  }, // [!code ++]
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^7"
-  }
-}
-```
-
---------------------------------
-
 ### Run executable with default entrypoint
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/executables.mdx
@@ -714,6 +765,18 @@ you shouldn't see this
 
 --------------------------------
 
+### Install express with bun add
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/render.mdx
+
+Install the Express library into the project using Bun package manager.
+
+```sh
+bun add express
+```
+
+--------------------------------
+
 ### Get nanoseconds since process start with Bun.nanoseconds()
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/utils.mdx
@@ -727,26 +790,14 @@ Bun.nanoseconds();
 
 --------------------------------
 
-### Run the project with bun run
+### View all bun add options with --help
 
-Source: https://github.com/oven-sh/bun/blob/main/src/runtime/cli/init/README.default.md
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/add.mdx
 
-Run this command to start the project's entry point.
+Run bun add --help to view a complete list of options for the command.
 
 ```bash
-bun run {[entryPoint]s}
-```
-
---------------------------------
-
-### Install express with bun add
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/render.mdx
-
-Install the Express library into the project using Bun package manager.
-
-```sh
-bun add express
+bun add --help
 ```
 
 --------------------------------
@@ -760,6 +811,29 @@ Install React and React DOM dependencies using Bun.
 ```sh
 # Any package manager can be used
 bun add react react-dom
+```
+
+--------------------------------
+
+### Global test setup with beforeAll and afterAll hooks
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/test/configuration.mdx
+
+Define database setup and teardown handlers using `bun:test` hooks in a preload script.
+
+```typescript
+// Global test setup
+import { beforeAll, afterAll } from "bun:test";
+
+beforeAll(() => {
+  // Set up test database
+  setupTestDatabase();
+});
+
+afterAll(() => {
+  // Clean up
+  cleanupTestDatabase();
+});
 ```
 
 --------------------------------
@@ -780,14 +854,17 @@ https://example.com#fragment
 
 --------------------------------
 
-### View all bun add options with --help
+### Configure bun:test/require-top-level-describe options in bunfig.toml
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/add.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/require-top-level-describe.mdx
 
-Run bun add --help to view a complete list of options for the command.
+Demonstrates the full options structure with defaults in bunfig.toml.
 
-```bash
-bun add --help
+```toml
+[lint.rules]
+"bun:test/require-top-level-describe" = ["error", {
+  # maxNumberOfTopLevelDescribes = <number>,
+}]
 ```
 
 --------------------------------
@@ -833,29 +910,6 @@ const month = date.slice(5, 7); // 7 is the end
 
 --------------------------------
 
-### Global test setup with beforeAll and afterAll hooks
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/test/configuration.mdx
-
-Define database setup and teardown handlers using `bun:test` hooks in a preload script.
-
-```typescript
-// Global test setup
-import { beforeAll, afterAll } from "bun:test";
-
-beforeAll(() => {
-  // Set up test database
-  setupTestDatabase();
-});
-
-afterAll(() => {
-  // Clean up
-  cleanupTestDatabase();
-});
-```
-
---------------------------------
-
 ### Install the @sentry/bun SDK
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sentry.mdx
@@ -868,17 +922,19 @@ bun add @sentry/bun
 
 --------------------------------
 
-### Configure bun:test/require-top-level-describe options in bunfig.toml
+### Configure global installation behavior in ~/.bunfig.toml
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/require-top-level-describe.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/add.mdx
 
-Demonstrates the full options structure with defaults in bunfig.toml.
+Set globalDir and globalBinDir in the global .bunfig.toml ($HOME/.bunfig.toml or $XDG_CONFIG_HOME/.bunfig.toml). Bun ignores these keys in a project's bunfig.toml.
 
 ```toml
-[lint.rules]
-"bun:test/require-top-level-describe" = ["error", {
-  # maxNumberOfTopLevelDescribes = <number>,
-}]
+[install]
+# where `bun add --global` installs packages
+globalDir = "~/.bun/install/global"
+
+# where globally-installed package bins are linked
+globalBinDir = "~/.bun/bin"
 ```
 
 --------------------------------
@@ -913,27 +969,14 @@ function total(items) {
 
 --------------------------------
 
-### bunx CLI execution examples
+### Bundle with bun build CLI
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/bunx.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
 
-Common examples of using bunx, including running migrations, formatting files, pinning versions, specifying package names with -p, and using --bun to enforce Bun's runtime over Node.
+Use the bun build command to bundle the entrypoint file and output to the ./out directory.
 
 ```bash
-# Run Prisma migrations
-bunx prisma migrate
-
-# Format a file with Prettier
-bunx prettier foo.js
-
-# Run a specific version of a package
-bunx uglify-js@3.14.0 app.js
-
-# Use --package when binary name differs from package name
-bunx -p @angular/cli ng new my-app
-
-# Force running with Bun instead of Node.js, even if the executable contains a Node shebang
-bunx --bun vite dev foo.js
+bun build ./index.tsx --outdir ./out
 ```
 
 --------------------------------
@@ -950,6 +993,18 @@ const value = line.replace(/=\s*/, "");
 
 --------------------------------
 
+### bunx command syntax
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/bunx.mdx
+
+General invocation form for bunx. Executes an npm package executable (CLI); if the package isn't installed in node_modules, Bun installs it into a global shared cache.
+
+```bash
+bunx [flags] <package>[@version] [flags and arguments for the package]
+```
+
+--------------------------------
+
 ### Incorrect label reference with whitespace
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/markdown/no-invalid-label-refs.mdx
@@ -960,52 +1015,6 @@ This example is reported because `[guide][ ]` contains whitespace between bracke
 Read the [guide][ ].
 
 [guide]: https://example.com/guide
-```
-
---------------------------------
-
-### Bundle with bun build CLI
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
-
-Use the bun build command to bundle the entrypoint file and output to the ./out directory.
-
-```bash
-bun build ./index.tsx --outdir ./out
-```
-
---------------------------------
-
-### Reported usage of beforeEach hook
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/jest/no-hooks.mdx
-
-Example of test setup using `beforeEach` that triggers the `jest/no-hooks` lint rule violation.
-
-```ts
-import { beforeEach, expect, test } from "@jest/globals";
-
-let cart;
-
-beforeEach(() => {
-  cart = createCart();
-});
-
-test("starts empty", () => {
-  expect(cart.items).toEqual([]);
-});
-```
-
---------------------------------
-
-### Start service immediately
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/systemd.mdx
-
-Starts the systemd service manually without needing to reboot.
-
-```bash
-systemctl start my-app
 ```
 
 --------------------------------
@@ -1056,74 +1065,36 @@ bunx sv create my-app
 
 --------------------------------
 
-### Valid comments example
+### Start service immediately
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/no-warning-comments.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/systemd.mdx
 
-Shows valid comments that do not trigger the rule because warning terms are not matching whole words at the start.
-
-```js
-// An empty list gives 0.
-function total(items) {
-  // Todos are counted like any other item.
-  return items.length * 1.1;
-}
-```
-
---------------------------------
-
-### Disallowed javascript: URL assignments
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/no-script-url.mdx
-
-Examples reported by the rule where strings or simple template literals start with 'javascript:' in any case.
-
-```js
-link.href = "javascript:void(0)";
-location.href = `JavaScript:save()`;
-```
-
---------------------------------
-
-### Install dependencies for specific workspaces with --filter
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/workspaces.mdx
-
-Use bun install --filter to install dependencies only for selected workspaces. Paths can be used instead of names; both commands are equivalent.
+Starts the systemd service manually without needing to reboot.
 
 ```bash
-# Install dependencies for all workspaces starting with `pkg-` except for `pkg-c`
-bun install --filter "pkg-*" --filter "!pkg-c"
-
-# Paths can also be used. This is equivalent to the command above.
-bun install --filter "./packages/pkg-*" --filter "!pkg-c" # or --filter "!./packages/pkg-c"
+systemctl start my-app
 ```
 
 --------------------------------
 
-### Reported lowercase comment example
+### Reported usage of beforeEach hook
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/capitalized-comments.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/jest/no-hooks.mdx
 
-Demonstrates an invalid comment that starts with a lowercase letter when using default rule settings.
+Example of test setup using `beforeEach` that triggers the `jest/no-hooks` lint rule violation.
 
-```js
-// retry once, then give up
-await send(message);
-```
+```ts
+import { beforeEach, expect, test } from "@jest/globals";
 
---------------------------------
+let cart;
 
-### Initialize a new Bun project directory
+beforeEach(() => {
+  cart = createCart();
+});
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
-
-Creates a new project directory and initializes it with default configuration using bun init.
-
-```bash
-mkdir prisma-postgres-app
-cd prisma-postgres-app
-bun init
+test("starts empty", () => {
+  expect(cart.items).toEqual([]);
+});
 ```
 
 --------------------------------
@@ -1138,6 +1109,20 @@ Initializes a new Bun project and installs drizzle-orm along with drizzle-kit de
 bun init -y
 bun add drizzle-orm
 bun add -D drizzle-kit
+```
+
+--------------------------------
+
+### Initialize a new Bun project directory
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
+
+Creates a new project directory and initializes it with default configuration using bun init.
+
+```bash
+mkdir prisma-postgres-app
+cd prisma-postgres-app
+bun init
 ```
 
 --------------------------------
@@ -1158,43 +1143,34 @@ Listening on http://0.0.0.0:3000/
 
 --------------------------------
 
-### Invalid literal temporary directory paths
+### Valid comments example
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun/no-literal-temp-dir.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/no-warning-comments.mdx
 
-Examples reported by the rule when hard-coded paths starting with `/tmp` or `/var/tmp` are used.
+Shows valid comments that do not trigger the rule because warning terms are not matching whole words at the start.
 
 ```js
-import { writeFileSync } from "node:fs";
-
-writeFileSync("/tmp/report.json", JSON.stringify(report));
-writeFileSync(`/var/tmp/${name}.log`, lines.join("\n"));
+// An empty list gives 0.
+function total(items) {
+  // Todos are counted like any other item.
+  return items.length * 1.1;
+}
 ```
 
 --------------------------------
 
-### Preconnect at startup using --fetch-preconnect flag
+### Install dependencies for specific workspaces with --filter
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/networking/fetch.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/workspaces.mdx
 
-Pass `--fetch-preconnect` to the Bun CLI to initiate preconnecting to a host upon startup. Note that this flag is not implemented on Windows.
+Use bun install --filter to install dependencies only for selected workspaces. Paths can be used instead of names; both commands are equivalent.
 
-```sh
-bun --fetch-preconnect https://bun.com ./my-script.ts
-```
+```bash
+# Install dependencies for all workspaces starting with `pkg-` except for `pkg-c`
+bun install --filter "pkg-*" --filter "!pkg-c"
 
---------------------------------
-
-### Reported: link fragment with no matching heading
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/markdown/no-missing-link-fragments.mdx
-
-This Markdown is reported because #usage does not match the only heading, "Getting started".
-
-```markdown
-# Getting started
-
-See [usage](#usage).
+# Paths can also be used. This is equivalent to the command above.
+bun install --filter "./packages/pkg-*" --filter "!pkg-c" # or --filter "!./packages/pkg-c"
 ```
 
 --------------------------------
@@ -1211,28 +1187,40 @@ bun dev
 
 --------------------------------
 
-### Install Bun via Scoop
+### Disallowed javascript: URL assignments
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/installation.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/no-script-url.mdx
 
-Installs Bun on Windows using the Scoop package manager.
+Examples reported by the rule where strings or simple template literals start with 'javascript:' in any case.
 
-```bash
-scoop install bun
+```js
+link.href = "javascript:void(0)";
+location.href = `JavaScript:save()`;
 ```
 
 --------------------------------
 
-### Incorrect usage without braces
+### Preconnect at startup using --fetch-preconnect flag
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/curly.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/networking/fetch.mdx
 
-Examples of single-line if statements and loops without braces that get reported under default configuration.
+Pass `--fetch-preconnect` to the Bun CLI to initiate preconnecting to a host upon startup. Note that this flag is not implemented on Windows.
+
+```sh
+bun --fetch-preconnect https://bun.com ./my-script.ts
+```
+
+--------------------------------
+
+### Reported lowercase comment example
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/capitalized-comments.mdx
+
+Demonstrates an invalid comment that starts with a lowercase letter when using default rule settings.
 
 ```js
-if (!user) redirect("/login");
-
-for (const item of items) total += item.price;
+// retry once, then give up
+await send(message);
 ```
 
 --------------------------------
@@ -1257,6 +1245,118 @@ bun --bun run dev
     ➜  Local:   http://localhost:5173/
     ➜  Network: use --host to expose
     ➜  press h + enter to show help
+```
+
+--------------------------------
+
+### Install Bun via Scoop
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/installation.mdx
+
+Installs Bun on Windows using the Scoop package manager.
+
+```bash
+scoop install bun
+```
+
+--------------------------------
+
+### Invalid literal temporary directory paths
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun/no-literal-temp-dir.mdx
+
+Examples reported by the rule when hard-coded paths starting with `/tmp` or `/var/tmp` are used.
+
+```js
+import { writeFileSync } from "node:fs";
+
+writeFileSync("/tmp/report.json", JSON.stringify(report));
+writeFileSync(`/var/tmp/${name}.log`, lines.join("\n"));
+```
+
+--------------------------------
+
+### Reported: link fragment with no matching heading
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/markdown/no-missing-link-fragments.mdx
+
+This Markdown is reported because #usage does not match the only heading, "Getting started".
+
+```markdown
+# Getting started
+
+See [usage](#usage).
+```
+
+--------------------------------
+
+### Start benchmark server using Node.js
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/stream-file-upload-client/README.md
+
+Runs the destination HTTP web server to receive file uploads.
+
+```bash
+node server-node.mjs
+
+```
+
+--------------------------------
+
+### Incorrect usage without braces
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/curly.mdx
+
+Examples of single-line if statements and loops without braces that get reported under default configuration.
+
+```js
+if (!user) redirect("/login");
+
+for (const item of items) total += item.price;
+```
+
+--------------------------------
+
+### Start a simple HTTP server with Bun.serve
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/http/simple.mdx
+
+Starts an HTTP server listening on port 3000 that responds to every request with status 200 and "Welcome to Bun!".
+
+```typescript
+const server = Bun.serve({
+  port: 3000,
+  fetch(request) {
+    return new Response("Welcome to Bun!");
+  },
+});
+
+console.log(`Listening on ${server.url}`);
+```
+
+--------------------------------
+
+### Install Bun via Homebrew
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/installation.mdx
+
+Installs Bun on macOS or Linux using the Homebrew tap.
+
+```bash
+brew install oven-sh/bun/bun
+```
+
+--------------------------------
+
+### Install @napi-rs/cli and scaffold a new NAPI project
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/plugins.mdx
+
+Run these commands to install the NAPI CLI globally and scaffold a new native addon project.
+
+```bash
+bun add -g @napi-rs/cli
+napi new
 ```
 
 --------------------------------
@@ -1303,27 +1403,21 @@ function formatTime(date) {}
 
 --------------------------------
 
-### Start benchmark server using Node.js
+### Configure bunfig.toml and run Fullstack Dev Server
 
-Source: https://github.com/oven-sh/bun/blob/main/bench/stream-file-upload-client/README.md
+Source: https://github.com/oven-sh/bun/blob/main/packages/bun-plugin-svelte/README.md
 
-Runs the destination HTTP web server to receive file uploads.
+Register bun-plugin-svelte under serve.static plugins in bunfig.toml, then run the dev server with an HTML entrypoint.
 
-```bash
-node server-node.mjs
+```toml
+[serve.static]
+plugins = ["bun-plugin-svelte"]
 
 ```
 
---------------------------------
+```sh
+$ bun index.html
 
-### Install Bun via Homebrew
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/installation.mdx
-
-Installs Bun on macOS or Linux using the Homebrew tap.
-
-```bash
-brew install oven-sh/bun/bun
 ```
 
 --------------------------------
@@ -1345,34 +1439,14 @@ test("loads the user", async () => {
 
 --------------------------------
 
-### Install @napi-rs/cli and scaffold a new NAPI project
+### Bundle with bun build CLI
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/plugins.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
 
-Run these commands to install the NAPI CLI globally and scaffold a new native addon project.
+Use the `bun build` CLI command to bundle an entrypoint and write output to an outdir. This is the CLI equivalent of the JavaScript API.
 
 ```bash
-bun add -g @napi-rs/cli
-napi new
-```
-
---------------------------------
-
-### Start a simple HTTP server with Bun.serve
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/http/simple.mdx
-
-Starts an HTTP server listening on port 3000 that responds to every request with status 200 and "Welcome to Bun!".
-
-```typescript
-const server = Bun.serve({
-  port: 3000,
-  fetch(request) {
-    return new Response("Welcome to Bun!");
-  },
-});
-
-console.log(`Listening on ${server.url}`);
+bun build ./index.tsx --outdir ./build
 ```
 
 --------------------------------
@@ -1387,6 +1461,35 @@ Uses `allowedPrefixes` to allow titles starting with immutable names or HTTP met
 import { test } from "@jest/globals";
 
 test("GET /users returns a list", () => {});
+```
+
+--------------------------------
+
+### Run initial Prisma database migration
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
+
+Creates and applies the initial SQL migration to the PostgreSQL database. Pass --env-file=.env because Bun does not load .env automatically when executing CLIs with --bun.
+
+```bash
+bun run --bun --env-file=.env prisma migrate dev --name init
+```
+
+```txt
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": PostgreSQL database "mydb", schema "public" at "localhost:5432"
+
+Applying migration `20250114141233_init`
+
+The following migration(s) have been created and applied from new schema changes:
+
+prisma/migrations/
+  └─ 20250114141233_init/
+    └─ migration.sql
+
+Your database is now in sync with your schema.
 ```
 
 --------------------------------
@@ -1433,50 +1536,26 @@ worker.postMessage(image);
 
 --------------------------------
 
-### Configure bunfig.toml and run Fullstack Dev Server
+### Start WebSocket server in Deno
 
-Source: https://github.com/oven-sh/bun/blob/main/packages/bun-plugin-svelte/README.md
+Source: https://github.com/oven-sh/bun/blob/main/bench/websocket-server/README.md
 
-Register bun-plugin-svelte under serve.static plugins in bunfig.toml, then run the dev server with an HTML entrypoint.
+Runs the WebSocket chat server benchmark in Deno using Deno.serve with full permissions enabled.
 
-```toml
-[serve.static]
-plugins = ["bun-plugin-svelte"]
-
-```
-
-```sh
-$ bun index.html
-
+```bash
+deno run -A ./chat-server.deno.mjs
 ```
 
 --------------------------------
 
-### Run initial Prisma database migration
+### Environment variables for env prefix example
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
 
-Creates and applies the initial SQL migration to the PostgreSQL database. Pass --env-file=.env because Bun does not load .env automatically when executing CLIs with --bun.
+Example environment variables used to demonstrate prefix-based inlining.
 
 ```bash
-bun run --bun --env-file=.env prisma migrate dev --name init
-```
-
-```txt
-Loaded Prisma config from prisma.config.ts.
-
-Prisma schema loaded from prisma/schema.prisma.
-Datasource "db": PostgreSQL database "mydb", schema "public" at "localhost:5432"
-
-Applying migration `20250114141233_init`
-
-The following migration(s) have been created and applied from new schema changes:
-
-prisma/migrations/
-  └─ 20250114141233_init/
-    └─ migration.sql
-
-Your database is now in sync with your schema.
+FOO=bar BAZ=123 ACME_PUBLIC_URL=https://acme.com
 ```
 
 --------------------------------
@@ -1509,14 +1588,18 @@ export default myPlugin;
 
 --------------------------------
 
-### Bundle with bun build CLI
+### Compare esbuild and bun build CLI commands
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/esbuild.mdx
 
-Use the `bun build` CLI command to bundle an entrypoint and write output to an outdir. This is the CLI equivalent of the JavaScript API.
+Shows the equivalent esbuild and bun build commands for bundling an entrypoint to an output directory. Bun bundles by default, so the --bundle flag is omitted.
 
 ```bash
-bun build ./index.tsx --outdir ./build
+# esbuild
+esbuild <entrypoint> --outdir=out --bundle
+
+# bun
+bun build <entrypoint> --outdir=out
 ```
 
 --------------------------------
@@ -1536,99 +1619,6 @@ Use backslash escapes when literal text starting with a block quote marker is in
 
 --------------------------------
 
-### Start WebSocket server in Deno
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/websocket-server/README.md
-
-Runs the WebSocket chat server benchmark in Deno using Deno.serve with full permissions enabled.
-
-```bash
-deno run -A ./chat-server.deno.mjs
-```
-
---------------------------------
-
-### Autolink URLs with paths
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec-permissive-autolinks.txt
-
-Matches optional URL paths starting with '/' and delimited by slashes. Non-alphanumerical characters (., -, _) in path components must be bounded by alphanumerical characters.
-
-```example
-https://example.com/images/branding/logo_272x92.png
-.
-<p><a href="https://example.com/images/branding/logo_272x92.png">https://example.com/images/branding/logo_272x92.png</a></p>
-.
---fpermissive-url-autolinks
-```
-
---------------------------------
-
-### Environment variables for env prefix example
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
-
-Example environment variables used to demonstrate prefix-based inlining.
-
-```bash
-FOO=bar BAZ=123 ACME_PUBLIC_URL=https://acme.com
-```
-
---------------------------------
-
-### Compare esbuild and bun build CLI commands
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/esbuild.mdx
-
-Shows the equivalent esbuild and bun build commands for bundling an entrypoint to an output directory. Bun bundles by default, so the --bundle flag is omitted.
-
-```bash
-# esbuild
-esbuild <entrypoint> --outdir=out --bundle
-
-# bun
-bun build <entrypoint> --outdir=out
-```
-
---------------------------------
-
-### Reported URL examples with default "never" option
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/unicorn/relative-url-style.mdx
-
-Demonstrates code reported under the default "never" style when URLs start with `./`.
-
-```js
-const logo = new URL("./logo.png", import.meta.url);
-const icon = new URL(`./${name}.svg`, import.meta.url);
-```
-
---------------------------------
-
-### Start the development server with bun run dev
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/hono.mdx
-
-Starts the local development server to serve the Hono application on localhost:3000.
-
-```sh
-bun run dev
-```
-
---------------------------------
-
-### Example type error output from Bun.build check
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/check.mdx
-
-Shows the format of a type error log produced when check: true is used. The message starts with the TypeScript error code.
-
-```text
-/app/src/index.ts:3: TS2322: Type 'string' is not assignable to type 'number'.
-```
-
---------------------------------
-
 ### Run shell commands with Bun Shell quickstart
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/shell.mdx
@@ -1642,6 +1632,18 @@ const response = await fetch("https://example.com");
 
 // Use Response as stdin.
 await $`cat < ${response} | wc -c`; // 1256
+```
+
+--------------------------------
+
+### Start the development server with bun run dev
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/hono.mdx
+
+Starts the local development server to serve the Hono application on localhost:3000.
+
+```sh
+bun run dev
 ```
 
 --------------------------------
@@ -1667,6 +1669,22 @@ $ vite dev
 
 --------------------------------
 
+### Autolink URLs with paths
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec-permissive-autolinks.txt
+
+Matches optional URL paths starting with '/' and delimited by slashes. Non-alphanumerical characters (., -, _) in path components must be bounded by alphanumerical characters.
+
+```example
+https://example.com/images/branding/logo_272x92.png
+.
+<p><a href="https://example.com/images/branding/logo_272x92.png">https://example.com/images/branding/logo_272x92.png</a></p>
+.
+--fpermissive-url-autolinks
+```
+
+--------------------------------
+
 ### Bundle multiple entrypoints with bun build --splitting
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
@@ -1679,36 +1697,27 @@ bun build ./entry-a.ts ./entry-b.ts --outdir ./out --splitting
 
 --------------------------------
 
-### Get current file name with import.meta.file
+### Reported URL examples with default "never" option
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/import-meta-file.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/unicorn/relative-url-style.mdx
 
-Use `import.meta.file` to retrieve the filename of the currently executing module (for example, evaluating inside `/a/b/c.ts` returns `"c.ts"`).
+Demonstrates code reported under the default "never" style when URLs start with `./`.
 
-```ts
-import.meta.file; // => "c.ts"
+```js
+const logo = new URL("./logo.png", import.meta.url);
+const icon = new URL(`./${name}.svg`, import.meta.url);
 ```
 
 --------------------------------
 
-### Incorrect test blocks without padding (Reported)
+### Example type error output from Bun.build check
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/vitest/padding-around-test-blocks.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/check.mdx
 
-Shows an example where test calls directly follow setup code and each other without separating blank lines, causing a lint violation.
+Shows the format of a type error log produced when check: true is used. The message starts with the TypeScript error code.
 
-```ts
-import { describe, expect, test } from "vitest";
-
-describe("cart", () => {
-  const cart = createCart();
-  test("starts empty", () => {
-    expect(cart.items).toEqual([]);
-  });
-  test.skip("adds an item", () => {
-    expect(cart.add("apple").items).toEqual(["apple"]);
-  });
-});
+```text
+/app/src/index.ts:3: TS2322: Type 'string' is not assignable to type 'number'.
 ```
 
 --------------------------------
@@ -1781,18 +1790,31 @@ bun --hot ./index.ts
 
 --------------------------------
 
-### Set scanner credentials via environment variables
+### Configure react/jsx-filename-extension with default options in bunfig.toml
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/security-scanner-api.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/react/jsx-filename-extension.mdx
 
-Some enterprise scanners read authentication from environment variables. Export the required variables (for example in ~/.bashrc) before running bun install so the scanner uses them automatically.
+Demonstrates all options configured with their default values in bunfig.toml.
 
-```bash
-# This might go in ~/.bashrc, for example
-export SECURITY_API_KEY="your-api-key"
+```toml
+[lint.rules]
+"react/jsx-filename-extension" = ["error", {
+  extensions = [".jsx"],
+  allow = "always", # "always" or "as-needed"
+  ignoreFilesWithoutCode = false,
+}]
+```
 
-# The scanner will now use these credentials automatically
-bun install
+--------------------------------
+
+### Get current file name with import.meta.file
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/import-meta-file.mdx
+
+Use `import.meta.file` to retrieve the filename of the currently executing module (for example, evaluating inside `/a/b/c.ts` returns `"c.ts"`).
+
+```ts
+import.meta.file; // => "c.ts"
 ```
 
 --------------------------------
@@ -1820,62 +1842,6 @@ pm2 start pm2.config.cjs
 
 --------------------------------
 
-### Invalid test code violating require-hook
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/require-hook.mdx
-
-Example of invalid test setup where initialized `let` variables and standalone function calls are placed outside hooks at the top level or directly in a `describe` block.
-
-```ts
-import { describe, expect, test } from "bun:test";
-
-let db = connect();
-db.seed(["ada", "grace"]);
-
-describe("users", () => {
-  clearCache();
-
-  test("finds a user", () => {
-    expect(db.find("ada")).toBeDefined();
-  });
-});
-```
-
---------------------------------
-
-### Configure react/jsx-filename-extension with default options in bunfig.toml
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/react/jsx-filename-extension.mdx
-
-Demonstrates all options configured with their default values in bunfig.toml.
-
-```toml
-[lint.rules]
-"react/jsx-filename-extension" = ["error", {
-  extensions = [".jsx"],
-  allow = "always", # "always" or "as-needed"
-  ignoreFilesWithoutCode = false,
-}]
-```
-
---------------------------------
-
-### Define an HTTP route and start an Elysia server in server.ts
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/elysia.mdx
-
-Define a GET route at root using Elysia and listen on port 8080. Logs the running server port using the app.server instance.
-
-```ts
-import { Elysia } from "elysia";
-
-const app = new Elysia().get("/", () => "Hello Elysia").listen(8080);
-
-console.log(`🦊 Elysia is running on port ${app.server?.port}...`);
-```
-
---------------------------------
-
 ### Initialize Prisma schema for PostgreSQL
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/prisma-postgres.mdx
@@ -1888,20 +1854,42 @@ bunx --bun prisma init --db
 
 --------------------------------
 
-### Report child process resource usage with resourceUsage()
+### Incorrect test blocks without padding (Reported)
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/child-process.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/vitest/padding-around-test-blocks.mdx
 
-After the spawned process exits, call resourceUsage() to get maxRSS and CPU time. The example spawns bun --version and logs memory and CPU usage.
+Shows an example where test calls directly follow setup code and each other without separating blank lines, causing a lint violation.
 
-```typescript
-const proc = Bun.spawn(["bun", "--version"]);
-await proc.exited;
+```ts
+import { describe, expect, test } from "vitest";
 
-const usage = proc.resourceUsage();
-console.log(`Max memory used: ${usage.maxRSS} bytes`);
-console.log(`CPU time (user): ${usage.cpuTime.user} µs`);
-console.log(`CPU time (system): ${usage.cpuTime.system} µs`);
+describe("cart", () => {
+  const cart = createCart();
+  test("starts empty", () => {
+    expect(cart.items).toEqual([]);
+  });
+  test.skip("adds an item", () => {
+    expect(cart.add("apple").items).toEqual(["apple"]);
+  });
+});
+```
+
+--------------------------------
+
+### Define a cc rule and build edge in build.ninja
+
+Source: https://github.com/oven-sh/bun/blob/main/scripts/build/CLAUDE.md
+
+Example from the generated build/<profile>/build.ninja showing a `cc` rule (defined via n.rule("cc", {...}) in compile.ts) and a build edge emitted by cc(n, cfg, src, opts) per source. The `|` starts implicit inputs and `||` starts order-only inputs.
+
+```ninja
+rule cc
+  command = clang $cflags -MMD -MT $out -MF $out.d -c $in -o $out
+  depfile = $out.d
+  deps = gcc
+
+build obj/src/foo.c.o: cc ../../src/foo.c | deps/zstd/libzstd.a || codegen/generated.h
+  cflags = -O2 -I...
 ```
 
 --------------------------------
@@ -1934,37 +1922,18 @@ builder.onStart(() => {
 
 --------------------------------
 
-### Configure rule with default options in bunfig.toml
+### Set scanner credentials via environment variables
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/typescript/switch-exhaustiveness-check.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/security-scanner-api.mdx
 
-Demonstrates all options set to their defaults in bunfig.toml.
+Some enterprise scanners read authentication from environment variables. Export the required variables (for example in ~/.bashrc) before running bun install so the scanner uses them automatically.
 
-```toml
-[lint.rules]
-"@typescript-eslint/switch-exhaustiveness-check" = ["error", {
-  considerDefaultExhaustiveForUnions = false,
-  allowDefaultCaseForExhaustiveSwitch = true,
-  requireDefaultForNonUnion = false,
-  # defaultCaseCommentPattern = <string>,
-}]
-```
+```bash
+# This might go in ~/.bashrc, for example
+export SECURITY_API_KEY="your-api-key"
 
---------------------------------
-
-### package.json with a metadependency
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/overrides.mdx
-
-Example package.json where foo depends on bar, making bar a metadependency. By default, Bun installs the latest version of all dependencies and metadependencies according to the ranges specified in each package's package.json.
-
-```json
-{
-  "name": "my-app",
-  "dependencies": {
-    "foo": "^2.0.0"
-  }
-}
+# The scanner will now use these credentials automatically
+bun install
 ```
 
 --------------------------------
@@ -1986,33 +1955,41 @@ Hello via Bun!
 
 --------------------------------
 
-### Retrieve rows as raw Buffers with sql.raw()
+### Invalid test code violating require-hook
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/sql.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/require-hook.mdx
 
-Use .raw() to get rows as arrays of Buffer objects (Uint8Array on SQLite). Call .raw() before the query starts (before await, .then(), or .execute()) to ensure binary formats are requested.
+Example of invalid test setup where initialized `let` variables and standalone function calls are placed outside hooks at the top level or directly in a `describe` block.
 
 ```ts
-const rows = await sql`SELECT * FROM users`.raw();
-console.log(rows); // [[Buffer, Buffer], [Buffer, Buffer], [Buffer, Buffer]]
+import { describe, expect, test } from "bun:test";
+
+let db = connect();
+db.seed(["ada", "grace"]);
+
+describe("users", () => {
+  clearCache();
+
+  test("finds a user", () => {
+    expect(db.find("ada")).toBeDefined();
+  });
+});
 ```
 
 --------------------------------
 
-### Read a resolved promise's value with Bun.peek()
+### Define an HTTP route and start an Elysia server in server.ts
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/utils.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/elysia.mdx
 
-Use Bun.peek() to read a promise's result without await or .then, but only if the promise has already fulfilled or rejected. This example shows peeking a resolved promise to get its value.
+Define a GET route at root using Elysia and listen on port 8080. Logs the running server port using the app.server instance.
 
-```typescript
-import { peek } from "bun";
+```ts
+import { Elysia } from "elysia";
 
-const promise = Promise.resolve("hi");
+const app = new Elysia().get("/", () => "Hello Elysia").listen(8080);
 
-// no await!
-const result = peek(promise);
-console.log(result); // "hi"
+console.log(`🦊 Elysia is running on port ${app.server?.port}...`);
 ```
 
 --------------------------------
@@ -2037,66 +2014,20 @@ my-project/
 
 --------------------------------
 
-### Example output of bun audit fix
+### Report child process resource usage with resourceUsage()
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/audit.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/child-process.mdx
 
-Shows the plan printed by `bun audit fix`, including fixed packages, packages blocked by a dependent's range, and packages with no published fix. The final counts reflect the re-audit after installing.
+After the spawned process exits, call resourceUsage() to get maxRSS and CPU time. The example spawns bun --version and logs memory and CPU usage.
 
-```text
-fixing:
-  ms@0.7.0 → 0.7.1
-  lodash@4.17.20 → 4.17.21
-    package.json: 4.17.20 → 4.17.21
-  tar@6.1.11 → 6.1.12
-    package.json (overrides): 6.1.11 → 6.1.12
+```typescript
+const proc = Bun.spawn(["bun", "--version"]);
+await proc.exited;
 
-blocked by a dependent's range:
-  minimatch@0.3.0 → 3.0.2
-    express@3.21.2 depends on minimatch@0.3.0
-  semver@5.7.1 → 6.3.1
-    my-app depends on semver@^5.0.0
-    bun audit fix --latest
-  qs@6.5.2 → 6.11.0
-    package.json overrides qs@~6.5.0 (express>qs)
-    bun audit fix --latest
-
-no published version fixes:
-  left-pad@1.3.0  GHSA-xxxx-xxxx-xxxx
-    bun audit fix --ignore GHSA-xxxx-xxxx-xxxx
-
-Fixed 3 vulnerabilities in 3 packages
-5 vulnerabilities remaining
-```
-
---------------------------------
-
-### Get, set, delete, and fix package.json fields with bun pm pkg
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/pm.mdx
-
-Examples of each bun pm pkg operation. With --json, a value that is not valid JSON is an error. set, delete, and fix accept --dry-run, which prints the resulting package.json instead of writing it.
-
-```bash
-# get
-bun pm pkg get name                               # single property
-bun pm pkg get name version                       # multiple properties
-bun pm pkg get                                    # entire package.json
-bun pm pkg get scripts.build                      # nested property
-
-# set
-bun pm pkg set name="my-package"                  # simple property
-bun pm pkg set scripts.test="jest" version=2.0.0  # multiple properties
-bun pm pkg set private=true --json                # JSON values with --json flag
-bun pm pkg set 'keywords[]=cli'                   # append to an array (created if missing)
-bun pm pkg set 'contributors[0].name=Jane'        # update an array element
-
-# delete
-bun pm pkg delete description                     # single property
-bun pm pkg delete scripts.test contributors[0]    # multiple/nested
-
-# fix
-bun pm pkg fix                                    # auto-fix common issues
+const usage = proc.resourceUsage();
+console.log(`Max memory used: ${usage.maxRSS} bytes`);
+console.log(`CPU time (user): ${usage.cpuTime.user} µs`);
+console.log(`CPU time (system): ${usage.cpuTime.system} µs`);
 ```
 
 --------------------------------
@@ -2148,20 +2079,6 @@ bun create nuxt@latest my-nuxt-app
 
 --------------------------------
 
-### Force refresh cached registry metadata with bun add or bun install
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
-
-Use --force to fetch fresh metadata before the 5-minute cache expires, for example after publishing a new version. Bun re-asks the registry for every range or tag it must resolve and rewrites the cached manifest.
-
-```bash
-bun add <pkg> --force
-# or, in a project without a lockfile
-bun install --force
-```
-
---------------------------------
-
 ### Install and run global packages using bun i -g
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/install/from-npm-install-to-bun-install.mdx
@@ -2174,6 +2091,36 @@ bun i -g eslint
 
 # Run a globally-installed package without the `bun run` prefix
 eslint --init
+```
+
+--------------------------------
+
+### package.json with a metadependency
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/overrides.mdx
+
+Example package.json where foo depends on bar, making bar a metadependency. By default, Bun installs the latest version of all dependencies and metadependencies according to the ranges specified in each package's package.json.
+
+```json
+{
+  "name": "my-app",
+  "dependencies": {
+    "foo": "^2.0.0"
+  }
+}
+```
+
+--------------------------------
+
+### Retrieve rows as raw Buffers with sql.raw()
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/sql.mdx
+
+Use .raw() to get rows as arrays of Buffer objects (Uint8Array on SQLite). Call .raw() before the query starts (before await, .then(), or .execute()) to ensure binary formats are requested.
+
+```ts
+const rows = await sql`SELECT * FROM users`.raw();
+console.log(rows); // [[Buffer, Buffer], [Buffer, Buffer], [Buffer, Buffer]]
 ```
 
 --------------------------------
@@ -2203,6 +2150,58 @@ bun init
 
 --------------------------------
 
+### Read a resolved promise's value with Bun.peek()
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/utils.mdx
+
+Use Bun.peek() to read a promise's result without await or .then, but only if the promise has already fulfilled or rejected. This example shows peeking a resolved promise to get its value.
+
+```typescript
+import { peek } from "bun";
+
+const promise = Promise.resolve("hi");
+
+// no await!
+const result = peek(promise);
+console.log(result); // "hi"
+```
+
+--------------------------------
+
+### Example output of bun audit fix
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/audit.mdx
+
+Shows the plan printed by `bun audit fix`, including fixed packages, packages blocked by a dependent's range, and packages with no published fix. The final counts reflect the re-audit after installing.
+
+```text
+fixing:
+  ms@0.7.0 → 0.7.1
+  lodash@4.17.20 → 4.17.21
+    package.json: 4.17.20 → 4.17.21
+  tar@6.1.11 → 6.1.12
+    package.json (overrides): 6.1.11 → 6.1.12
+
+blocked by a dependent's range:
+  minimatch@0.3.0 → 3.0.2
+    express@3.21.2 depends on minimatch@0.3.0
+  semver@5.7.1 → 6.3.1
+    my-app depends on semver@^5.0.0
+    bun audit fix --latest
+  qs@6.5.2 → 6.11.0
+    package.json overrides qs@~6.5.0 (express>qs)
+    bun audit fix --latest
+
+no published version fixes:
+  left-pad@1.3.0  GHSA-xxxx-xxxx-xxxx
+    bun audit fix --ignore GHSA-xxxx-xxxx-xxxx
+
+Fixed 3 vulnerabilities in 3 packages
+5 vulnerabilities remaining
+```
+
+--------------------------------
+
 ### Example output of bun pm licenses
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/pm.mdx
@@ -2227,15 +2226,32 @@ Unknown (4)
 
 --------------------------------
 
-### Configure [install] section in bunfig.toml
+### Get, set, delete, and fix package.json fields with bun pm pkg
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/bunfig.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/pm.mdx
 
-The `[install]` section configures the behavior of `bun install`. This snippet shows the basic structure.
+Examples of each bun pm pkg operation. With --json, a value that is not valid JSON is an error. set, delete, and fix accept --dry-run, which prints the resulting package.json instead of writing it.
 
-```toml
-[install]
-# configuration here
+```bash
+# get
+bun pm pkg get name                               # single property
+bun pm pkg get name version                       # multiple properties
+bun pm pkg get                                    # entire package.json
+bun pm pkg get scripts.build                      # nested property
+
+# set
+bun pm pkg set name="my-package"                  # simple property
+bun pm pkg set scripts.test="jest" version=2.0.0  # multiple properties
+bun pm pkg set private=true --json                # JSON values with --json flag
+bun pm pkg set 'keywords[]=cli'                   # append to an array (created if missing)
+bun pm pkg set 'contributors[0].name=Jane'        # update an array element
+
+# delete
+bun pm pkg delete description                     # single property
+bun pm pkg delete scripts.test contributors[0]    # multiple/nested
+
+# fix
+bun pm pkg fix                                    # auto-fix common issues
 ```
 
 --------------------------------
@@ -2252,18 +2268,6 @@ command source /path/to/bun/misctools/lldb/init.lldb
 
 --------------------------------
 
-### Install a specific version of Bun on Windows
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/upgrade.mdx
-
-Installs a specific version of Bun via the PowerShell installation script on Windows.
-
-```powershell
-iex "& {$(irm https://bun.sh/install.ps1)} -Version 1.3.3"
-```
-
---------------------------------
-
 ### Bundle with Bun.build API
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/index.mdx
@@ -2275,6 +2279,20 @@ await Bun.build({
   entrypoints: ["./index.tsx"],
   outdir: "./out",
 });
+```
+
+--------------------------------
+
+### Force refresh cached registry metadata with bun add or bun install
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
+
+Use --force to fetch fresh metadata before the 5-minute cache expires, for example after publishing a new version. Bun re-asks the registry for every range or tag it must resolve and rewrites the cached manifest.
+
+```bash
+bun add <pkg> --force
+# or, in a project without a lockfile
+bun install --force
 ```
 
 --------------------------------
@@ -2300,34 +2318,6 @@ jobs:
       - run: bun install # [!code ++]
       - run: bun index.ts # [!code ++]
       - run: bun run build # [!code ++]
-```
-
---------------------------------
-
-### Install without creating a lockfile with --no-save
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/lockfile.mdx
-
-Use `bun install --no-save` to install without creating a lockfile.
-
-```bash
-bun install --no-save
-```
-
---------------------------------
-
-### Install dependencies for specific packages using --filter
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
-
-Use the --filter flag to install dependencies for a subset of packages in a monorepo. The first command installs for all workspaces except pkg-c; the second installs only for pkg-a in ./packages/pkg-a.
-
-```bash
-# Install dependencies for all workspaces except `pkg-c`
-bun install --filter '!pkg-c'
-
-# Install dependencies for only `pkg-a` in `./packages/pkg-a`
-bun install --filter './packages/pkg-a'
 ```
 
 --------------------------------
@@ -2365,36 +2355,38 @@ sink.start(options?: {
 
 --------------------------------
 
-### Install a specific version of Bun on macOS and Linux
+### Install a package with bun install
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/snippets/cli/install.mdx
+
+Basic CLI usage for installing a named package at a specific version. Run from a terminal in your project directory.
+
+```sh
+bun install <name>@<version>
+```
+
+--------------------------------
+
+### Install a specific version of Bun on Windows
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/util/upgrade.mdx
 
-Installs a specific version tag of Bun via the bash install script on macOS and Linux.
+Installs a specific version of Bun via the PowerShell installation script on Windows.
 
-```bash
-curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.3"
+```powershell
+iex "& {$(irm https://bun.sh/install.ps1)} -Version 1.3.3"
 ```
 
 --------------------------------
 
-### Reproducible install with bun install --frozen-lockfile
+### Create and run a new Elysia project using bun create
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/elysia.mdx
 
-Installs the exact versions in the lockfile without updating it. If package.json disagrees with bun.lock, Bun exits with an error naming the first changed dependency; run bun install and commit the updated bun.lock to fix it.
+Initialize a new Elysia application in Bun, enter the project directory, and start the development server with hot reloading.
 
 ```bash
-bun install --frozen-lockfile
-```
-
---------------------------------
-
-### Install commander via npm
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/commander/Readme.md
-
-Installs the Commander package as a dependency in your project.
-
-```sh
-npm install commander
+bun create elysia myapp
+cd myapp
+bun run dev
 ```
