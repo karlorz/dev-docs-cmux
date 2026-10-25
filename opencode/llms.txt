@@ -391,18 +391,6 @@ Use the /redo command to redo changes that were undone.
 
 --------------------------------
 
-### Start API and web server with opencode serve
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
-
-Starts the API and web server. See Web documentation for more details.
-
-```bash
-$ opencode serve
-```
-
---------------------------------
-
 ### Create an OpenCode client and start a session
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/client/index.mdx
@@ -424,6 +412,18 @@ await client.session.prompt({
   sessionID: session.id,
   text: "Review the current changes",
 })
+```
+
+--------------------------------
+
+### Start API and web server with opencode serve
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
+
+Starts the API and web server. See Web documentation for more details.
+
+```bash
+$ opencode serve
 ```
 
 --------------------------------
@@ -452,28 +452,6 @@ opencode github install
 
 --------------------------------
 
-### Install OpenCode via curl, npm, Homebrew, pacman, paru, mise, or Nix
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-Install OpenCode using the YOLO script or a package manager. Remove versions older than 0.1.x before installing.
-
-```bash
-# YOLO
-curl -fsSL https://opencode.ai/v2/install | bash
-
-# Package managers
-npm i -g @opencode/cli@latest      # or bun/pnpm/yarn
-brew install anomalyco/tap/opencode-v2 # macOS and Linux (recommended, always up to date)
-brew install opencode              # macOS and Linux (official brew formula, updated less)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-beta              # Arch Linux (Latest from AUR)
-mise use -g opencode               # Any OS
-nix run github:anomalyco/opencode  # Nix
-```
-
---------------------------------
-
 ### Run OpenCode with Docker
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
@@ -494,6 +472,28 @@ The command prints the path to the snapshot after completion. This is an example
 
 ```text
 /home/me/.local/share/opencode/log/heap-48213-2026-10-23T013012345Z.heapsnapshot
+```
+
+--------------------------------
+
+### Install OpenCode via curl, npm, Homebrew, pacman, paru, mise, or Nix
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Install OpenCode using the YOLO script or a package manager. Remove versions older than 0.1.x before installing.
+
+```bash
+# YOLO
+curl -fsSL https://opencode.ai/v2/install | bash
+
+# Package managers
+npm i -g @opencode/cli@latest      # or bun/pnpm/yarn
+brew install anomalyco/tap/opencode-v2 # macOS and Linux (recommended, always up to date)
+brew install opencode              # macOS and Linux (official brew formula, updated less)
+sudo pacman -S opencode            # Arch Linux (Stable)
+paru -S opencode-beta              # Arch Linux (Latest from AUR)
+mise use -g opencode               # Any OS
+nix run github:anomalyco/opencode  # Nix
 ```
 
 --------------------------------
@@ -686,18 +686,6 @@ const info = await client.server.info()
 
 --------------------------------
 
-### Start local development server with bun dev
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/README.md
-
-Starts the local Astro development server. The resulting local URL includes the base path configured in astro.config.ts.
-
-```bash
-bun dev
-```
-
---------------------------------
-
 ### Start OpenCode with a search provider API key
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/websearch.mdx
@@ -710,18 +698,6 @@ $ TAVILY_API_KEY=your-key opencode
 
 --------------------------------
 
-### Install OpenCode CLI via Vite+
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
-
-Install the OpenCode CLI globally using Vite+. Vite+ requires no additional flag.
-
-```bash
-vp install -g @opencode/cli
-```
-
---------------------------------
-
 ### Install OpenCode CLI via Homebrew
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
@@ -730,6 +706,18 @@ Install the OpenCode CLI using Homebrew. This is one of several supported instal
 
 ```bash
 brew install anomalyco/tap/opencode-v2
+```
+
+--------------------------------
+
+### Install OpenCode CLI via Vite+
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+
+Install the OpenCode CLI globally using Vite+. Vite+ requires no additional flag.
+
+```bash
+vp install -g @opencode/cli
 ```
 
 --------------------------------
@@ -862,6 +850,29 @@ Use the `env` property to set environment variables when starting the LSP server
 
 --------------------------------
 
+### Start, persist, and resume a video generation with Video.start and Video.resume
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/ai/README.md
+
+Use `Video.start` to get a generation handle, persist its token along with the provider and model ID, then resume with `Video.resume` and await completion. The token carries no route identity, so the model must be saved separately.
+
+```typescript
+// Explicit control: keep the handle, persist the token, resume elsewhere.
+const controlled = Effect.gen(function* () {
+  const generation = yield* Video.start({ model: google.video("veo-3.1-generate-preview"), prompt })
+  generation.id // provider operation / task / request id
+  generation.status // "queued" | "running" | "completed" | "failed" | "cancelled" | "expired"
+  generation.token // route-owned JSON: `{ operation }`, `{ requestID }`, `{ taskID }`, or fal's follow-up URLs
+  // The token carries no route identity: persist the provider and model ID alongside it, since `resume` needs the model.
+  const saved = JSON.stringify(generation.token)
+
+  const resumed = yield* Video.resume(google.video("veo-3.1-generate-preview"), JSON.parse(saved))
+  return yield* resumed.await({ poll: { interval: "10 seconds" } })
+})
+```
+
+--------------------------------
+
 ### Install OpenCode CLI via curl
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
@@ -926,6 +937,18 @@ setup: async (ctx) => {
 
 --------------------------------
 
+### Install the Figma plugin via CLI
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/README.md
+
+Installs the plugin directly from the Git repository's Figma directory using the default branch.
+
+```sh
+opencode plugin add 'git+https://github.com/anomalyco/opencode.git#path:packages/plugins/figma'
+```
+
+--------------------------------
+
 ### Setup function using ctx.uses, ctx.stores, and ctx.add
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-extensions/README.md
@@ -938,18 +961,6 @@ const setup: Setup<typeof definition> = (ctx) => {
   const prefs = ctx.stores.prefs.value // loaded before setup
   ctx.add(Command, { id: "open", title: ctx.t("open"), run: () => ctx.layout.settings(ctx.id) })
 }
-```
-
---------------------------------
-
-### Install the Figma plugin via CLI
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/README.md
-
-Installs the plugin directly from the Git repository's Figma directory using the default branch.
-
-```sh
-opencode plugin add 'git+https://github.com/anomalyco/opencode.git#path:packages/plugins/figma'
 ```
 
 --------------------------------
@@ -978,14 +989,14 @@ pnpm add -g --allow-build=@opencode/cli @opencode/cli
 
 --------------------------------
 
-### Install OpenCode CLI via mise
+### Install OpenCode 1 with Homebrew
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
 
-Install the OpenCode CLI globally using mise. Requires mise 2026.10.9 or later; older versions install OpenCode 1.
+Installs OpenCode 1 on macOS and Linux using the OpenCode Homebrew tap. Use this tap for V1; Homebrew's `brew install opencode` formula currently installs V2.
 
 ```bash
-mise use -g opencode
+brew install anomalyco/tap/opencode
 ```
 
 --------------------------------
@@ -1003,30 +1014,21 @@ vim .opencode/themes/my-theme.json
 
 --------------------------------
 
-### Install OpenCode 1 with Homebrew
+### Connect to IO.NET provider
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
 
-Installs OpenCode 1 on macOS and Linux using the OpenCode Homebrew tap. Use this tap for V1; Homebrew's `brew install opencode` formula currently installs V2.
+Run the /connect command to start connecting to IO.NET, then enter your API key when prompted.
 
-```bash
-brew install anomalyco/tap/opencode
+```txt
+/connect
 ```
 
---------------------------------
-
-### Install a plugin with opencode plugin
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
-
-Installs a plugin and updates your config. Use --global to install in global config, --force to replace existing plugin version.
-
-```bash
-opencode plugin <module>
-```
-
-```bash
-opencode plug <module>
+```txt
+┌ API key
+│
+│
+└ enter
 ```
 
 --------------------------------
@@ -1047,21 +1049,30 @@ npm init solid@latest my-app
 
 --------------------------------
 
-### Connect to IO.NET provider
+### Install a plugin with opencode plugin
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
 
-Run the /connect command to start connecting to IO.NET, then enter your API key when prompted.
+Installs a plugin and updates your config. Use --global to install in global config, --force to replace existing plugin version.
 
-```txt
-/connect
+```bash
+opencode plugin <module>
 ```
 
-```txt
-┌ API key
-│
-│
-└ enter
+```bash
+opencode plug <module>
+```
+
+--------------------------------
+
+### Install OpenCode CLI via mise
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/index.mdx
+
+Install the OpenCode CLI globally using mise. Requires mise 2026.10.9 or later; older versions install OpenCode 1.
+
+```bash
+mise use -g opencode
 ```
 
 --------------------------------
@@ -1093,21 +1104,6 @@ const endpoint = await Service.ensure({
     console.log(reason, previousVersion)
   },
 })
-```
-
---------------------------------
-
-### Enter Snowflake account identifier
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
-
-When prompted during Snowflake Cortex setup, enter your account identifier, for example myorg-myaccount or xy12345.us-east-1.
-
-```txt
-┌ Snowflake Account Identifier
-│
-│
-└ enter
 ```
 
 --------------------------------
@@ -1147,6 +1143,33 @@ export default Plugin.define({
     await ctx.storage.set("loaded", true)
   },
 })
+```
+
+--------------------------------
+
+### Enter Snowflake account identifier
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
+
+When prompted during Snowflake Cortex setup, enter your account identifier, for example myorg-myaccount or xy12345.us-east-1.
+
+```txt
+┌ Snowflake Account Identifier
+│
+│
+└ enter
+```
+
+--------------------------------
+
+### Start the Astro dev server with bun dev
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/README.md
+
+Run from the services/www directory to start the local development server. The local URL includes the base configured in astro.config.ts.
+
+```bash
+bun dev
 ```
 
 --------------------------------
@@ -1305,18 +1328,6 @@ opencode mini
 
 --------------------------------
 
-### Undo changes with /undo
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
-
-Use the /undo command to revert changes and show your original message again. You can run /undo multiple times to undo multiple changes.
-
-```bash
-/undo
-```
-
---------------------------------
-
 ### View CLI help documentation
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-code-connect/references/api.md
@@ -1327,6 +1338,18 @@ Displays help information for the figma connect CLI and its subcommands.
 npx figma connect --help
 npx figma connect publish --help
 npx figma connect unpublish --help
+```
+
+--------------------------------
+
+### Undo changes with /undo
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/index.mdx
+
+Use the /undo command to revert changes and show your original message again. You can run /undo multiple times to undo multiple changes.
+
+```bash
+/undo
 ```
 
 --------------------------------
@@ -1358,6 +1381,30 @@ This is an SST v3 monorepo with TypeScript. The project uses bun workspaces for 
 ## Monorepo Conventions
 
 - Import shared modules using workspace names: `@my-app/core/example`
+```
+
+--------------------------------
+
+### Configure session settings in cli.json
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/config.mdx
+
+Example cli.json configuration for full-screen TUI sessions, including sidebar, scrollbar, thinking, grouping, image preview, TPS, markdown, new location, and permissions. Use these keys to control how sessions are presented and where new sessions start.
+
+```json
+{
+  "session": {
+    "sidebar": "auto",
+    "scrollbar": false,
+    "thinking": "hide",
+    "grouping": "auto",
+    "image_preview": false,
+    "tps": true,
+    "markdown": "rendered",
+    "new_location": "launch",
+    "permissions": "prompt"
+  }
+}
 ```
 
 --------------------------------
@@ -1394,26 +1441,19 @@ export default Plugin.define({
 
 --------------------------------
 
-### Configure session settings in cli.json
+### Start video generation and stream events with ai.video.start
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/config.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/ai/README.md
 
-Example cli.json configuration for full-screen TUI sessions, including sidebar, scrollbar, thinking, grouping, image preview, TPS, markdown, new location, and permissions. Use these keys to control how sessions are presented and where new sessions start.
+Use the promise client to start a video generation, stream events with polling, await the result, and write the video to a file. The handle's status and progress are snapshots; refresh() resolves to a new handle. Every promise method and stream accepts { signal } to abort.
 
-```json
-{
-  "session": {
-    "sidebar": "auto",
-    "scrollbar": false,
-    "thinking": "hide",
-    "grouping": "auto",
-    "image_preview": false,
-    "tps": true,
-    "markdown": "rendered",
-    "new_location": "launch",
-    "permissions": "prompt"
-  }
-}
+```typescript
+import { ai } from "@opencode/ai/promise"
+
+const generation = await ai.video.start({ model, prompt })
+for await (const event of generation.events({ poll: { interval: 10_000 } })) console.log(event.type)
+const video = await generation.result({ signal })
+await ai.write(video.video, "./kite.mp4")
 ```
 
 --------------------------------
@@ -1526,19 +1566,6 @@ vim .opencode/themes/my-theme.json
 
 --------------------------------
 
-### Install OpenCode Desktop on macOS via Homebrew
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-Install the OpenCode desktop application on macOS using Homebrew Cask.
-
-```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-```
-
---------------------------------
-
 ### Create user-wide theme file
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/themes.mdx
@@ -1548,6 +1575,19 @@ Create a new JSON theme file in the user configuration directory ~/.config/openc
 ```bash
 mkdir -p ~/.config/opencode/themes
 vim ~/.config/opencode/themes/my-theme.json
+```
+
+--------------------------------
+
+### Install OpenCode Desktop on macOS via Homebrew
+
+Source: https://github.com/anomalyco/opencode/blob/dev/README.md
+
+Install the OpenCode desktop application on macOS using Homebrew Cask.
+
+```bash
+# macOS (Homebrew)
+brew install --cask opencode-desktop
 ```
 
 --------------------------------
@@ -1590,18 +1630,6 @@ bun add ./opencode-acme-effect-plugin-1.0.0.tgz
 
 --------------------------------
 
-### Install @opencode/sdk and effect
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/sdk/effect.mdx
-
-Install the Effect-native embedded SDK and the required Effect version.
-
-```sh
-bun add @opencode/sdk effect@4.0.1
-```
-
---------------------------------
-
 ### Connect to OpenCode Zen in the TUI
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
@@ -1639,6 +1667,47 @@ Subscribe to OpenCode Go in the console, copy your API key, then connect it as O
 
 --------------------------------
 
+### Install @opencode/sdk and effect
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/sdk/effect.mdx
+
+Install the Effect-native embedded SDK and the required Effect version.
+
+```sh
+bun add @opencode/sdk effect@4.0.1
+```
+
+--------------------------------
+
+### Run OpenCode from WSL in a Windows project path
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
+
+Navigates to a Windows drive mount path under /mnt/ and launches OpenCode.
+
+```bash
+cd /mnt/c/Users/YourName/project
+opencode
+```
+
+--------------------------------
+
+### Configure legacy experimental.policies in opencode.jsonc
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/policies.mdx
+
+Demonstrates the legacy experimental.policies key configuration. This key remains supported and automatically merges into policies.
+
+```jsonc
+{
+  "experimental": {
+    "policies": [{ "action": "provider.use", "resource": "openai", "effect": "deny" }],
+  },
+}
+```
+
+--------------------------------
+
 ### GET /file/status
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
@@ -1665,19 +1734,6 @@ GET
 [
   "<File>"
 ]
-```
-
---------------------------------
-
-### Run OpenCode from WSL in a Windows project path
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/windows-wsl.mdx
-
-Navigates to a Windows drive mount path under /mnt/ and launches OpenCode.
-
-```bash
-cd /mnt/c/Users/YourName/project
-opencode
 ```
 
 --------------------------------
@@ -1749,22 +1805,6 @@ jobs:
 
 --------------------------------
 
-### Configure legacy experimental.policies in opencode.jsonc
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/policies.mdx
-
-Demonstrates the legacy experimental.policies key configuration. This key remains supported and automatically merges into policies.
-
-```jsonc
-{
-  "experimental": {
-    "policies": [{ "action": "provider.use", "resource": "openai", "effect": "deny" }],
-  },
-}
-```
-
---------------------------------
-
 ### GET /session/:id/todo
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
@@ -1794,19 +1834,6 @@ GET
 
 --------------------------------
 
-### Get current path with path.get()
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
-
-Use path.get() to get current path information.
-
-```javascript
-// Get current path information
-const pathInfo = await client.path.get()
-```
-
---------------------------------
-
 ### Create a SKILL.md file for a git-release skill
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/skills.mdx
@@ -1825,6 +1852,19 @@ description: Prepare release notes, version bumps, and GitHub releases
 2. Summarize merged changes since the previous tag.
 3. Propose the version bump before changing files.
 4. Run `scripts/changelog.ts` only after the user approves the version.
+```
+
+--------------------------------
+
+### Get current path with path.get()
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
+
+Use path.get() to get current path information.
+
+```javascript
+// Get current path information
+const pathInfo = await client.path.get()
 ```
 
 --------------------------------
@@ -1851,35 +1891,6 @@ const plugin = Plugin.define({
 })
 
 await using opencode = await OpenCode.create({ plugins: [plugin] })
-```
-
---------------------------------
-
-### GET /session/:id/children
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
-
-Get a session's child sessions. Returns an array of Session objects.
-
-```APIDOC
-## GET /session/:id/children
-
-### Description
-Get a session's child sessions.
-
-### Method
-GET
-
-### Endpoint
-/session/:id/children
-
-### Parameters
-#### Path Parameters
-- **id** (string) - Required - Session ID
-
-### Response
-#### Success Response (200)
-- **Session[]** - Array of child Session objects
 ```
 
 --------------------------------
@@ -1913,6 +1924,47 @@ gantt
 
 --------------------------------
 
+### GET /session/:id/children
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
+
+Get a session's child sessions. Returns an array of Session objects.
+
+```APIDOC
+## GET /session/:id/children
+
+### Description
+Get a session's child sessions.
+
+### Method
+GET
+
+### Endpoint
+/session/:id/children
+
+### Parameters
+#### Path Parameters
+- **id** (string) - Required - Session ID
+
+### Response
+#### Success Response (200)
+- **Session[]** - Array of child Session objects
+```
+
+--------------------------------
+
+### View serve help with opencode serve --help
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
+
+Displays all subcommands and flags for the serve command.
+
+```bash
+$ opencode serve --help
+```
+
+--------------------------------
+
 ### GET /session/status
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
@@ -1934,6 +1986,26 @@ GET
 ### Response
 #### Success Response (200)
 - **{ [sessionID: string]: SessionStatus }** - Object mapping session IDs to SessionStatus
+```
+
+--------------------------------
+
+### Configure instructions in opencode.jsonc
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/instructions.mdx
+
+Specifies instruction sources including local files, globs, home directory paths, and remote URLs. Configured instructions load in order after AGENTS.md files.
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "CONTRIBUTING.md",
+    "docs/guidelines/*.md",
+    "~/rules/opencode.md",
+    "https://example.com/instructions.md",
+  ],
+}
 ```
 
 --------------------------------
@@ -1998,34 +2070,33 @@ GET
 
 --------------------------------
 
-### View serve help with opencode serve --help
+### Run /connect and Select Other Provider
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
 
-Displays all subcommands and flags for the serve command.
+Start the /connect command and scroll down to select the Other provider option to add a custom OpenAI-compatible provider.
 
 ```bash
-$ opencode serve --help
+$ /connect
+
+┌  Add credential
+│
+◆  Select provider
+│  ...
+│  ● Other
+└
 ```
 
 --------------------------------
 
-### Configure instructions in opencode.jsonc
+### Run desktop startup benchmark with custom sample count
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/instructions.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/e2e/performance/README.md
 
-Specifies instruction sources including local files, globs, home directory paths, and remote URLs. Configured instructions load in order after AGENTS.md files.
+Overrides the run count for targeted startup diagnostics using the DESKTOP_STARTUP_RUNS environment variable.
 
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    "CONTRIBUTING.md",
-    "docs/guidelines/*.md",
-    "~/rules/opencode.md",
-    "https://example.com/instructions.md",
-  ],
-}
+```sh
+DESKTOP_STARTUP_RUNS=1 bun run bench:devex
 ```
 
 --------------------------------
@@ -2042,33 +2113,14 @@ Check for a new version of OpenCode and install it. If a newer OpenCode 1 releas
 
 --------------------------------
 
-### Fetch available Go models with curl
+### Preview uninstallation with --dry-run
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/console/go.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/index.mdx
 
-Retrieve the full list of available models and their metadata from the models endpoint.
-
-```bash
-curl https://opencode.ai/inference/go/v1/models
-```
-
---------------------------------
-
-### Run /connect and Select Other Provider
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/providers.mdx
-
-Start the /connect command and scroll down to select the Other provider option to add a custom OpenAI-compatible provider.
+Previews the files and installation components that will be cleaned up prior to actual removal. Session data, configuration, and state are preserved.
 
 ```bash
-$ /connect
-
-┌  Add credential
-│
-◆  Select provider
-│  ...
-│  ● Other
-└
+opencode uninstall --dry-run
 ```
 
 --------------------------------
@@ -2117,26 +2169,18 @@ GET
 
 --------------------------------
 
-### Preview uninstallation with --dry-run
+### Run subagent-eviction.ts with DEMO_LABEL=AFTER
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/script/drive/subagent-eviction.md
 
-Previews the files and installation components that will be cleaned up prior to actual removal. Session data, configuration, and state are preserved.
-
-```bash
-opencode uninstall --dry-run
-```
-
---------------------------------
-
-### Run desktop startup benchmark with custom sample count
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/e2e/performance/README.md
-
-Overrides the run count for targeted startup diagnostics using the DESKTOP_STARTUP_RUNS environment variable.
+Executes the subagent eviction proof script using opencode-drive to assert successful delivery after parent location eviction and rebuild. Requires Bun 1.4.2, opencode-drive 2.1.3, and an installed V2 checkout.
 
 ```sh
-DESKTOP_STARTUP_RUNS=1 bun run bench:devex
+OPENCODE_DRIVE_DB=proof.sqlite \
+OPENCODE_DRIVE_MEDIA_DIR=$PWD/.drive-output \
+DEMO_LABEL=AFTER \
+opencode-drive run script/drive/subagent-eviction.ts
+
 ```
 
 --------------------------------
@@ -2171,32 +2215,15 @@ GET
 
 --------------------------------
 
-### Support V1 and V2 from one package with Plugin.define and server()
+### Build and package production release with CLI distribution
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/build/plugins/migrate-v1.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/desktop/README.md
 
-A package can temporarily expose both implementations from one default export. V1 calls `server()` and V2 calls `setup()`; the APIs remain separate and this shape does not translate hooks automatically. V1 object entrypoints are supported in OpenCode `1.18.29` and newer.
+Build and package the desktop app for production using a specified prebuilt V2 CLI distribution path and channel.
 
-```ts
-import { Plugin } from "@opencode/plugin"
-
-export default {
-  ...Plugin.define({
-    id: "example",
-    async setup(ctx) {
-      await ctx.tool.hook("execute.before", () => {
-        console.log("A tool is about to run")
-      })
-    },
-  }),
-  async server() {
-    return {
-      "tool.execute.before": async () => {
-        console.log("A tool is about to run")
-      },
-    }
-  },
-}
+```bash
+OPENCODE_CHANNEL=prod OPENCODE_CLI_DIST=/absolute/path/to/packages/cli/dist bun run build
+OPENCODE_CHANNEL=prod bun run package
 ```
 
 --------------------------------
@@ -2221,46 +2248,6 @@ figma.currentPage.focusedSlide = slide;
 
 --------------------------------
 
-### Install @opencode-ai/sdk from npm
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
-
-Install the opencode JS/TS SDK from npm to build type-safe integrations with the opencode server.
-
-```bash
-npm install @opencode-ai/sdk
-```
-
---------------------------------
-
-### Run subagent-eviction.ts with DEMO_LABEL=AFTER
-
-Source: https://github.com/anomalyco/opencode/blob/dev/script/drive/subagent-eviction.md
-
-Executes the subagent eviction proof script using opencode-drive to assert successful delivery after parent location eviction and rebuild. Requires Bun 1.4.2, opencode-drive 2.1.3, and an installed V2 checkout.
-
-```sh
-OPENCODE_DRIVE_DB=proof.sqlite \
-OPENCODE_DRIVE_MEDIA_DIR=$PWD/.drive-output \
-DEMO_LABEL=AFTER \
-opencode-drive run script/drive/subagent-eviction.ts
-
-```
-
---------------------------------
-
-### Install project dependencies
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
-
-Installs the required package dependencies. While pnpm is used for repository templates, npm, pnpm, or yarn can be used interchangeably.
-
-```bash
-$ npm install # or pnpm install or yarn install
-```
-
---------------------------------
-
 ### Create OpenCode client and fetch sessions with Effect
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/sdk/README.md
@@ -2276,27 +2263,14 @@ const session = yield * opencode.sessions.get({ sessionID })
 
 --------------------------------
 
-### Build and package production release with CLI distribution
+### Install @opencode-ai/sdk from npm
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/desktop/README.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/sdk.mdx
 
-Build and package the desktop app for production using a specified prebuilt V2 CLI distribution path and channel.
-
-```bash
-OPENCODE_CHANNEL=prod OPENCODE_CLI_DIST=/absolute/path/to/packages/cli/dist bun run build
-OPENCODE_CHANNEL=prod bun run package
-```
-
---------------------------------
-
-### Start OpenCode TUI for a specific working directory
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/tui.mdx
-
-Start the TUI for a specific working directory by passing the path as an argument.
+Install the opencode JS/TS SDK from npm to build type-safe integrations with the opencode server.
 
 ```bash
-opencode /path/to/project
+npm install @opencode-ai/sdk
 ```
 
 --------------------------------
@@ -2336,39 +2310,26 @@ PluginBoot background fiber
 
 --------------------------------
 
-### Start OpenCode TUI for a Project
+### Run opencode serve with port, hostname, and CORS options
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/cli.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/server.mdx
 
-Start the OpenCode terminal user interface for a specific project directory.
+Starts the headless HTTP server. Use the optional flags to set the port, hostname, and allowed browser origins.
 
 ```bash
-opencode [project]
+opencode serve [--port <number>] [--hostname <string>] [--cors <origin>]
 ```
 
 --------------------------------
 
-### TextNode.deleteCharacters(start, end)
+### Install project dependencies
 
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-use-figjam/references/edit-text.md
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
 
-Deletes a range of characters between start and end indices within the text node. Requires fonts to be loaded before modification.
+Installs the required package dependencies. While pnpm is used for repository templates, npm, pnpm, or yarn can be used interchangeably.
 
-```APIDOC
-### TextNode.deleteCharacters(start, end)
-
-#### Description
-Deletes characters spanning from the start index up to the end index.
-
-#### Parameters
-- **start** (`number`) - The zero-based character index at which deletion begins.
-- **end** (`number`) - The zero-based character index at which deletion ends.
-
-#### Example
-```javascript
-textNode.deleteCharacters(0, 6) // Delete first 6 characters
-textNode.deleteCharacters(5, 10) // Delete characters 5-9
-```
+```bash
+$ npm install # or pnpm install or yarn install
 ```
 
 --------------------------------
@@ -2382,16 +2343,4 @@ Recommended migration path: ask OpenCode to convert the V1 configuration to the 
 ```text
 Migrate my OpenCode configuration, including file-based definitions, from the V1 format to the native V2 format.
 Preserve its behavior and all unrelated settings.
-```
-
---------------------------------
-
-### View opencode run help
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/www/src/docs/content/cli/commands.mdx
-
-View all subcommands and flags.
-
-```bash
-$ opencode run --help
 ```
