@@ -486,6 +486,21 @@ text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 
 --------------------------------
 
+### Render production HTML tags for views/bar.js entry point
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+
+Example HTML tags output by a backend template for the `views/bar.js` entry point in production, demonstrating required imported CSS, the module script, and modulepreload links.
+
+```html
+<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
+<script type="module" src="assets/bar-gkvgaI9m.js"></script>
+<!-- optional -->
+<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
+```
+
+--------------------------------
+
 ### Access WebAssembly Module via URL import
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -505,21 +520,6 @@ const main = async () => {
 }
 
 main()
-```
-
---------------------------------
-
-### Render production HTML tags for views/bar.js entry point
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
-
-Example HTML tags output by a backend template for the `views/bar.js` entry point in production, demonstrating required imported CSS, the module script, and modulepreload links.
-
-```html
-<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
-<script type="module" src="assets/bar-gkvgaI9m.js"></script>
-<!-- optional -->
-<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
 ```
 
 --------------------------------
@@ -565,18 +565,6 @@ Example HTML tags output by a backend template for the `views/foo.js` entry poin
 
 --------------------------------
 
-### Scaffold Vite project using Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Bun. Follow the prompts in the console.
-
-```bash
-$ bun create vite
-```
-
---------------------------------
-
 ### Imports field: double hash import
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -586,6 +574,18 @@ Imports from a package that uses the imports field with a double hash mapping. T
 ```javascript
 import { msg as importsDoubleHash } from '##double/index.js'
 text('.imports-double-hash', importsDoubleHash)
+```
+
+--------------------------------
+
+### Scaffold Vite project using Bun
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Bun. Follow the prompts in the console.
+
+```bash
+$ bun create vite
 ```
 
 --------------------------------
@@ -778,25 +778,6 @@ const myPlugin = () => ({
 
 --------------------------------
 
-### Attach pre-middleware via configureServer hook
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Adds custom middlewares to the Vite connect application that execute before internal middlewares are installed.
-
-```javascript
-const myPlugin = () => ({
-  name: 'configure-server',
-  configureServer(server) {
-    server.middlewares.use((req, res, next) => {
-      // custom handle request...
-    })
-  },
-})
-```
-
---------------------------------
-
 ### Instantiate and execute code using ModuleRunner
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
@@ -820,6 +801,25 @@ const moduleRunner = new ModuleRunner(
 )
 
 await moduleRunner.import('/src/entry-point.js')
+```
+
+--------------------------------
+
+### Attach pre-middleware via configureServer hook
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Adds custom middlewares to the Vite connect application that execute before internal middlewares are installed.
+
+```javascript
+const myPlugin = () => ({
+  name: 'configure-server',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      // custom handle request...
+    })
+  },
+})
 ```
 
 --------------------------------
@@ -1006,6 +1006,19 @@ text('.imports-slash', importsSlash)
 
 --------------------------------
 
+### Imports field: star mapping
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a package that uses the imports field with a star mapping. The star allows any subpath.
+
+```javascript
+import { msg as importsStar } from '#star/index.js'
+text('.imports-star', importsStar)
+```
+
+--------------------------------
+
 ### Configure package.json for single entry library
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1026,19 +1039,6 @@ Recommended `package.json` export configuration for a single-entry library distr
     }
   }
 }
-```
-
---------------------------------
-
-### Imports field: star mapping
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports from a package that uses the imports field with a star mapping. The star allows any subpath.
-
-```javascript
-import { msg as importsStar } from '#star/index.js'
-text('.imports-star', importsStar)
 ```
 
 --------------------------------
@@ -1346,24 +1346,6 @@ Configure the npm scripts required to build the application and preview the outp
 
 --------------------------------
 
-### Import with exports and module condition required
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports from a package that uses the exports field with a required module condition. The condition is required for resolution.
-
-```javascript
-import { msg as exportsWithModuleCondition } from '@vitejs/test-resolve-exports-with-module-condition'
-import { msg as exportsWithModuleConditionRequired } from '@vitejs/test-resolve-exports-with-module-condition-required'
-text('.exports-with-module-condition', exportsWithModuleCondition)
-text(
-  '.exports-with-module-condition-required',
-  exportsWithModuleConditionRequired,
-)
-```
-
---------------------------------
-
 ### Configure basic experimental.renderBuiltUrl for runtime and relative URLs
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1390,6 +1372,37 @@ experimental: {
 
 --------------------------------
 
+### Import with exports and module condition required
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a package that uses the exports field with a required module condition. The condition is required for resolution.
+
+```javascript
+import { msg as exportsWithModuleCondition } from '@vitejs/test-resolve-exports-with-module-condition'
+import { msg as exportsWithModuleConditionRequired } from '@vitejs/test-resolve-exports-with-module-condition-required'
+text('.exports-with-module-condition', exportsWithModuleCondition)
+text(
+  '.exports-with-module-condition-required',
+  exportsWithModuleConditionRequired,
+)
+```
+
+--------------------------------
+
+### Import with exports and module condition
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a package that uses the exports field with a module condition. The module condition selects the ESM entry.
+
+```javascript
+import { msg as exportsWithModule } from '@vitejs/test-resolve-exports-with-module'
+text('.exports-with-module', exportsWithModule)
+```
+
+--------------------------------
+
 ### Enable config IntelliSense with defineConfig helper
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
@@ -1406,15 +1419,15 @@ export default defineConfig({
 
 --------------------------------
 
-### Import with exports and module condition
+### Import with exports legacy fallback
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
 
-Imports from a package that uses the exports field with a module condition. The module condition selects the ESM entry.
+Imports from a package that uses the exports field with a legacy fallback. The fallback is used when the exports field does not match.
 
 ```javascript
-import { msg as exportsWithModule } from '@vitejs/test-resolve-exports-with-module'
-text('.exports-with-module', exportsWithModule)
+import { msg as exportsLegacyFallbackMsg } from '@vitejs/test-resolve-exports-legacy-fallback/dir'
+text('.exports-legacy-fallback', exportsLegacyFallbackMsg)
 ```
 
 --------------------------------
@@ -1434,15 +1447,14 @@ dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 
 --------------------------------
 
-### Import with exports legacy fallback
+### Instantiate Worker with import.meta.url
 
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
 
-Imports from a package that uses the exports field with a legacy fallback. The fallback is used when the exports field does not match.
+Demonstrates instantiating a Web Worker using a relative script path resolved against import.meta.url.
 
 ```javascript
-import { msg as exportsLegacyFallbackMsg } from '@vitejs/test-resolve-exports-legacy-fallback/dir'
-text('.exports-legacy-fallback', exportsLegacyFallbackMsg)
+const worker = new Worker(new URL('./worker.js', import.meta.url))
 ```
 
 --------------------------------
@@ -1460,31 +1472,6 @@ text('.exports-entry', msg)
 
 --------------------------------
 
-### Instantiate Worker with import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Demonstrates instantiating a Web Worker using a relative script path resolved against import.meta.url.
-
-```javascript
-const worker = new Worker(new URL('./worker.js', import.meta.url))
-```
-
---------------------------------
-
-### Import from UTF-8 BOM file
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a message from a file that contains a UTF-8 byte order mark (BOM). The BOM is stripped during resolution.
-
-```javascript
-import { msg as bomMsg } from './utf8-bom/main.js'
-text('.utf8-bom', bomMsg)
-```
-
---------------------------------
-
 ### Typical SSR application source file structure
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -1498,6 +1485,19 @@ Shows the recommended directory and file layout for an SSR application, includin
   - main.js          # exports env-agnostic (universal) app code
   - entry-client.js  # mounts the app to a DOM element
   - entry-server.js  # renders the app using the framework's SSR API
+```
+
+--------------------------------
+
+### Import from UTF-8 BOM file
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a message from a file that contains a UTF-8 byte order mark (BOM). The BOM is stripped during resolution.
+
+```javascript
+import { msg as bomMsg } from './utf8-bom/main.js'
+text('.utf8-bom', bomMsg)
 ```
 
 --------------------------------
@@ -1672,18 +1672,6 @@ text('.exports-deep-exposed-dir', exposedDirMsg)
 
 --------------------------------
 
-### Scaffold Vite Vue project with CLI options using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
-
-```bash
-$ pnpm create vite my-vue-app --template vue
-```
-
---------------------------------
-
 ### Deep import with exports field and query
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1706,6 +1694,18 @@ Imports from a package that uses the exports field and has a nested scope. The i
 ```javascript
 import exportsAndNestedScopeMsg from '@vitejs/test-resolve-exports-and-nested-scope/nested'
 text('.exports-and-nested-scope', exportsAndNestedScopeMsg)
+```
+
+--------------------------------
+
+### Scaffold Vite Vue project with CLI options using pnpm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
+
+```bash
+$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
@@ -1762,19 +1762,6 @@ export default {
 
 --------------------------------
 
-### Deep import with exports field
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a specific file from a package that uses the exports field. The exports field must explicitly allow the deep path.
-
-```javascript
-import { msg as deepMsg } from '@vitejs/test-resolve-exports-path/deep.js'
-text('.exports-deep', deepMsg)
-```
-
---------------------------------
-
 ### View raw JSON metadata output for build.license
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/build-options.md
@@ -1796,6 +1783,40 @@ Generated when `build.license.fileName` ends with `.json`. Contains structured m
     "text": "MIT License\n\n..."
   }
 ]
+```
+
+--------------------------------
+
+### Deep import with exports field
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a specific file from a package that uses the exports field. The exports field must explicitly allow the deep path.
+
+```javascript
+import { msg as deepMsg } from '@vitejs/test-resolve-exports-path/deep.js'
+text('.exports-deep', deepMsg)
+```
+
+--------------------------------
+
+### Importing CSS Modules
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Demonstrates defining a CSS module file and importing its module object to apply class names.
+
+```css
+.red {
+  color: red;
+}
+```
+
+```js
+import 'vite/client'
+// ---cut---
+import classes from './example.module.css'
+document.getElementById('foo').className = classes.red
 ```
 
 --------------------------------
@@ -1827,27 +1848,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Importing CSS Modules
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Demonstrates defining a CSS module file and importing its module object to apply class names.
-
-```css
-.red {
-  color: red;
-}
-```
-
-```js
-import 'vite/client'
-// ---cut---
-import classes from './example.module.css'
-document.getElementById('foo').className = classes.red
-```
-
---------------------------------
-
 ### Import CSS and external assets in JavaScript entrypoint
 
 Source: https://github.com/vitejs/vite/blob/main/playground/backend-integration/frontend/entrypoints/index.html
@@ -1873,19 +1873,6 @@ text('.imports-mid-hash-postfix', importsMidHashPostfix)
 
 --------------------------------
 
-### Configure index.html for SSR
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
-
-Includes a placeholder for injecting server-rendered markup and references the client entry script.
-
-```html
-<div id="app"><!--ssr-outlet--></div>
-<script type="module" src="/src/entry-client.js"></script>
-```
-
---------------------------------
-
 ### Override Vite dependency in pnpm-workspace.yaml
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -1900,38 +1887,49 @@ overrides:
 
 --------------------------------
 
-### Imports field: question mark postfix import
+### Configure index.html for SSR
 
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
 
-Imports from a package that uses the imports field with a question mark and postfix. The mapping includes a question mark, query, and fragment.
+Includes a placeholder for injecting server-rendered markup and references the client entry script.
 
-```javascript
-import { msg as importsQuestionMarkPostfix } from '#question?mark?query#fragment'
-text('.imports-question-mark-postfix', importsQuestionMarkPostfix)
+```html
+<div id="app"><!--ssr-outlet--></div>
+<script type="module" src="/src/entry-client.js"></script>
 ```
 
 --------------------------------
 
-### Imports field: star mapping with dollar sign
+### Configure build.lib for single entry in vite.config.js
 
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Imports from a package that uses the imports field with a star mapping that includes a dollar sign. The dollar sign is a special character in the mapping.
+Use `build.lib` to bundle a single entry library, externalizing dependencies like `vue` and providing UMD globals.
 
-```javascript
-import { msg as importsStarDollar } from '#star/dollar$$.js'
-text('.imports-star-dollar', importsStarDollar)
-```
+```js
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
 
---------------------------------
-
-### Specify custom configuration file with --config CLI flag
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
-
-Explicitly define a custom configuration file path resolved relative to the current working directory.
-
-```bash
-vite --config my-config.js
+export default defineConfig({
+  build: {
+    lib: {
+      entry: resolve(import.meta.dirname, 'lib/main.js'),
+      name: 'MyLib',
+      // the proper extensions will be added
+      fileName: 'my-lib',
+    },
+    rolldownOptions: {
+      // make sure to externalize deps that shouldn't be bundled
+      // into your library
+      external: ['vue'],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          vue: 'Vue',
+        },
+      },
+    },
+  },
+})
 ```
