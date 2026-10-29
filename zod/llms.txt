@@ -34,11 +34,11 @@ curl -fsSL https://raw.githubusercontent.com/nubjs/nub/0ae8783f1f93763c56dfc8278
 
 --------------------------------
 
-### Install zod with npm
+### Install zod@^4.5.0 to use z.compile()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
 
-Install Zod version 4.5.0 or higher to enable z.compile() support or import zod/compile.
+Install the Zod version that provides the compiler. After installing, call z.compile() on hot-path schemas or import "zod/compile" at your entry point. Bundles that never call z.compile() or import zod/compile are tree-shaken and pay no bundle-size cost.
 
 ```sh
 npm install zod@^4.5.0
@@ -54,6 +54,22 @@ Installs the latest release of Zod using the npm package manager.
 
 ```sh
 npm install zod@latest
+```
+
+--------------------------------
+
+### Inspect materialized schema metadata properties on first read
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+
+Shows how metadata keys like .minLength start as prototype getters and materialize as own properties only after they are read.
+
+```ts
+const s = z.string().min(3).max(9);
+
+Object.keys(s); // 4.5: ["def", "type", "format", "minLength", "maxLength"] — 4.6: ["def", "type"]
+s.minLength;    // 3 in both
+Object.keys(s); // 4.6: ["def", "type", "minLength"]
 ```
 
 --------------------------------
@@ -75,18 +91,55 @@ const Fast = z.withParser(Player, (input) =>
 
 --------------------------------
 
-### Inspect materialized schema metadata properties on first read
+### Parse with a compiled Zod schema
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
 
-Shows how metadata keys like .minLength start as prototype getters and materialize as own properties only after they are read.
+Compiled schemas are used exactly like the original schema. Calling .parse() on the compiled schema is roughly 9x faster for this example.
 
 ```ts
-const s = z.string().min(3).max(9);
+Player.parse({ ... });
+CompiledPlayer.parse({ ... }); // ~9x faster
+```
 
-Object.keys(s); // 4.5: ["def", "type", "format", "minLength", "maxLength"] — 4.6: ["def", "type"]
-s.minLength;    // 3 in both
-Object.keys(s); // 4.6: ["def", "type", "minLength"]
+--------------------------------
+
+### Enable compile-by-default with import "zod/compile"
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Import "zod/compile" in your application entry point (or before any schemas are defined) to make all declared schemas self-compile on first use. Compilation is lazy, so only schemas you actually parse with get compiled.
+
+```ts
+// in your entrypoint (or before any schemas are defined)
+import "zod/compile";
+```
+
+--------------------------------
+
+### Define a Point schema with z.object
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+A simple Point schema used as the input for the compiled validator example.
+
+```ts
+const Point = z.object({
+  x: z.number(),
+  y: z.number()
+});
+```
+
+--------------------------------
+
+### Install Zod 4.5 with npm
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
+
+Install the latest Zod release to get the Zod 4.5 features.
+
+```sh
+npm install zod@latest
 ```
 
 --------------------------------
@@ -121,15 +174,15 @@ git push -u origin <branch>:refs/heads/<branch>
 
 --------------------------------
 
-### Enable default compilation in entrypoint
+### Run package resolution tests with nub
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/resolution/README.md
 
-Import `zod/compile` in your entrypoint or before defining schemas to enable compile-by-default.
+Run from the repository root to build the project and execute resolution tests. Verifies published declarations using Are the Types Wrong and runs built CommonJS and ES modules on Node.
 
-```ts
-// in your entrypoint (or before any schemas are defined)
-import "zod/compile";
+```sh
+nub run build
+nub run --filter @zod/resolution test:all
 ```
 
 --------------------------------
@@ -171,84 +224,6 @@ z.guid();
 
 --------------------------------
 
-### Configure peerDependencies to support Zod 3 and Zod 4
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The zod/v4 subpath is available starting in version 3.25.0.
-
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^3.25.0 || ^4.0.0"
-  }
-}
-```
-
---------------------------------
-
-### Project schema input and output with z.input() and z.output()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
-
-Projects a schema onto either its input or output side to validate codec halves independently. This behaves as a no-op on schemas without codecs or pipes.
-
-```ts
-const isoDate = z.codec(z.iso.datetime(), z.date(), {
-  decode: (s) => new Date(s),
-  encode: (d) => d.toISOString(),
-});
-
-const Event = z.object({ name: z.string(), at: isoDate });
-
-z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
-z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
-```
-
---------------------------------
-
-### Enable zod/compile via Node.js CLI flags
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Preload `zod/compile` using Node CLI arguments to guarantee it runs before any module defines a schema in ESM or CommonJS.
-
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
-
---------------------------------
-
-### Preload zod/compile in nub.jsonc
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Configure `preload` in configuration files like `nub.jsonc` or `bunfig.toml` to automatically load `zod/compile`.
-
-```jsonc
-{
-  "preload": ["zod/compile"]
-}
-```
-
---------------------------------
-
-### Run package resolution tests with nub
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/resolution/README.md
-
-Run from the repository root to build the project and execute resolution tests. Verifies published declarations using Are the Types Wrong and runs built CommonJS and ES modules on Node.
-
-```sh
-nub run build
-nub run --filter @zod/resolution test:all
-```
-
---------------------------------
-
 ### Define and parse schemas using @zod/mini
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/mini/README.md
@@ -264,6 +239,24 @@ const User = z.object({
 });
 
 z.parse(User, { name: "Colin", age: 30 });
+```
+
+--------------------------------
+
+### Configure peerDependencies to support Zod 3 and Zod 4
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The zod/v4 subpath is available starting in version 3.25.0.
+
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  }
+}
 ```
 
 --------------------------------
@@ -300,6 +293,45 @@ Initialize a custom registry typed with specific metadata attributes.
 import * as z from "zod";
 
 const myRegistry = z.registry<{ description: string };>();
+```
+
+--------------------------------
+
+### import "zod/compile"
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
+
+Enables compilation globally. Every schema constructed after this import is compiled automatically the first time it parses. Compilation is lazy, so only schemas actually parsed get compiled. This import is for applications, not libraries.
+
+```APIDOC
+## import "zod/compile"
+
+### Description
+Enables compilation globally. Every schema constructed *after* this import is compiled automatically the first time it parses. Compilation is lazy, so only the schemas you actually parse with get compiled. This import is for applications, not libraries.
+
+### Usage
+```ts
+import "zod/compile"; // must come before modules that define schemas
+import * as z from "zod";
+
+const schema = z.object({ name: z.string() });
+schema.parse({ name: "ok" }); // compiled on first parse
+```
+
+### CLI Flags
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
+```
+
+### Preload Configuration
+Set `preload` in `bunfig.toml` or `nub.jsonc`.
+
+```jsonc title="nub.jsonc"
+{
+  "preload": ["zod/compile"]
+}
+```
 ```
 
 --------------------------------
@@ -354,18 +386,6 @@ const stringToDate = z.codec(
 
 --------------------------------
 
-### Auto-compile schemas via Node.js CLI --import flag
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
-
-Preloads zod/compile via the Node.js CLI to ensure compilation is enabled before any module defines a schema.
-
-```sh
-node --import zod/compile app.js
-```
-
---------------------------------
-
 ### Define base recipe object schema
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -379,6 +399,33 @@ const Recipe = z.object({
   ingredients: z.array(z.string()),
 });
 // { title: string; description?: string | undefined; ingredients: string[] }
+```
+
+--------------------------------
+
+### Set preload for zod/compile in nub.jsonc
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile before schemas are defined.
+
+```jsonc
+{
+  "preload": ["zod/compile"]
+}
+```
+
+--------------------------------
+
+### Preload zod/compile via Node.js CLI flags
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Use the Node.js --import flag for ESM or --require for CommonJS to guarantee compilation is enabled before any module defines a schema.
+
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
 ```
 
 --------------------------------
@@ -646,23 +693,6 @@ Initializes a Zod registry with a strongly-typed metadata definition.
 import * as z from "zod";
 
 const myRegistry = z.registry<{ description: string }>();
-```
-
---------------------------------
-
-### Define an object schema with Zod Mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/basics.mdx
-
-Defines a basic object schema using the lightweight zod/mini entrypoint.
-
-```typescript
-import * as z from "zod/mini"
-
-const Player = z.object({ 
-  username: z.string(),
-  xp: z.number()
-});
 ```
 
 --------------------------------
@@ -987,33 +1017,22 @@ z.util.isValidJWT(...);
 
 --------------------------------
 
-### import "zod/compile"
+### Project schema input and output with z.input() and z.output()
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
 
-Enables compilation globally for an application. Every schema constructed after this import is compiled automatically the first time it parses.
+Useful for validating the two halves of a codec independently. This is a no-op on schemas that do not contain codecs or pipes.
 
-```APIDOC
-### Module Import
-`import "zod/compile"`
-
-### Description
-Enables schema compilation globally. Every schema constructed after this import is compiled lazily on first parse. Designed for application use rather than libraries.
-
-### Usage Examples
 ```ts
-import "zod/compile"; // must come before modules that define schemas
-import * as z from "zod";
+const isoDate = z.codec(z.iso.datetime(), z.date(), {
+  decode: (s) => new Date(s),
+  encode: (d) => d.toISOString(),
+});
 
-const schema = z.object({ name: z.string() });
-schema.parse({ name: "ok" }); // compiled on first parse
-```
+const Event = z.object({ name: z.string(), at: isoDate });
 
-CLI invocation:
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
+z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
+z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
 ```
 
 --------------------------------
@@ -1055,6 +1074,20 @@ localDt.parse("2020-01-01T06:15"); // Valid
 const millis = z.iso.datetime({ precision: 3 });
 millis.parse("2020-01-01T06:15:00.123Z"); // Valid
 ```
+```
+
+--------------------------------
+
+### Verifying in-place instance validation result
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+
+Parses an instance with okResponse to return the untouched input object reference. The prototype survives and methods remain accessible.
+
+```ts
+const res = await fetch("/api/user");
+
+okResponse.parse(res) === res; // ✅ true
 ```
 
 --------------------------------
@@ -1279,6 +1312,22 @@ z.toJSONSchema(schema, {
 
 --------------------------------
 
+### Set description with .describe() in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+
+```typescript
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
+```
+
+--------------------------------
+
 ### Convert file schema with size and MIME constraints
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1295,22 +1344,6 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 //   minLength: 1,
 //   maxLength: 1048576,
 // }
-```
-
---------------------------------
-
-### Set description with .describe() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
-
-```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
@@ -1339,6 +1372,56 @@ result.error.issues;
   "path": [ "confirm" ],
   "message": "Passwords don't match"
 }] */
+```
+
+--------------------------------
+
+### z.input() / z.output()
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
+
+Projects a schema onto its input or output side, useful for validating the two halves of a codec independently. This is a no-op on schemas not containing codecs/pipes.
+
+```APIDOC
+## z.input() / z.output()
+
+### Description
+Projects a schema onto its input or output side, useful for validating the two halves of a codec independently. This is a no-op on schemas not containing codecs/pipes.
+
+### Method
+z.input(schema)
+z.output(schema)
+
+### Parameters
+- **schema** (ZodType) - Required - The schema to project onto its input or output side.
+
+### Example
+```ts
+const isoDate = z.codec(z.iso.datetime(), z.date(), {
+  decode: (s) => new Date(s),
+  encode: (d) => d.toISOString(),
+});
+
+const Event = z.object({ name: z.string(), at: isoDate });
+
+z.input(Event).parse({ name: "launch", at: "2024-01-01T00:00:00Z" }); // ✅
+z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
+```
+```
+
+--------------------------------
+
+### Inspect default input and output types for branded schemas
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
+
+```typescript
+const USD = z.string().brand<"USD">();
+
+type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
+type USDInput = z.input<typeof USD>; // string
 ```
 
 --------------------------------
@@ -1382,21 +1465,6 @@ z.parse(stringToLength, "hello"); // => 5
 
 --------------------------------
 
-### Inspect default input and output types for branded schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
-
-```typescript
-const USD = z.string().brand<"USD">();
-
-type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
-type USDInput = z.input<typeof USD>; // string
-```
-
---------------------------------
-
 ### z.iso.time(options?)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1424,27 +1492,6 @@ time.parse("03:15:00.9999999");   // Valid
 const minuteTime = z.iso.time({ precision: -1 });
 minuteTime.parse("03:15");        // Valid
 ```
-```
-
---------------------------------
-
-### Compile a Zod schema with z.compile
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Compile an existing Zod schema into a flat, loop-free fast-path validator using z.compile().
-
-```ts
-import * as z from "zod";
-
-const Player = z.object({
-  username: z.string(),
-  bio: z.string(),
-  xp: z.number(),
-  // ...20 more properties...
-});
-
-const CompiledPlayer = z.compile(Player);
 ```
 
 --------------------------------
@@ -1512,97 +1559,4 @@ export function acceptObjectSchema<T extends z4.$ZodObject>(schema: T){
   // inspect internals
   schema._zod.def.shape;
 }
-```
-
---------------------------------
-
-### Constrain Set schema size with Zod methods
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Applies item count constraints to a Set schema using .nonempty(), .min(), .max(), and .size() methods.
-
-```ts
-z.set(z.string()).nonempty(); // must contain at least 1 item
-z.set(z.string()).min(5); // must contain 5 or more items
-z.set(z.string()).max(5); // must contain 5 or fewer items
-z.set(z.string()).size(5); // must contain 5 items exactly
-```
-
---------------------------------
-
-### Configure Zod in devDependencies for local development
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Add zod to devDependencies alongside peerDependencies to satisfy peer dependency requirements during library development.
-
-```ts
-// package.json
-{
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  },
-  "devDependencies": {
-    "zod": "^4.0.0"
-  }
-}
-```
-
---------------------------------
-
-### Define and parse union schemas with z.union()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Checks the input against each option schema in order and returns the first value that successfully validates.
-
-```ts
-const stringOrNumber = z.union([z.string(), z.number()]);
-// string | number
-
-stringOrNumber.parse("foo"); // passes
-stringOrNumber.parse(14); // passes
-```
-
---------------------------------
-
-### Constrain Map schema size with Zod methods
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Applies size constraints to a Map schema using .nonempty(), .min(), .max(), and .size() utility methods.
-
-```ts
-z.map(z.string(), z.number()).nonempty(); // must contain at least 1 item
-z.map(z.string(), z.number()).min(5); // must contain 5 or more items
-z.map(z.string(), z.number()).max(5); // must contain 5 or fewer items
-z.map(z.string(), z.number()).size(5); // must contain 5 items exactly
-```
-
---------------------------------
-
-### Chain validation and transformation methods on z.string
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/zod.mdx
-
-Demonstrates concise, chainable method calls to configure length bounds and casing rules on a string schema.
-
-```typescript
-z.string()
-  .min(5)
-  .max(10)
-  .toLowerCase();
-```
-
---------------------------------
-
-### Apply convenience .transform() method in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Directly chains the .transform() method on a schema as shorthand for piping.
-
-```ts
-const stringToLength = z.string().transform(val => val.length); 
 ```
