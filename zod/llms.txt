@@ -58,22 +58,6 @@ npm install zod@latest
 
 --------------------------------
 
-### Inspect materialized schema metadata properties on first read
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
-
-Shows how metadata keys like .minLength start as prototype getters and materialize as own properties only after they are read.
-
-```ts
-const s = z.string().min(3).max(9);
-
-Object.keys(s); // 4.5: ["def", "type", "format", "minLength", "maxLength"] — 4.6: ["def", "type"]
-s.minLength;    // 3 in both
-Object.keys(s); // 4.6: ["def", "type", "minLength"]
-```
-
---------------------------------
-
 ### Install external parser using z.withParser()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
@@ -87,6 +71,22 @@ const Player = z.object({ username: z.string(), xp: z.number() });
 const Fast = z.withParser(Player, (input) =>
   isPlayer(input) ? { username: input.username, xp: input.xp } : z.INVALID
 );
+```
+
+--------------------------------
+
+### Inspect materialized schema metadata properties on first read
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+
+Shows how metadata keys like .minLength start as prototype getters and materialize as own properties only after they are read.
+
+```ts
+const s = z.string().min(3).max(9);
+
+Object.keys(s); // 4.5: ["def", "type", "format", "minLength", "maxLength"] — 4.6: ["def", "type"]
+s.minLength;    // 3 in both
+Object.keys(s); // 4.6: ["def", "type", "minLength"]
 ```
 
 --------------------------------
@@ -243,24 +243,6 @@ z.parse(User, { name: "Colin", age: 30 });
 
 --------------------------------
 
-### Configure peerDependencies to support Zod 3 and Zod 4
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The zod/v4 subpath is available starting in version 3.25.0.
-
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^3.25.0 || ^4.0.0"
-  }
-}
-```
-
---------------------------------
-
 ### Use async and safe variants of decode
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
@@ -283,16 +265,20 @@ stringToDate.safeDecodeAsync("2024-01-15T10:30:00.000Z");
 
 --------------------------------
 
-### Creating a custom registry in Zod
+### Configure peerDependencies to support Zod 3 and Zod 4
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
 
-Initialize a custom registry typed with specific metadata attributes.
+Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The zod/v4 subpath is available starting in version 3.25.0.
 
-```ts
-import * as z from "zod";
-
-const myRegistry = z.registry<{ description: string };>();
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  }
+}
 ```
 
 --------------------------------
@@ -332,6 +318,20 @@ Set `preload` in `bunfig.toml` or `nub.jsonc`.
   "preload": ["zod/compile"]
 }
 ```
+```
+
+--------------------------------
+
+### Creating a custom registry in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Initialize a custom registry typed with specific metadata attributes.
+
+```ts
+import * as z from "zod";
+
+const myRegistry = z.registry<{ description: string };>();
 ```
 
 --------------------------------
@@ -417,19 +417,6 @@ Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile b
 
 --------------------------------
 
-### Preload zod/compile via Node.js CLI flags
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Use the Node.js --import flag for ESM or --require for CommonJS to guarantee compilation is enabled before any module defines a schema.
-
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
-
---------------------------------
-
 ### Validate unknown keys with .catchall()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -460,6 +447,19 @@ const DogWithStrings = z.catchall(
 
 DogWithStrings.parse({ name: "Yeller", extraKey: "extraValue" }); // ✅
 DogWithStrings.parse({ name: "Yeller", extraKey: 42 }); // ❌
+```
+
+--------------------------------
+
+### Preload zod/compile via Node.js CLI flags
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Use the Node.js --import flag for ESM or --require for CommonJS to guarantee compilation is enabled before any module defines a schema.
+
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
 ```
 
 --------------------------------
@@ -697,6 +697,24 @@ const myRegistry = z.registry<{ description: string }>();
 
 --------------------------------
 
+### Configure Zod as a peer dependency in package.json
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
+
+Include zod in peerDependencies so users of your library can provide their own Zod version.
+
+```json
+// package.json
+{
+  // ...
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  }
+}
+```
+
+--------------------------------
+
 ### Inspect core schema class inheritance diagram
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/core.mdx
@@ -772,24 +790,6 @@ Displays the complete inheritance hierarchy extending from $ZodType down to spec
       - $ZodCustom
 
       
-```
-
---------------------------------
-
-### Configure Zod as a peer dependency in package.json
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Include zod in peerDependencies so users of your library can provide their own Zod version.
-
-```json
-// package.json
-{
-  // ...
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  }
-}
 ```
 
 --------------------------------
@@ -1312,22 +1312,6 @@ z.toJSONSchema(schema, {
 
 --------------------------------
 
-### Set description with .describe() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
-
-```typescript
-const emailSchema = z.email();
-emailSchema.describe("An email address");
-
-// equivalent to
-emailSchema.meta({ description: "An email address" });
-```
-
---------------------------------
-
 ### Convert file schema with size and MIME constraints
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -1344,6 +1328,22 @@ z.file().min(1).max(1024 * 1024).mime("image/png");
 //   minLength: 1,
 //   maxLength: 1048576,
 // }
+```
+
+--------------------------------
+
+### Set description with .describe() in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Sets a description shorthand on a schema, equivalent to calling .meta({ description: ... }).
+
+```typescript
+const emailSchema = z.email();
+emailSchema.describe("An email address");
+
+// equivalent to
+emailSchema.meta({ description: "An email address" });
 ```
 
 --------------------------------
@@ -1411,21 +1411,6 @@ z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
 
 --------------------------------
 
-### Inspect default input and output types for branded schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
-
-```typescript
-const USD = z.string().brand<"USD">();
-
-type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
-type USDInput = z.input<typeof USD>; // string
-```
-
---------------------------------
-
 ### Parse, decode, and encode with standard Zod schema methods
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
@@ -1441,6 +1426,21 @@ type Output = z.output<typeof schema>;  // string
 schema.parse("asdf");   // => "asdf"
 schema.decode("asdf");  // => "asdf"
 schema.encode("asdf");  // => "asdf"
+```
+
+--------------------------------
+
+### Inspect default input and output types for branded schemas
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
+
+```typescript
+const USD = z.string().brand<"USD">();
+
+type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
+type USDInput = z.input<typeof USD>; // string
 ```
 
 --------------------------------
