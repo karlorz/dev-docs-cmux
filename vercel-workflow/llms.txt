@@ -70,36 +70,46 @@ export default app;
 
 --------------------------------
 
-### Install the Workflow SDK
-
-Source: https://github.com/vercel/workflow/blob/main/packages/workflow/README.md
-
-Install the SDK in an existing project using npm.
-
-```bash
-npm install workflow
-```
-
---------------------------------
-
-### Run and build the TanStack Start app
-
-Source: https://github.com/vercel/workflow/blob/main/workbench/tanstack-start/README.md
-
-Commands to run the development server and then build and start the production server for the TanStack Start app.
-
-```sh
-pnpm dev
-pnpm build && pnpm start
-```
-
---------------------------------
-
-### Example app development commands
+### Core package testing commands (pnpm test, vitest run, e2e setup)
 
 Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
 
-Commands for developing the example app: build workflow bundles, then use the workflow CLI directly with either `pnpm workflow` or the shorthand `pnpm wf`.
+Commands for testing the core package. Includes running unit tests, targeting a specific test file, and the full local E2E workflow: start the dev server with WORKFLOW_PUBLIC_MANIFEST=1, wait, run the E2E test with required environment variables, and stop the server. Use nextjs-turbopack for local E2E testing because the example app has no dev server.
+
+```bash
+# Test core functionality
+cd packages/core && pnpm test
+
+# Test specific file
+cd packages/core && pnpm vitest run src/[filename].test.ts
+
+# Run E2E tests (requires environment variables and running dev server)
+# Note: Use nextjs-turbopack for local e2e testing (not example app - it has no dev server)
+
+# Step 1: Start the dev server in background
+# NOTE: WORKFLOW_PUBLIC_MANIFEST=1 is required for e2e tests to access the workflow manifest
+cd workbench/nextjs-turbopack && WORKFLOW_PUBLIC_MANIFEST=1 pnpm dev > /tmp/nextjs-dev.log 2>&1 &
+
+# Step 2: Wait for server to be ready (usually 15-20 seconds)
+sleep 15
+
+# Step 3: Run the e2e tests from the project root
+DEPLOYMENT_URL="http://localhost:3000" APP_NAME="nextjs-turbopack" pnpm vitest run packages/core/e2e/e2e.test.ts
+
+# Step 4: Stop the dev server when done
+pkill -f "pnpm dev"
+
+# To run specific tests, use the -t flag:
+DEPLOYMENT_URL="http://localhost:3000" APP_NAME="nextjs-turbopack" pnpm vitest run packages/core/e2e/e2e.test.ts -t "sleeping"
+```
+
+--------------------------------
+
+### Build and run example app with workflow CLI
+
+Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
+
+Builds workflow bundles for the example app and provides both the full and shorthand CLI commands for running workflows.
 
 ```bash
 # Build workflow bundles for example app
@@ -144,20 +154,35 @@ Adds a start script to the host package.json that runs Next.js from the installe
 
 --------------------------------
 
-### Start Postgres World in SvelteKit hooks.server.ts
+### Run and build the TanStack Start app
 
-Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
+Source: https://github.com/vercel/workflow/blob/main/workbench/tanstack-start/README.md
 
-Create a src/hooks.server.ts file. This SvelteKit server init hook starts the Postgres World worker on server startup. The world.start?.() call is optional chaining because worlds that deliver work over HTTP (like Vercel World) have no worker to start.
+Commands to run the development server and then build and start the production server for the TanStack Start app.
 
-```ts
-import type { ServerInit } from "@sveltejs/kit";
+```sh
+pnpm dev
+pnpm build && pnpm start
+```
 
-export const init: ServerInit = async () => {
-  const { getWorld } = await import("workflow/runtime");
-  const world = await getWorld();
-  await world.start?.();
-};
+--------------------------------
+
+### Install @workflow/world-postgres with npm, pnpm, or yarn
+
+Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
+
+Install the package using your preferred package manager. Choose one of the three commands.
+
+```bash
+npm install @workflow/world-postgres
+```
+
+```bash
+pnpm add @workflow/world-postgres
+```
+
+```bash
+yarn add @workflow/world-postgres
 ```
 
 --------------------------------
@@ -178,80 +203,32 @@ npm install ai@5 @ai-sdk/openai@2
 
 --------------------------------
 
-### Start PostgreSQL and run migrations
-
-Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
-
-Starts the PostgreSQL database with Docker Compose, generates and runs Drizzle migrations, and sets environment variables for local development.
-
-```bash
-# Start PostgreSQL database
-docker-compose up -d
-
-# Create and run migrations
-pnpm drizzle-kit generate
-pnpm drizzle-kit migrate
-
-# Set environment variables for local development
-export WORKFLOW_POSTGRES_URL="postgres://world:world@localhost:5432/world"
-export WORKFLOW_TARGET_WORLD="@workflow/world-postgres"
-```
-
---------------------------------
-
-### Install the World migration skill
-
-Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/upgrading-to-v5.mdx
-
-Installs the World migration skill to automate upgrading a custom World from v4 to v5.
-
-```bash
-npx skills add https://github.com/vercel/workflow --skill migrating-world-v4-to-v5
-```
-
---------------------------------
-
-### Start Postgres World in Nitro plugin and config
+### Start Postgres World in SvelteKit hooks.server.ts
 
 Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
 
-Create a plugin to start the world on server initialization, then register it in your nitro.config.ts. The plugin imports the runtime and calls world.start?.() to subscribe to the Postgres World queue. The config adds the workflow/nitro module and the plugin file.
+Creates a src/hooks.server.ts file with a ServerInit hook that starts the World's background worker on server initialization.
 
 ```ts
-import { defineNitroPlugin } from "nitro/~internal/runtime/plugin";
+import type { ServerInit } from "@sveltejs/kit";
 
-export default defineNitroPlugin(async () => {
+export const init: ServerInit = async () => {
   const { getWorld } = await import("workflow/runtime");
   const world = await getWorld();
   await world.start?.();
-});
-```
-
-```ts
-import { defineNitroConfig } from "nitropack";
-
-export default defineNitroConfig({
-  modules: ["workflow/nitro"],
-  plugins: ["plugins/start-pg-world.ts"],
-});
+};
 ```
 
 --------------------------------
 
-### Start Postgres World in Next.js instrumentation.ts
+### Install @workflow/world-postgres package
 
 Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
 
-Create an instrumentation.ts file in your project root. This registers a server startup hook that starts the Postgres World worker, but only when not running on the Edge runtime. The world.start?.() call is optional chaining because worlds that deliver work over HTTP (like Vercel World) have no worker to start.
+Install the Postgres World package. Keep workflow and @workflow/world-postgres on the same major version and release cycle; a mismatch fails before starting a run.
 
-```ts
-export async function register() {
-  if (process.env.NEXT_RUNTIME !== "edge") {
-    const { getWorld } = await import("workflow/runtime");
-    const world = await getWorld();
-    await world.start?.();
-  }
-}
+```package-install
+@workflow/world-postgres
 ```
 
 --------------------------------
@@ -271,6 +248,64 @@ DEPLOYMENT_URL=http://localhost:3000 APP_NAME=nextjs-turbopack pnpm bench
 
 --------------------------------
 
+### CLI: --help
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Displays help information for the CLI.
+
+```APIDOC
+## CLI: --help
+
+### Description
+Displays help information for the CLI.
+
+### Method
+--help
+
+### Request Example
+```bash
+# Show help
+npx @workflow/nest --help
+```
+```
+
+--------------------------------
+
+### Run the app with npm run dev
+
+Source: https://github.com/vercel/workflow/blob/main/packages/workflow/README.md
+
+Run the app locally to start the development server.
+
+```bash
+npm run dev
+```
+
+--------------------------------
+
+### Run E2E tests against deployed Vercel app (environment variables example)
+
+Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
+
+Command to run E2E tests locally against a deployed Vercel preview/production app. Requires many environment variables (DEPLOYMENT_URL, VERCEL_DEPLOYMENT_ID, APP_NAME, WORKFLOW_VERCEL_ENV, WORKFLOW_VERCEL_AUTH_TOKEN, WORKFLOW_VERCEL_TEAM, WORKFLOW_VERCEL_PROJECT, WORKFLOW_VERCEL_PROJECT_SLUG, VERCEL_OIDC_TOKEN). The example uses a nextjs-turbopack preview deployment and pulls VERCEL_OIDC_TOKEN from the workbench app's .env.local.
+
+```bash
+NODE_OPTIONS="--enable-source-maps" \
+DEPLOYMENT_URL="https://example-nextjs-workflow-turbopack-<hash>.labs.vercel.dev" \
+VERCEL_DEPLOYMENT_ID="dpl_..." \
+APP_NAME="nextjs-turbopack" \
+WORKFLOW_VERCEL_ENV="preview" \
+WORKFLOW_VERCEL_AUTH_TOKEN="<vercel_labs_token>" \
+WORKFLOW_VERCEL_TEAM="team_nO2mCG4W8IxPIeKoSsqwAxxB" \
+WORKFLOW_VERCEL_PROJECT="prj_yjkM7UdHliv8bfxZ1sMJQf1pMpdi" \
+WORKFLOW_VERCEL_PROJECT_SLUG="example-nextjs-workflow-turbopack" \
+VERCEL_OIDC_TOKEN="$(grep VERCEL_OIDC_TOKEN workbench/nextjs-turbopack/.env.local | cut -d= -f2-)" \
+pnpm run test:e2e
+```
+
+--------------------------------
+
 ### Build and run Node.js production server
 
 Source: https://github.com/vercel/workflow/blob/main/workbench/express/README.md
@@ -284,11 +319,11 @@ node .output/server/index.mjs
 
 --------------------------------
 
-### Install @workflow/nest with npm or pnpm
+### Install @workflow/nest package
 
 Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
 
-Install the @workflow/nest package using npm or pnpm. The commands are alternatives; choose one package manager.
+Install the NestJS integration package using npm or pnpm.
 
 ```bash
 npm install @workflow/nest
@@ -319,30 +354,56 @@ npx --yes next start -p "${PORT:-3456}"
 
 --------------------------------
 
-### CI summary output example
+### Start PostgreSQL and run migrations with Docker Compose
 
-Source: https://github.com/vercel/workflow/blob/main/workbench/sim-world/README.md
+Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
 
-Example of the summary comment posted by the CI workflow. Shows the simulated world deterministic testing header and the scenario book result line with a pass/fail count.
+Starts the PostgreSQL database via Docker Compose, generates and runs Drizzle ORM migrations, and sets local environment variables for development. Requires Docker and pnpm.
 
-```text
-## Sim World
+```bash
+# Start PostgreSQL database
+docker-compose up -d
 
-Simulated world deterministic testing for races. [Traces](…)
+# Create and run migrations
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
 
-▸ 🟢 world-sim scenario book — 0 fail of 41 total
+# Set environment variables for local development
+export WORKFLOW_POSTGRES_URL="postgres://world:world@localhost:5432/world"
+export WORKFLOW_TARGET_WORLD="@workflow/world-postgres"
 ```
 
 --------------------------------
 
-### Install @workflow/world-postgres package
+### Start a workflow with start from workflow/api
+
+Source: https://github.com/vercel/workflow/blob/main/packages/workflow/README.md
+
+Start a workflow from an API route, Server Action, or other server-side code using the start function.
+
+```typescript
+import { start } from 'workflow/api';
+import { onboardUser } from './workflows/onboard-user';
+
+await start(onboardUser, ['hello@example.com']);
+```
+
+--------------------------------
+
+### Start Postgres World in Next.js instrumentation.ts
 
 Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
 
-Install the Postgres World package in your workflow project. Keep it on the same major version as the workflow package; mismatched versions fail before starting a run.
+Creates an instrumentation.ts file to start the World's background worker on server boot. Skips edge runtime and calls world.start?.() after importing workflow/runtime.
 
-```bash
-@workflow/world-postgres
+```ts
+export async function register() {
+  if (process.env.NEXT_RUNTIME !== "edge") {
+    const { getWorld } = await import("workflow/runtime");
+    const world = await getWorld();
+    await world.start?.();
+  }
+}
 ```
 
 --------------------------------
@@ -359,49 +420,16 @@ npm install @workflow/ai
 
 --------------------------------
 
-### Build and test the package
-
-Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
-
-Builds the package and runs integration tests. Requires Docker to be installed and running.
-
-```bash
-pnpm build
-pnpm test
-```
-
---------------------------------
-
-### Run the web UI with the CLI
-
-Source: https://github.com/vercel/workflow/blob/main/packages/web/README.md
-
-Starts the web UI on the default port 3456 using the Workflow CLI. Requires the environment to be configured with the appropriate environment variables for your World.
-
-```bash
-npx workflow web --noBrowser
-```
-
---------------------------------
-
-### Create workflow file with 'use workflow' and 'use step' directives
+### Install SWC dev dependencies
 
 Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
 
-Create a workflow file in src/ with 'use step' and 'use workflow' directives. The example shows a step function and a workflow function that calls it.
+Install the SWC packages required by NestJS's SWC builder as dev dependencies.
 
-```ts
-// src/workflows/example.ts
-export async function myStep(data: string) {
-  'use step';
-  return data.toUpperCase();
-}
-
-export async function myWorkflow(input: string) {
-  'use workflow';
-  const result = await myStep(input);
-  return result;
-}
+```bash
+npm install -D @swc/cli @swc/core
+# or
+pnpm add -D @swc/cli @swc/core
 ```
 
 --------------------------------
@@ -451,17 +479,109 @@ export async function myAgentWorkflow(userMessage: string) {
 
 --------------------------------
 
-### Start a workflow from server-side code
+### Create workflow file with directives
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Create workflow files in src/ with 'use workflow' and 'use step' directives. The example shows a step function and a workflow function that calls it.
+
+```typescript
+// src/workflows/example.ts
+export async function myStep(data: string) {
+  'use step';
+  return data.toUpperCase();
+}
+
+export async function myWorkflow(input: string) {
+  'use workflow';
+  const result = await myStep(input);
+  return result;
+}
+```
+
+--------------------------------
+
+### Install the World migration skill
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/upgrading-to-v5.mdx
+
+Use this command to install the migration skill for upgrading a custom World from v4 to v5. Run it in your project directory.
+
+```bash
+npx skills add https://github.com/vercel/workflow --skill migrating-world-v4-to-v5
+```
+
+--------------------------------
+
+### Run the web UI with the CLI
+
+Source: https://github.com/vercel/workflow/blob/main/packages/web/README.md
+
+Starts the web UI on the default port 3456 using the Workflow CLI. Requires the environment to be configured with the appropriate environment variables for your World.
+
+```bash
+npx workflow web --noBrowser
+```
+
+--------------------------------
+
+### Install Workflow SDK with npm
 
 Source: https://github.com/vercel/workflow/blob/main/packages/workflow/README.md
 
-Start a workflow from an API route, Server Action, or other server-side code using the start function from 'workflow/api'.
+Install the workflow package in an existing project using npm.
+
+```bash
+npm install workflow
+```
+
+--------------------------------
+
+### Start Postgres World in Nitro plugin
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
+
+Creates a Nitro plugin that starts the World's background worker on server initialization. Must be registered in nitro.config.ts.
 
 ```ts
-import { start } from 'workflow/api';
-import { onboardUser } from './workflows/onboard-user';
+import { defineNitroPlugin } from "nitro/~internal/runtime/plugin";
 
-await start(onboardUser, ['hello@example.com']);
+export default defineNitroPlugin(async () => {
+  const { getWorld } = await import("workflow/runtime");
+  const world = await getWorld();
+  await world.start?.();
+});
+```
+
+--------------------------------
+
+### CLI: init
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Generates .swcrc configuration for the project. Use --force to overwrite an existing configuration.
+
+```APIDOC
+## CLI: init
+
+### Description
+Generates .swcrc configuration for the project.
+
+### Method
+init
+
+### Parameters
+#### Options
+- **--force** (boolean) - Optional - Force regenerate (overwrites existing).
+
+### Request Example
+```bash
+# Generate .swcrc configuration
+npx @workflow/nest init
+
+# Force regenerate (overwrites existing)
+npx @workflow/nest init --force
+```
 ```
 
 --------------------------------
@@ -479,36 +599,33 @@ The app resumes approvals from server-side code with a deterministic token.
 
 --------------------------------
 
-### Start a workflow from an API route
+### Run local development server
 
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+Source: https://github.com/vercel/workflow/blob/main/workbench/express/README.md
 
-Use start() from an API route to launch a workflow. The function returns a run object with a runId. For a no-arg workflow, call start(noArgWorkflow) without arguments.
+Starts the local development server for the Express workflow with Nitro v3.
 
-```typescript
-import { start } from "workflow/api";
-
-// From an API route; works directly
-export async function POST() {
-  const run = await start(myWorkflow, [arg1, arg2]);
-  return Response.json({ runId: run.runId });
-}
-
-// No-args workflow
-const run = await start(noArgWorkflow);
+```sh
+npm run dev
 ```
 
 --------------------------------
 
-### Run event-log race repro locally
+### Next.js app development commands
 
 Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
 
-Run the event-log race repro harness against a locally started workbench app. No Vercel deployment or credentials are required. The first command targets world-postgres; the second targets world-local.
+Commands for starting the dev server, building the app, and running the production server for the Next.js workbench app with workflow support.
 
 ```bash
-pnpm run test:e2e:event-log-race-repro:local              # world-postgres
-pnpm run test:e2e:event-log-race-repro:local --world local # world-local
+# Start Next.js dev server with workflow support
+cd workbench/nextjs-turbopack && pnpm dev
+
+# Build Next.js app with workflows
+cd workbench/nextjs-turbopack && pnpm build
+
+# Production server
+cd workbench/nextjs-turbopack && pnpm start
 ```
 
 --------------------------------
@@ -531,14 +648,18 @@ bun dev
 
 --------------------------------
 
-### Run local development server
+### Example CI summary output
 
-Source: https://github.com/vercel/workflow/blob/main/workbench/express/README.md
+Source: https://github.com/vercel/workflow/blob/main/workbench/sim-world/README.md
 
-Starts the local development server for the Express workflow with Nitro v3.
+Shows the summary comment posted by the CI workflow. The count is the key metric to inspect.
 
-```sh
-npm run dev
+```text
+## Sim World
+
+Simulated world deterministic testing for races. [Traces](…)
+
+▸ 🟢 world-sim scenario book — 0 fail of 41 total
 ```
 
 --------------------------------
@@ -559,98 +680,48 @@ export async function startWorkflowWorld(): Promise<void> {
 
 --------------------------------
 
-### Conformance suite setup with createTestSuite
+### Create PostgreSQL world with createWorld()
 
-Source: https://github.com/vercel/workflow/blob/main/skills/migrating-world-v4-to-v5/SKILL.md
+Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
 
-Imports and invokes createTestSuite from @workflow/world-testing to run conformance tests against a World package. The suite spawns a server with WORKFLOW_TARGET_WORLD set and runs real workflows, failing on non-canonical IDs or non-dense runs.
+Create a PostgreSQL world programmatically with a connection string and optional settings. The example is incomplete and not type-checked.
 
 ```typescript
-import { createTestSuite } from '@workflow/world-testing';
+import { createWorld } from "@workflow/world-postgres";
 
-createTestSuite('@my-org/my-world'); // or a path to the built entrypoint
+const world = createWorld({
+  connectionString: "postgres://username:password@localhost:5432/database",
+  jobPrefix: "myapp", // optional
+  queueConcurrency: 50, // optional
+  maxPoolSize: 10, // optional, overrides WORKFLOW_POSTGRES_MAX_POOL_SIZE when `pool` is omitted
+});
 ```
 
 --------------------------------
 
-### Static step method with Step and Workflow mode outputs
+### Start a PostgreSQL database container
 
-Source: https://github.com/vercel/workflow/blob/main/packages/swc-plugin-workflow/spec.md
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
 
-Static step method example. The input class MyService has a static async method marked with "use step". The Step Mode output registers the method in the global step registry and the class in the class registry. The Workflow Mode output replaces the method body with a call to globalThis[Symbol.for("WORKFLOW_USE_STEP")] and registers the class. Instance methods are not supported.
-
-```javascript
-export class MyService {
-  static async process(data) {
-    "use step";
-    return data.value * 2;
-  }
-}
-```
-
-```javascript
-/**__internal_workflows{"steps":{"input.js":{"MyService.process":{"stepId":"step//./input//MyService.process"}}},"classes":{"input.js":{"MyService":{"classId":"class//./input//MyService"}}}}*/;
-export class MyService {
-    static async process(data) {
-        return data.value * 2;
-    }
-}
-(function(__wf_fn, __wf_id) {
-    var __wf_sym = Symbol.for("@workflow/core//registeredSteps"), __wf_reg = globalThis[__wf_sym] || (globalThis[__wf_sym] = new Map());
-    __wf_reg.set(__wf_id, __wf_fn);
-    __wf_fn.stepId = __wf_id;
-})(MyService.process, "step//./input//MyService.process");
-(function(__wf_cls, __wf_id) {
-    var __wf_sym = Symbol.for("workflow-class-registry"), __wf_reg = globalThis[__wf_sym] || (globalThis[__wf_sym] = new Map());
-    __wf_reg.set(__wf_id, __wf_cls);
-    if (!Object.prototype.hasOwnProperty.call(__wf_cls, "classId")) Object.defineProperty(__wf_cls, "classId", { value: __wf_id, writable: false, enumerable: false, configurable: false });
-})(MyService, "class//./input//MyService");
-```
-
-```javascript
-/**__internal_workflows{"steps":{"input.js":{"MyService.process":{"stepId":"step//./input//MyService.process"}}},"classes":{"input.js":{"MyService":{"classId":"class//./input//MyService"}}}}*/;
-export class MyService {
-}
-MyService.process = globalThis[Symbol.for("WORKFLOW_USE_STEP")]("step//./input//MyService.process");
-(function(__wf_cls, __wf_id) {
-    var __wf_sym = Symbol.for("workflow-class-registry"), __wf_reg = globalThis[__wf_sym] || (globalThis[__wf_sym] = new Map());
-    __wf_reg.set(__wf_id, __wf_cls);
-    if (!Object.prototype.hasOwnProperty.call(__wf_cls, "classId")) Object.defineProperty(__wf_cls, "classId", { value: __wf_id, writable: false, enumerable: false, configurable: false });
-})(MyService, "class//./input//MyService");
-```
-
---------------------------------
-
-### Next.js app development commands
-
-Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
-
-Commands for developing the Next.js app: start the dev server, build the app with workflows, and run the production server.
+Runs a PostgreSQL 18 Alpine container matching the World's default connection string postgres://world:world@localhost:5432/world. Use for local development.
 
 ```bash
-# Start Next.js dev server with workflow support
-cd workbench/nextjs-turbopack && pnpm dev
-
-# Build Next.js app with workflows
-cd workbench/nextjs-turbopack && pnpm build
-
-# Production server
-cd workbench/nextjs-turbopack && pnpm start
+docker run -d --name workflow-postgres -p 127.0.0.1:5432:5432 \
+  -e POSTGRES_USER=world -e POSTGRES_PASSWORD=world -e POSTGRES_DB=world \
+  postgres:18-alpine
 ```
 
 --------------------------------
 
-### Expected excerpt using createWebhook()
+### Build and run integration tests with Testcontainers
 
-Source: https://github.com/vercel/workflow/blob/main/skills/migrating-to-workflow-sdk/evals/callback-url-default-response.md
+Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
 
-Expected SDK code that creates a webhook, sends a verification request with the webhook URL, and awaits the request to get the payload.
+Builds the package and runs integration tests. Docker must be installed and running before executing these commands.
 
-```ts
-using verification = createWebhook();
-await sendVerificationRequest(documentId, verification.url);
-const request = await verification;
-const payload = await request.json();
+```bash
+pnpm build
+pnpm test
 ```
 
 --------------------------------
@@ -685,6 +756,47 @@ async function collectChild(runId: string) {
   const run = getRun(runId);
   return (await run.returnValue) as { input: string; status: 'done' };
 }
+```
+
+--------------------------------
+
+### CLI: build
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Builds workflow bundles for local development. Use --vercel to emit a Vercel Build Output API directory.
+
+```APIDOC
+## CLI: build
+
+### Description
+Builds workflow bundles for local development. Use --vercel to emit a Vercel Build Output API directory.
+
+### Method
+build
+
+### Parameters
+#### Options
+- **--vercel** (boolean) - Optional - Emit a Vercel Build Output API directory (`.vercel/output`) with the workflow queue-consumer function. Implied when the `VERCEL` env var is set. Default: off (on under `VERCEL`).
+- **--dirs** (string) - Optional - Comma-separated workflow source directories to scan. Default: `src`.
+- **--entry** (string) - Optional - Vercel app entry module that default-exports a Node request handler. Auto-detected (e.g. `_vercel/entry.js`).
+- **--out-dir** (string) - Optional - Output directory for local-dev bundles (ignored with `--vercel`). Default: `.nestjs/workflow`.
+- **--module** (string) - Optional - SWC module type: `es6` or `commonjs`. Default: `es6`.
+- **--base-path** (string) - Optional - Route prefix the app is served under. Must match `setGlobalPrefix()` / `basePath`. Default: none.
+- **--sourcemap** (string) - Optional - esbuild sourcemap mode: `true`, `false`, `inline`, `linked`, `external`, `both`. Default: builder default.
+- **--max-duration** (number) - Optional - `maxDuration` for the app function. Default: `300`.
+- **--runtime** (string) - Optional - Vercel runtime for the emitted functions, e.g. `nodejs22.x`. Default: platform default.
+- **--app-function** (string) - Optional - Name of the catch-all app function. Default: `__nest`.
+- **--external** (string) - Optional - Comma-separated packages to leave as bare `require()` calls instead of bundling, for dependencies resolved at runtime behind `try`/`catch`. Vercel builds only. Default: none.
+
+### Request Example
+```bash
+# Build workflow bundles for local dev
+npx @workflow/nest build
+
+# Emit the Vercel Build Output (.vercel/output); implied when VERCEL is set
+npx @workflow/nest build --vercel
+```
 ```
 
 --------------------------------
@@ -725,61 +837,17 @@ export async function POST(request: Request) {
 
 --------------------------------
 
-### Configure Local World with createWorld() and WORKFLOW_TARGET_WORLD
+### Expected excerpt using createWebhook()
 
-Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/local.mdx
+Source: https://github.com/vercel/workflow/blob/main/skills/migrating-to-workflow-sdk/evals/callback-url-default-response.md
 
-Programmatic configuration example: create a World with createWorld() and export it from a module, then point WORKFLOW_TARGET_WORLD at that module. Options passed to createWorld() take precedence over environment variables; baseUrl overrides port if set, and streamFlushIntervalMs is overridden by WORKFLOW_STREAM_FLUSH_INTERVAL_MS if set.
+Expected SDK code that creates a webhook, sends a verification request with the webhook URL, and awaits the request to get the payload.
 
-```typescript
-import { createWorld } from "@workflow/world-local";
-
-export default createWorld({
-  dataDir: "./custom-workflow-data",
-  port: 5173,
-  // baseUrl overrides port if set
-  baseUrl: "https://local.example.com:3000",
-  recoverActiveRuns: true, // overrides WORKFLOW_LOCAL_RECOVER_ACTIVE_RUNS
-  streamFlushIntervalMs: 10, // WORKFLOW_STREAM_FLUSH_INTERVAL_MS, if set, overrides this
-});
-```
-
-```bash
-WORKFLOW_TARGET_WORLD="./my-world.ts"
-```
-
---------------------------------
-
-### Pin a workflow run to a specific region with start()
-
-Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/vercel.mdx
-
-Use the `region` option in `start()` to pin a run's data and queue dispatch to a specific region, such as `sfo1`. Note that this does not deploy your code; your app must be deployed to that region for execution to happen there.
-
-```typescript
-import { start } from "workflow/api";
-import { myWorkflow } from "@/workflows/my-workflow";
-
-const run = await start(myWorkflow, [input], { region: "sfo1" });
-```
-
---------------------------------
-
-### Start a child workflow from inside a workflow
-
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
-
-Call start() from within a workflow function to spawn a child run. The child run is created without waiting for it to complete; use childRun.returnValue only when the parent should wait.
-
-```typescript
-import { start } from "workflow/api";
-
-export async function parentWorkflow() {
-  "use workflow";
-  const childRun = await start(childWorkflow, ["some data"]);
-  await sleep("1h");
-  return { childRunId: childRun.runId };
-}
+```ts
+using verification = createWebhook();
+await sendVerificationRequest(documentId, verification.url);
+const request = await verification;
+const payload = await request.json();
 ```
 
 --------------------------------
@@ -806,57 +874,31 @@ export async function startWorkflowWorld(): Promise<void> {
 
 --------------------------------
 
-### world.streams.get()
+### Deploy to Vercel
 
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/vercel.mdx
 
-Retrieves a readable stream for a given run and stream name, starting from a specified index.
+Deploy your application to Vercel to automatically use the Vercel World backend. No additional setup is required.
 
-```APIDOC
-## world.streams.get()
-
-### Description
-Retrieves a readable stream for a given run and stream name, starting from a specified index.
-
-### Method
-N/A (SDK method)
-
-### Endpoint
-N/A
-
-### Parameters
-#### Path Parameters
-- **runId** (string) - Required - The ID of the run.
-- **name** (string) - Required - The name of the stream.
-- **startIndex** (number) - Required - The index to start reading from.
-
-### Request Example
-```typescript
-const readable = await world.streams.get(runId, name, startIndex);
-```
-
-### Response
-#### Success Response
-- **readable** (ReadableStream) - A readable stream of chunks.
-
-#### Response Example
-```typescript
-const readable = await world.streams.get(runId, name, startIndex);
-```
+```bash
+vercel deploy
 ```
 
 --------------------------------
 
-### Example trace output showing out-of-order positions
+### Add pre-build scripts to package.json
 
-Source: https://github.com/vercel/workflow/blob/main/packages/world-sim/README.md
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
 
-Shows a sample trace output where positions count backwards because the log order disagrees with commit order. The hook owns position 7, the timeout at 8 was committed first, and the branch at 9 went with the timeout. Out-of-order positions are highlighted when color is on.
+Add a prebuild script that runs the init command with --force to regenerate configuration before builds, and a build script that runs nest build.
 
-```text
-# 8    +1.0m  wf   wait_completed   @6
-# 7    +1.0m  ext    hook_received  @2   token="count:doc-29"
-# 9    +1.0m  wf   step_created     @9   settle
+```json
+{
+  "scripts": {
+    "prebuild": "npx @workflow/nest init --force",
+    "build": "nest build"
+  }
+}
 ```
 
 --------------------------------
@@ -865,7 +907,7 @@ Shows a sample trace output where positions count backwards because the log orde
 
 Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
 
-Run the bootstrap CLI to set up the database. The CLI loads the connection string from WORKFLOW_POSTGRES_URL, then DATABASE_URL, then defaults to postgres://world:world@localhost:5432/world. Use the command for your package manager.
+Run the bootstrap command to set up the database. The CLI loads the connection string from WORKFLOW_POSTGRES_URL, then DATABASE_URL, then defaults to postgres://world:world@localhost:5432/world. Requires PostgreSQL access and permissions to create tables and manage jobs.
 
 ```bash
 # npm
@@ -889,22 +931,114 @@ bunx --package @workflow/world-postgres bootstrap
 
 --------------------------------
 
-### Test webhook with resumeWebhook and waitForHook
+### CLI commands for @workflow/nest
 
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
 
-Test a workflow that uses a webhook by starting it, waiting for the hook, and resuming it with a Request object. No HTTP server is needed; the hook token is discovered via waitForHook.
+Commands to initialize SWC configuration, build workflow bundles, emit Vercel Build Output, and show help. Use --force to overwrite existing config; --vercel is implied when VERCEL is set.
+
+```Bash
+# Generate .swcrc configuration
+npx @workflow/nest init
+
+# Force regenerate (overwrites existing)
+npx @workflow/nest init --force
+
+# Build workflow bundles for local dev
+npx @workflow/nest build
+
+# Emit the Vercel Build Output (.vercel/output); implied when VERCEL is set
+npx @workflow/nest build --vercel
+
+# Show help
+npx @workflow/nest --help
+```
+
+--------------------------------
+
+### Get deployment ID with vercel inspect
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/vercel.mdx
+
+Use this command to retrieve the deployment ID for a given deployment URL, which is needed when starting runs from outside a deployment.
+
+```bash
+# `vercel inspect` prints the dpl_... ID for a deployment URL
+vercel inspect https://my-app-abc123.vercel.app
+```
+
+--------------------------------
+
+### Set up Vercel World in a script
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/vercel.mdx
+
+Use this script to configure the Vercel World with explicit credentials before starting a workflow. Requires the token, project ID, and team ID to be set together.
 
 ```typescript
-import { start, resumeWebhook } from "workflow/api";
-import { waitForHook } from "@workflow/vitest";
+import { start } from "workflow/api";
+import { setWorld } from "workflow/runtime";
+import { createWorld } from "@workflow/world-vercel";
+import { myWorkflow } from "../workflows/my-workflow";
 
-const run = await start(ingestWorkflow, ["ep-1"]);
-const hook = await waitForHook(run);  // Discovers the random webhook token
-await resumeWebhook(hook.token, new Request("https://example.com/webhook", {
-  method: "POST",
-  body: JSON.stringify({ event: "order.created" }),
-}));
+setWorld(
+  createWorld({
+    token: process.env.WORKFLOW_VERCEL_AUTH_TOKEN, // [!code highlight]
+    projectConfig: {
+      projectId: process.env.WORKFLOW_VERCEL_PROJECT, // [!code highlight]
+      teamId: process.env.WORKFLOW_VERCEL_TEAM, // [!code highlight]
+      environment: process.env.WORKFLOW_VERCEL_ENV, // [!code highlight]
+    },
+  })
+);
+
+const run = await start(myWorkflow, ["input"]);
+console.log(run.runId);
+```
+
+--------------------------------
+
+### Set up conformance test suite with createTestSuite
+
+Source: https://github.com/vercel/workflow/blob/main/skills/migrating-world-v4-to-v5/SKILL.md
+
+Wire up the conformance suite before migration verification. The suite spawns a server with WORKFLOW_TARGET_WORLD set to the given value and runs real workflows against it. Requires a built entrypoint that plain node can load and whose createWorld() works with no arguments.
+
+```typescript
+import { createTestSuite } from '@workflow/world-testing';
+
+createTestSuite('@my-org/my-world'); // or a path to the built entrypoint
+```
+
+--------------------------------
+
+### FastifyAdapter with bodyLimit
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Raise Fastify's body limit on the adapter because it is per instance and cannot be scoped to workflow routes. The default is 1 MiB, and WorkflowModule logs a warning at startup if it is not raised.
+
+```typescript
+const app = await NestFactory.create(
+  AppModule,
+  new FastifyAdapter({ bodyLimit: 16 * 1024 * 1024 })
+);
+```
+
+--------------------------------
+
+### Run local event-log race repro against world-postgres or world-local
+
+Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
+
+Runs the dedicated harness for CORRUPTED_EVENT_LOG against a locally started workbench app. No Vercel deployment or credentials are required. The first command uses world-postgres; the second uses world-local.
+
+```bash
+pnpm run test:e2e:event-log-race-repro:local              # world-postgres
+```
+
+```bash
+pnpm run test:e2e:event-log-race-repro:local --world local # world-local
 ```
 
 --------------------------------
@@ -926,293 +1060,63 @@ Wire the statusline helper into ~/.claude/settings.json so it runs across all se
 
 --------------------------------
 
-### CLI commands for init, build, and help
-
-Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
-
-Shows the CLI commands for generating .swcrc, building workflow bundles, emitting Vercel Build Output, and showing help. The --force flag overwrites existing config.
-
-```bash
-# Generate .swcrc configuration
-npx @workflow/nest init
-
-# Force regenerate (overwrites existing)
-npx @workflow/nest init --force
-
-# Build workflow bundles for local dev
-npx @workflow/nest build
-
-# Emit the Vercel Build Output (.vercel/output); implied when VERCEL is set
-npx @workflow/nest build --vercel
-
-# Show help
-npx @workflow/nest --help
-```
-
---------------------------------
-
-### Static workflow method with Workflow mode output
+### Instance method step: input class with custom serialization
 
 Source: https://github.com/vercel/workflow/blob/main/packages/swc-plugin-workflow/spec.md
 
-Static workflow method example. The input class JobRunner has a static async method marked with "use workflow". The Workflow Mode output sets the workflowId property and registers the method in globalThis.__private_workflows.
+Input example of an instance method using `"use step"`. The class provides custom serialization methods `WORKFLOW_SERIALIZE` and `WORKFLOW_DESERIALIZE` from `@workflow/serde`.
 
 ```javascript
-export class JobRunner {
-  static async runJob(jobId) {
-    "use workflow";
-    return await processJob(jobId);
+import { WORKFLOW_SERIALIZE, WORKFLOW_DESERIALIZE } from '@workflow/serde';
+
+export class Counter {
+  static [WORKFLOW_SERIALIZE](instance) {
+    return { value: instance.value };
+  }
+  static [WORKFLOW_DESERIALIZE](data) {
+    return new Counter(data.value);
+  }
+  constructor(value) {
+    this.value = value;
+  }
+  async add(amount) {
+    'use step';
+    return this.value + amount;
   }
 }
 ```
 
-```javascript
-/**__internal_workflows{"workflows":{"input.js":{"JobRunner.runJob":{"workflowId":"workflow//./input//JobRunner.runJob"}}}}*/;
-export class JobRunner {
-    static async runJob(jobId) {
-        return await processJob(jobId);
-    }
-}
-JobRunner.runJob.workflowId = "workflow//./input//JobRunner.runJob";
-globalThis.__private_workflows.set("workflow//./input//JobRunner.runJob", JobRunner.runJob);
-```
-
 --------------------------------
 
-### Get stream in workflow, pass to step
+### Start a workflow from an API route
 
 Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
 
-Shows how to obtain a WritableStream in a workflow function and pass it to a step function for actual I/O. The step function writes data to the stream using getWriter() and write().
+Use start() from an API route to launch a workflow. The function returns a run object with a runId. For a no-arg workflow, call start(noArgWorkflow) without arguments.
 
 ```typescript
-import { getWritable } from "workflow";
+import { start } from "workflow/api";
 
-export async function myWorkflow() {
-  "use workflow";
-  const writable = getWritable();
-  await writeData(writable, "hello world");
+// From an API route; works directly
+export async function POST() {
+  const run = await start(myWorkflow, [arg1, arg2]);
+  return Response.json({ runId: run.runId });
 }
 
-async function writeData(writable: WritableStream, chunk: string) {
-  "use step";
-  const writer = writable.getWriter();
-  try {
-    await writer.write(chunk);
-  } finally {
-    writer.releaseLock();
-  }
-}
+// No-args workflow
+const run = await start(noArgWorkflow);
 ```
 
 --------------------------------
 
-### Integration test config with @workflow/vitest plugin
+### Run bootstrap migrations with Bun
 
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
 
-Vitest configuration for integration tests using the workflow() plugin. Install @workflow/vitest next to workflow and keep them on the same major; the plugin fails the run when its @workflow/core major differs from the app's.
-
-```typescript
-// vitest.integration.config.ts
-import { defineConfig } from "vitest/config";
-import { workflow } from "@workflow/vitest";
-
-export default defineConfig({
-  plugins: [workflow()],
-  test: {
-    include: ["**/*.integration.test.ts"],
-    testTimeout: 60_000,
-  },
-});
-```
-
---------------------------------
-
-### Custom class serde implementation with @workflow/serde
-
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
-
-Shows how to implement WORKFLOW_SERIALIZE and WORKFLOW_DESERIALIZE static methods inside a class body using computed property syntax. The class must be in a package with @workflow/serde as a dependency. The example includes a computeDistance method marked with "use step" to keep Node.js-dependent code out of the workflow bundle.
-
-```typescript
-import { WORKFLOW_SERIALIZE, WORKFLOW_DESERIALIZE } from "@workflow/serde";
-
-export class Point {
-  x: number;
-  y: number;
-
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-  }
-
-  // Serialize: return plain data (must be devalue-compatible types only)
-  static [WORKFLOW_SERIALIZE](instance: Point) {
-    return { x: instance.x, y: instance.y };
-  }
-
-  // Deserialize: reconstruct from plain data
-  static [WORKFLOW_DESERIALIZE](data: { x: number; y: number }) {
-    return new Point(data.x, data.y);
-  }
-
-  async computeDistance(other: Point) {
-    "use step";
-    return Math.sqrt((this.x - other.x) ** 2 + (this.y - other.y) ** 2);
-  }
-}
-```
-
---------------------------------
-
-### Run event-log race repro at historical soak scale
-
-Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
-
-Run the event-log race repro at the historical soak scale to measure a rate. The default scale (14 runs) is a per-PR regression check, not a rate measurement. This command uses the historical scale with the specified environment variables and skips build and DB setup.
+Runs the bootstrap command using bunx. Reads WORKFLOW_POSTGRES_URL or DATABASE_URL. Idempotent.
 
 ```bash
-EVENT_LOG_RACE_REPRO_STEP_STORM_ATTEMPTS=600 \
-EVENT_LOG_RACE_REPRO_HOOK_STORM_ATTEMPTS=600 \
-EVENT_LOG_RACE_REPRO_ATTEMPTS=200 \
-EVENT_LOG_RACE_REPRO_CONCURRENCY=40 \
-EVENT_LOG_RACE_REPRO_BUDGET_MS=4500000 \
-  pnpm run test:e2e:event-log-race-repro:local --skip-build --skip-db-setup
-```
-
---------------------------------
-
-### Run the app and open the observability UI
-
-Source: https://github.com/vercel/workflow/blob/main/packages/workflow/README.md
-
-Run your app with npm run dev, then open the local observability UI with npx workflow web in another terminal.
-
-```bash
-npm run dev
-```
-
-```bash
-npx workflow web
-```
-
---------------------------------
-
-### Integration test for approval workflow with hooks and sleep
-
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
-
-Integration test that starts a workflow, waits for a hook and resumes it, waits for a sleep and wakes it up, then asserts the final result. Uses waitForHook, resumeHook, waitForSleep, and getRun from the workflow API.
-
-```typescript
-// approval.integration.test.ts
-import { describe, it, expect } from "vitest";
-import { start, getRun, resumeHook } from "workflow/api";
-import { waitForHook, waitForSleep } from "@workflow/vitest";
-import { approvalWorkflow } from "./approval";
-
-describe("approvalWorkflow", () => {
-  it("should publish when approved", async () => {
-    const run = await start(approvalWorkflow, ["doc-123"]);
-
-    // Wait for the hook, then resume it
-    await waitForHook(run, { token: "approval:doc-123" });
-    await resumeHook("approval:doc-123", { approved: true, reviewer: "alice" });
-
-    // Wait for sleep, then wake it up
-    const sleepId = await waitForSleep(run);
-    await getRun(run.runId).wakeUp({ correlationIds: [sleepId] });
-
-    const result = await run.returnValue;
-    expect(result).toEqual({ status: "published", reviewer: "alice" });
-  });
-});
-```
-
---------------------------------
-
-### Add pre-build scripts to package.json
-
-Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
-
-Add a prebuild script that runs the init command with --force to regenerate configuration before builds, and a build script that runs nest build.
-
-```json
-{
-  "scripts": {
-    "prebuild": "npx @workflow/nest init --force",
-    "build": "nest build"
-  }
-}
-```
-
---------------------------------
-
-### Wire up the build command for Vercel
-
-Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
-
-Add a `vercel-build` script to your `package.json` that compiles the app with `nest build` and then emits the Vercel Build Output with `npx @workflow/nest build`. `nest build` (via SWC) compiles your app, including decorator metadata and the workflow client transform, and `@workflow/nest build` bundles the app and workflow functions into `.vercel/output`.
-
-```json
-{
-  "scripts": {
-    "vercel-build": "nest build && npx @workflow/nest build"
-  }
-}
-```
-
---------------------------------
-
-### resolveData 'none' for status polling and 'all' with hydration
-
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
-
-Shows how to use resolveData to control I/O inclusion. Use 'none' for lightweight status checks; use 'all' (or omit) for full inspection, but always hydrate the data with hydrateResourceIO to get usable values.
-
-```typescript
-// Lightweight status check with no I/O loaded
-const run = await world.runs.get(runId, { resolveData: 'none' });
-console.log(run.status); // 'running' | 'completed' | 'failed' | 'cancelled'
-
-// Full inspection: resolveData includes data, hydrateResourceIO deserializes it
-const step = await world.steps.get(runId, stepId); // defaults to 'all'
-const hydrated = hydrateResourceIO(step, observabilityRevivers);
-```
-
---------------------------------
-
-### Print deep link URL for a run
-
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
-
-Commands that print the dashboard deep link and exit without opening a browser or starting a local server. Use --url to print the link, and --json for machine-readable output. The --env flag selects the environment (defaults to production).
-
-```bash
-# Vercel run: prints the Vercel dashboard URL for the run
-npx workflow inspect run <run_id> --backend vercel --project <project> --team <team> --url
-npx workflow web <run_id> --backend vercel --project <project> --team <team> --env preview --url
-
-# Local run: prints the local web UI deep link
-npx workflow inspect run <run_id> --url
-
-# Machine-readable: --url --json prints { "url": "..." } to stdout
-npx workflow inspect run <run_id> --backend vercel --url --json
-```
-
---------------------------------
-
-### Run simulator scenarios with pnpm sim
-
-Source: https://github.com/vercel/workflow/blob/main/workbench/sim-world/README.md
-
-Run the simulator from the command line. The first command plays all scenarios and prints every event stream. The second filters scenarios by id or name containing "hook". The third runs a single scenario by its id. The command exits non-zero if any scenario misses an expectation or trips a consistency check, so it doubles as the package's integration test.
-
-```bash
-pnpm sim                             # play every scenario, print every event stream
-pnpm sim hook                        # only scenarios whose id or name contains "hook"
-pnpm sim in-flight-after-decision    # one scenario, by id
+bunx --package @workflow/world-postgres bootstrap
 ```
 
 --------------------------------
@@ -1229,13 +1133,44 @@ npm run build
 
 --------------------------------
 
-### Next.js instrumentation.ts: start world runtime
+### Workspace-level commands (pnpm build, test, format, lint, typecheck, clean)
+
+Source: https://github.com/vercel/workflow/blob/main/AGENTS.md
+
+Run these commands from the repository root to build all packages, run unit and end-to-end tests, format and lint with Biome, typecheck TypeScript, and clean build artifacts.
+
+```bash
+# Build all packages
+pnpm build
+
+# Run tests across all packages  
+pnpm test
+
+# Run end-to-end tests
+pnpm test:e2e
+
+# Format code with Biome
+pnpm format
+
+# Lint with Biome
+pnpm lint
+
+# Typecheck TypeScript
+pnpm typecheck
+
+# Clean build artifacts
+pnpm clean
+```
+
+--------------------------------
+
+### Start world in Next.js instrumentation.ts
 
 Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/HOW_IT_WORKS.md
 
-Add this to instrumentation.ts|js in Next.js to ensure workers start before request handling. It dynamically imports the workflow runtime and calls world.start() to begin listening to jobs.
+Add this to instrumentation.ts|js to start graphile-worker workers before request handling in Next.js. It imports getWorld from workflow/runtime and calls world.start() only when not on the edge runtime.
 
-```typescript
+```TypeScript
 // instrumentation.ts
 
 if (process.env.NEXT_RUNTIME !== "edge") {
@@ -1245,71 +1180,6 @@ if (process.env.NEXT_RUNTIME !== "edge") {
     await world.start?.();
   });
 }
-```
-
---------------------------------
-
-### Error handling with FatalError, RetryableError, and Promise.allSettled
-
-Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
-
-Use this TypeScript snippet to handle permanent failures with FatalError (terminates immediately), transient failures with RetryableError (retries with optional retryAfter delay), and parallel steps with mixed criticality using Promise.allSettled. The example shows how to check the critical result and rethrow a FatalError if it fails.
-
-```typescript
-import { FatalError, RetryableError } from "workflow";
-
-// Permanent failure, so the workflow terminates
-throw new FatalError("Invalid input: missing required field");
-
-// Transient failure, so it will retry
-throw new RetryableError("API rate limited", { retryAfter: "5m" });
-
-// Mixed criticality parallel execution
-const results = await Promise.allSettled([
-  criticalStep(data),    // Must succeed
-  optionalStep(data),    // OK to fail
-  enrichmentStep(data),  // OK to fail
-]);
-const [critical, optional, enrichment] = results;
-if (critical.status === "rejected") throw new FatalError(critical.reason);
-```
-
---------------------------------
-
-### Install SWC packages required by NestJS SWC builder
-
-Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
-
-Install the SWC CLI and core packages as dev dependencies using npm or pnpm. These are required for NestJS's SWC builder.
-
-```bash
-npm install -D @swc/cli @swc/core
-# or
-pnpm add -D @swc/cli @swc/core
-```
-
---------------------------------
-
-### Hono app boundary for starting refund workflow
-
-Source: https://github.com/vercel/workflow/blob/main/skills/migrating-to-workflow-sdk/references/aws-step-functions.md
-
-Hono app boundary that exposes a POST /api/refunds/start endpoint, parses the refundId from the request body, starts the refundWorkflow with that ID, and returns the runId in the JSON response.
-
-```ts
-import { Hono } from 'hono';
-import { start } from 'workflow/api';
-import { refundWorkflow } from '../workflows/refund';
-
-const app = new Hono();
-
-app.post('/api/refunds/start', async (c) => {
-  const body = (await c.req.json()) as { refundId: string };
-  const run = await start(refundWorkflow, [body.refundId]);
-  return c.json({ runId: run.runId });
-});
-
-export default app;
 ```
 
 --------------------------------
@@ -1356,14 +1226,257 @@ const { data, cursor } = await world.steps.list({ runId, pagination: { cursor },
 
 --------------------------------
 
-### Use local observability UI
+### Inspect runs and launch web UI
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
+
+Lists workflow runs and launches the web UI, both using the @workflow/world-postgres backend.
+
+```bash
+# List workflow runs
+npx workflow inspect runs --backend @workflow/world-postgres
+
+# Launch the web UI
+npx workflow web --backend @workflow/world-postgres
+```
+
+--------------------------------
+
+### Start a child workflow from inside a workflow
+
+Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+
+Call start() from within a workflow function to spawn a child run. The child run is created without waiting for it to complete; use childRun.returnValue only when the parent should wait.
+
+```typescript
+import { start } from "workflow/api";
+
+export async function parentWorkflow() {
+  "use workflow";
+  const childRun = await start(childWorkflow, ["some data"]);
+  await sleep("1h");
+  return { childRunId: childRun.runId };
+}
+```
+
+--------------------------------
+
+### Hono app boundary for starting refund workflow
+
+Source: https://github.com/vercel/workflow/blob/main/skills/migrating-to-workflow-sdk/references/aws-step-functions.md
+
+Hono app boundary that exposes a POST /api/refunds/start endpoint, parses the refundId from the request body, starts the refundWorkflow with that ID, and returns the runId in the JSON response.
+
+```ts
+import { Hono } from 'hono';
+import { start } from 'workflow/api';
+import { refundWorkflow } from '../workflows/refund';
+
+const app = new Hono();
+
+app.post('/api/refunds/start', async (c) => {
+  const body = (await c.req.json()) as { refundId: string };
+  const run = await start(refundWorkflow, [body.refundId]);
+  return c.json({ runId: run.runId });
+});
+
+export default app;
+```
+
+--------------------------------
+
+### Create a new Astro project with the minimal template
+
+Source: https://github.com/vercel/workflow/blob/main/workbench/astro/README.md
+
+Run this command in your terminal to scaffold a new Astro project using the minimal template. It requires npm and will create a new project directory.
+
+```sh
+npm create astro@latest -- --template minimal
+```
+
+--------------------------------
+
+### Build @workflow/core and change to packages/core
+
+Source: https://github.com/vercel/workflow/blob/main/packages/core/scripts/README.md
+
+Builds the @workflow/core package so the benchmark scripts can import the compiled serialization layer, then changes into the packages/core directory.
+
+```bash
+pnpm --filter @workflow/core build
+cd packages/core
+```
+
+--------------------------------
+
+### Explicit region selection with start()
 
 Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/vercel.mdx
 
-Launches the local observability UI instead of the Vercel dashboard for workflow runs.
+Pass the `region` option to `start()` to pin a run to a specific Vercel Function region. The region controls data storage and queue dispatch, but does not deploy your code; your app must be deployed there for execution to occur in that region.
+
+```typescript
+import { start } from "workflow/api";
+import { myWorkflow } from "@/workflows/my-workflow";
+
+const run = await start(myWorkflow, [input], { region: "sfo1" });
+```
+
+--------------------------------
+
+### Same-named steps in different block scopes - step mode output
+
+Source: https://github.com/vercel/workflow/blob/main/packages/swc-plugin-workflow/spec.md
+
+Step mode output for the two `act` steps. The first is hoisted as `example$act` with step ID `step//./input//example/act`; the second as `example$act$1` with step ID `step//./input//example/act~1`. Registration IIFEs are abbreviated.
+
+```javascript
+var example$act = async ()=>
+"a";
+(function(__wf_fn, __wf_id) { /* ... */ })(example$act, "step//./input//example/act");
+var example$act$1 = async ()=>
+"b";
+(function(__wf_fn, __wf_id) { /* ... */ })(example$act$1, "step//./input//example/act~1");
+```
+
+--------------------------------
+
+### Inspect workflows and launch web UI with Workflow CLI
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
+
+Set the WORKFLOW_POSTGRES_URL environment variable, then use the Workflow CLI to list workflow runs and launch the web UI. If WORKFLOW_POSTGRES_URL is not set, the CLI defaults to postgres://world:world@localhost:5432/world.
 
 ```bash
-npx workflow web --backend vercel --localUi
+# Set your database URL
+export WORKFLOW_POSTGRES_URL="postgres://user:password@host:5432/database"
+
+# List workflow runs
+npx workflow inspect runs --backend @workflow/world-postgres
+
+# Launch the web UI
+npx workflow web --backend @workflow/world-postgres
+```
+
+--------------------------------
+
+### world.streams.get()
+
+Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+
+Retrieves a readable stream for a given run and stream name, starting from a specified index.
+
+```APIDOC
+## world.streams.get()
+
+### Description
+Retrieves a readable stream for a given run and stream name, starting from a specified index.
+
+### Method
+N/A (SDK method)
+
+### Endpoint
+N/A
+
+### Parameters
+#### Path Parameters
+- **runId** (string) - Required - The ID of the run.
+- **name** (string) - Required - The name of the stream.
+- **startIndex** (number) - Required - The index to start reading from.
+
+### Request Example
+```typescript
+const readable = await world.streams.get(runId, name, startIndex);
+```
+
+### Response
+#### Success Response
+- **readable** (ReadableStream) - A readable stream of chunks.
+
+#### Response Example
+```typescript
+const readable = await world.streams.get(runId, name, startIndex);
+```
+```
+
+--------------------------------
+
+### Build and deploy to Vercel
+
+Source: https://github.com/vercel/workflow/blob/main/workbench/express/README.md
+
+Builds the project for Vercel deployment using the Vercel preset and deploys with the prebuilt flag.
+
+```sh
+NITRO_PRESET=vercel npm run build
+npx vercel --prebuilt
+```
+
+--------------------------------
+
+### Import WorkflowModule in app.module.ts
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Import WorkflowModule from @workflow/nest and register it with forRoot() in the AppModule.
+
+```typescript
+import { Module } from '@nestjs/common';
+import { WorkflowModule } from '@workflow/nest';
+
+@Module({
+  imports: [WorkflowModule.forRoot()],
+})
+export class AppModule {}
+```
+
+--------------------------------
+
+### Add .swcrc to .gitignore
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Add .swcrc to .gitignore because it contains machine-specific absolute paths.
+
+```bash
+echo '/.swcrc' >> .gitignore
+```
+
+--------------------------------
+
+### Run bootstrap migrations with pnpm
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
+
+Runs the bootstrap command using pnpm dlx. Reads WORKFLOW_POSTGRES_URL or DATABASE_URL. Idempotent.
+
+```bash
+pnpm dlx --package @workflow/world-postgres bootstrap
+```
+
+--------------------------------
+
+### Run storage size benchmark
+
+Source: https://github.com/vercel/workflow/blob/main/packages/core/scripts/README.md
+
+Runs the storage size benchmark script that prints exact bytes for compression off vs on per workload, plus a simulated 10-step AI-agent event-log total.
+
+```bash
+node scripts/benchmark-compression-size.mjs
+```
+
+--------------------------------
+
+### Run bootstrap migrations with npm
+
+Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/postgres.mdx
+
+Runs the bootstrap command to create tables. Reads WORKFLOW_POSTGRES_URL or DATABASE_URL. Idempotent, safe to run on every deploy.
+
+```bash
+npx --package=@workflow/world-postgres bootstrap
 ```
 
 --------------------------------
@@ -1385,14 +1498,124 @@ export default config;
 
 --------------------------------
 
-### Create a new Astro project with the minimal template
+### Create a new Svelte project with npx sv create
 
-Source: https://github.com/vercel/workflow/blob/main/workbench/astro/README.md
+Source: https://github.com/vercel/workflow/blob/main/workbench/sveltekit/README.md
 
-Run this command in your terminal to scaffold a new Astro project using the minimal template. It requires npm and will create a new project directory.
+Use these commands to create a new Svelte project. The first creates a project in the current directory, the second in a directory named my-app.
 
 ```sh
-npm create astro@latest -- --template minimal
+# create a new project in the current directory
+npx sv create
+
+# create a new project in my-app
+npx sv create my-app
+```
+
+--------------------------------
+
+### Run all documentation tests with pnpm test:docs
+
+Source: https://github.com/vercel/workflow/blob/main/packages/docs-typecheck/README.md
+
+Run all documentation type-check tests from the repository root or from this package directory.
+
+```bash
+pnpm test:docs
+```
+
+--------------------------------
+
+### WorkflowModule.forRoot()
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Initializes the WorkflowModule with optional configuration options. Use this method to configure the module for your NestJS application.
+
+```APIDOC
+## WorkflowModule.forRoot()
+
+### Description
+Initializes the WorkflowModule with optional configuration options.
+
+### Method
+forRoot
+
+### Parameters
+#### Options
+- **dirs** (string[]) - Optional - Workflow source directories to scan.
+- **outDir** (string) - Optional - Output directory for local-dev bundles.
+- **skipBuild** (boolean) - Optional - Only with `workflow-nest build` in your build step: startup fails fast if the bundles are missing. Defaults to true on Vercel, where they always are.
+- **moduleType** (string) - Optional - SWC module type: `commonjs` if using SWC CommonJS compilation.
+- **distDir** (string) - Optional - Where compiled .js files live.
+
+### Request Example
+```ts
+import { WorkflowModule } from '@workflow/nest';
+
+// Basic usage
+WorkflowModule.forRoot()
+
+// With options
+WorkflowModule.forRoot({
+  dirs: ['src/workflows'],
+  outDir: '.nestjs/workflow',
+  // Only with `workflow-nest build` in your build step: startup fails fast if
+  // the bundles are missing. Defaults to true on Vercel, where they always are.
+  skipBuild: true,
+  moduleType: 'commonjs',  // if using SWC CommonJS compilation
+  distDir: 'dist',          // where compiled .js files live
+})
+```
+```
+
+--------------------------------
+
+### Configure PostgreSQL world with environment variables
+
+Source: https://github.com/vercel/workflow/blob/main/packages/world-postgres/README.md
+
+Set required and optional environment variables for the PostgreSQL world. Defaults are noted for optional settings.
+
+```bash
+# Required: PostgreSQL connection string
+export WORKFLOW_POSTGRES_URL="postgres://username:password@localhost:5432/database"
+
+# Optional: Job prefix for queue operations
+export WORKFLOW_POSTGRES_JOB_PREFIX="myapp"
+
+# Optional: Worker concurrency (default: 10)
+export WORKFLOW_POSTGRES_WORKER_CONCURRENCY="10"
+
+# Optional: Internal pg.Pool max size (default: 10)
+export WORKFLOW_POSTGRES_MAX_POOL_SIZE="10"
+
+# Optional: Let the application coordinate shutdown (default: false)
+export WORKFLOW_POSTGRES_APPLICATION_MANAGED_SHUTDOWN="1"
+
+# Optional: Maximum Hook minimum retention in days (default: 30)
+export WORKFLOW_POSTGRES_HOOK_RETENTION_LIMIT_DAYS="30"
+
+# Optional: Seconds a running delivery's job lock may go unrenewed before
+# another process redelivers the job (default: 0, off; 30 is a good value
+# when more than one process shares the database, see "Crash recovery")
+export WORKFLOW_POSTGRES_JOB_LOCK_STALE_SECONDS="30"
+```
+
+--------------------------------
+
+### Configure nest-cli.json to use SWC builder
+
+Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
+
+Set the builder to 'swc' in nest-cli.json so NestJS uses SWC for compilation.
+
+```json
+{
+  "compilerOptions": {
+    "builder": "swc"
+  }
+}
 ```
 
 --------------------------------
@@ -1413,6 +1636,24 @@ import { setAttributes } from 'workflow';
 
 --------------------------------
 
+### Inspect runs and runs with CLI
+
+Source: https://github.com/vercel/workflow/blob/main/skills/workflow/SKILL.md
+
+Commands to inspect workflow runs. Use --json for machine-readable output and --help for full usage. For Vercel-deployed projects, specify the backend and project details.
+
+```bash
+# CLI inspection (use --json for machine-readable output, --help for full usage)
+npx workflow inspect runs
+npx workflow inspect run <run_id>
+
+# For Vercel-deployed projects, specify backend and project
+npx workflow inspect runs --backend vercel --project <project-name> --team <team-slug>
+npx workflow inspect run <run_id> --backend vercel --project <project-name> --team <team-slug>
+```
+
+--------------------------------
+
 ### Install workflow tarball in package.json
 
 Source: https://github.com/vercel/workflow/blob/main/tarballs/README.md
@@ -1425,188 +1666,4 @@ Adds the workflow package as a dependency using a tarball URL from a Vercel depl
     "workflow": "https://<deployment>.vercel.sh/workflow.tgz"
   }
 }
-```
-
---------------------------------
-
-### Build @workflow/core and change to packages/core
-
-Source: https://github.com/vercel/workflow/blob/main/packages/core/scripts/README.md
-
-Builds the @workflow/core package so the benchmark scripts can import the compiled serialization layer, then changes into the packages/core directory.
-
-```bash
-pnpm --filter @workflow/core build
-cd packages/core
-```
-
---------------------------------
-
-### Initialize SWC configuration with npx @workflow/nest init
-
-Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
-
-Run the init command to generate a .swcrc file configured with the Workflow SWC plugin for client-mode transformations. The command writes only the settings the workflow transform needs, preserving other SWC configuration. Use --force to refresh the resolved plugin path.
-
-```bash
-npx @workflow/nest init
-```
-
---------------------------------
-
-### Extend module resolution with paths mapping
-
-Source: https://github.com/vercel/workflow/blob/main/packages/docs-typecheck/README.md
-
-Add a new package or subpath to compilerOptions.paths in src/type-checker.ts to resolve during type checking. The example shows adding a mapping for '@workflow/new-package'.
-
-```typescript
-paths: {
-  // existing mappings...
-  '@workflow/new-package': [path.join(repoRoot, 'packages/new-package/dist/index')],
-}
-```
-
---------------------------------
-
-### World interface for self-hosted runtimes
-
-Source: https://github.com/vercel/workflow/blob/main/skills/migrating-to-workflow-sdk/references/runtime-targets.md
-
-Minimum interface for a custom World implementation in self-hosted runtimes. It extends Queue, Streamer, and Storage, and optionally provides a start method for background workers.
-
-```ts
-interface World extends Queue, Streamer, Storage {
-  start?(): Promise<void>;
-}
-```
-
---------------------------------
-
-### World interface extending Storage, Queue, Streamer
-
-Source: https://github.com/vercel/workflow/blob/main/skills/migrating-to-workflow-sdk/evals/non-vercel-runtime-branch.md
-
-Defines the World interface that extends Storage, Queue, and Streamer, with an optional start method. This represents the migrated workflow/step structure and can remain the same in the migration.
-
-```TypeScript
-interface World extends Storage, Queue, Streamer {
-  start?(): Promise<void>;
-}
-```
-
---------------------------------
-
-### Build and deploy to Vercel
-
-Source: https://github.com/vercel/workflow/blob/main/workbench/express/README.md
-
-Builds the project for Vercel deployment using the Vercel preset and deploys with the prebuilt flag.
-
-```sh
-NITRO_PRESET=vercel npm run build
-npx vercel --prebuilt
-```
-
---------------------------------
-
-### Restart dev server with tmux
-
-Source: https://github.com/vercel/workflow/blob/main/skills/internal-dev-workbench/SKILL.md
-
-Restart the dev server after editing workflow files. Sends Ctrl-C to the dev pane, waits for the prompt, then starts the dev server with the workflow public manifest enabled.
-
-```bash
-tmux send-keys -t "$PANE_DEV" C-c
-# Wait for the prompt to return
-tmux send-keys -t "$PANE_DEV" \
-  'cd workbench/nextjs-turbopack && WORKFLOW_PUBLIC_MANIFEST=1 portless run --name turbopack pnpm dev' C-m
-```
-
---------------------------------
-
-### Storage.steps.list
-
-Source: https://github.com/vercel/workflow/blob/main/docs/content/worlds/v5/building-a-world.mdx
-
-Lists steps for a workflow run with pagination.
-
-```APIDOC
-## Storage.steps.list
-
-### Description
-Lists steps for a workflow run with pagination.
-
-### Method
-GET
-
-### Endpoint
-Storage.steps.list
-
-### Parameters
-#### Query Parameters
-- **params** (ListWorkflowRunStepsParams) - Required - Parameters for listing steps, including run ID and pagination.
-
-### Response
-#### Success Response (200)
-- **PaginatedResponse<Step>** - A paginated list of steps.
-
-#### Response Example
-```json
-{
-  "items": [
-    {
-      "id": "step_456",
-      "type": "action"
-    }
-  ],
-  "nextToken": "def456"
-}
-```
-```
-
---------------------------------
-
-### npx @workflow/nest init
-
-Source: https://github.com/vercel/workflow/blob/main/packages/nest/README.md
-
-Generates .swcrc configuration for the project. Use --force to overwrite existing configuration.
-
-```APIDOC
-## npx @workflow/nest init
-
-### Description
-Generates .swcrc configuration for the project.
-
-### Method
-CLI Command
-
-### Endpoint
-npx @workflow/nest init
-
-### Parameters
-#### Options
-- **--force** (boolean) - Optional - Force regenerate, overwriting existing configuration.
-
-### Request Example
-```bash
-npx @workflow/nest init
-npx @workflow/nest init --force
-```
-
-### Response
-No response body.
-```
-
---------------------------------
-
-### Run storage size benchmark
-
-Source: https://github.com/vercel/workflow/blob/main/packages/core/scripts/README.md
-
-Runs the storage size benchmark script that prints exact bytes for compression off vs on per workload, plus a simulated 10-step AI-agent event-log total.
-
-```bash
-node scripts/benchmark-compression-size.mjs
 ```
