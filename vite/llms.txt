@@ -572,6 +572,29 @@ $ bun create vite
 
 --------------------------------
 
+### Access WebAssembly Module via URL import
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Uses the ?url query suffix to get the resolved asset URL for explicit instantiation using WebAssembly.instantiateStreaming.
+
+```js
+import 'vite/client'
+// ---cut---
+import wasmUrl from 'foo.wasm?url'
+
+const main = async () => {
+  const responsePromise = fetch(wasmUrl)
+  const { module, instance } =
+    await WebAssembly.instantiateStreaming(responsePromise)
+  /* ... */
+}
+
+main()
+```
+
+--------------------------------
+
 ### Create entry index.html
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -594,29 +617,6 @@ Use this Playwright spec test to verify the DOM modification from the `?raw` imp
 test('?raw import', async () => {
   expect(await page.textContent('.raw')).toMatch('SVG')
 })
-```
-
---------------------------------
-
-### Access WebAssembly Module via URL import
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Uses the ?url query suffix to get the resolved asset URL for explicit instantiation using WebAssembly.instantiateStreaming.
-
-```js
-import 'vite/client'
-// ---cut---
-import wasmUrl from 'foo.wasm?url'
-
-const main = async () => {
-  const responsePromise = fetch(wasmUrl)
-  const { module, instance } =
-    await WebAssembly.instantiateStreaming(responsePromise)
-  /* ... */
-}
-
-main()
 ```
 
 --------------------------------
@@ -1654,6 +1654,22 @@ text('.exports-legacy-fallback', exportsLegacyFallbackMsg)
 
 --------------------------------
 
+### Configure application entry points using input in vite.config.js
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Sets the default entry point for applications that do not use an index.html entry. This serves as the default fallback for build.rolldownOptions.input, build.lib.entry, build.ssr, and optimizeDeps.entries.
+
+```javascript
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  input: 'src/main.ts',
+})
+```
+
+--------------------------------
+
 ### Import from package with exports field
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1663,6 +1679,19 @@ Imports the main entry of a package that defines an exports field. The exports f
 ```javascript
 import { msg } from '@vitejs/test-resolve-exports-path'
 text('.exports-entry', msg)
+```
+
+--------------------------------
+
+### Import from UTF-8 BOM file
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a message from a file that contains a UTF-8 byte order mark (BOM). The BOM is stripped during resolution.
+
+```javascript
+import { msg as bomMsg } from './utf8-bom/main.js'
+text('.utf8-bom', bomMsg)
 ```
 
 --------------------------------
@@ -1693,35 +1722,6 @@ export default defineConfig({
     },
   },
 })
-```
-
---------------------------------
-
-### Configure application entry points using input in vite.config.js
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
-
-Sets the default entry point for applications that do not use an index.html entry. This serves as the default fallback for build.rolldownOptions.input, build.lib.entry, build.ssr, and optimizeDeps.entries.
-
-```javascript
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  input: 'src/main.ts',
-})
-```
-
---------------------------------
-
-### Import from UTF-8 BOM file
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a message from a file that contains a UTF-8 byte order mark (BOM). The BOM is stripped during resolution.
-
-```javascript
-import { msg as bomMsg } from './utf8-bom/main.js'
-text('.utf8-bom', bomMsg)
 ```
 
 --------------------------------
