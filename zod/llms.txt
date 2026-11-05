@@ -58,6 +58,22 @@ npm install zod@latest
 
 --------------------------------
 
+### Inspect materialized schema metadata properties on first read
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
+
+Shows how metadata keys like .minLength start as prototype getters and materialize as own properties only after they are read.
+
+```ts
+const s = z.string().min(3).max(9);
+
+Object.keys(s); // 4.5: ["def", "type", "format", "minLength", "maxLength"] — 4.6: ["def", "type"]
+s.minLength;    // 3 in both
+Object.keys(s); // 4.6: ["def", "type", "minLength"]
+```
+
+--------------------------------
+
 ### Install external parser using z.withParser()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
@@ -71,22 +87,6 @@ const Player = z.object({ username: z.string(), xp: z.number() });
 const Fast = z.withParser(Player, (input) =>
   isPlayer(input) ? { username: input.username, xp: input.xp } : z.INVALID
 );
-```
-
---------------------------------
-
-### Inspect materialized schema metadata properties on first read
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
-
-Shows how metadata keys like .minLength start as prototype getters and materialize as own properties only after they are read.
-
-```ts
-const s = z.string().min(3).max(9);
-
-Object.keys(s); // 4.5: ["def", "type", "format", "minLength", "maxLength"] — 4.6: ["def", "type"]
-s.minLength;    // 3 in both
-Object.keys(s); // 4.6: ["def", "type", "minLength"]
 ```
 
 --------------------------------
@@ -283,6 +283,20 @@ Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The
 
 --------------------------------
 
+### Creating a custom registry in Zod
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
+
+Initialize a custom registry typed with specific metadata attributes.
+
+```ts
+import * as z from "zod";
+
+const myRegistry = z.registry<{ description: string };>();
+```
+
+--------------------------------
+
 ### import "zod/compile"
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
@@ -318,20 +332,6 @@ Set `preload` in `bunfig.toml` or `nub.jsonc`.
   "preload": ["zod/compile"]
 }
 ```
-```
-
---------------------------------
-
-### Creating a custom registry in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/metadata.mdx
-
-Initialize a custom registry typed with specific metadata attributes.
-
-```ts
-import * as z from "zod";
-
-const myRegistry = z.registry<{ description: string };>();
 ```
 
 --------------------------------
@@ -417,19 +417,6 @@ Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile b
 
 --------------------------------
 
-### Preload zod/compile via Node.js CLI flags
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Use the Node.js --import flag for ESM or --require for CommonJS to guarantee compilation is enabled before any module defines a schema.
-
-```sh
-node --import zod/compile app.js   # ESM
-node --require zod/compile app.cjs # CommonJS
-```
-
---------------------------------
-
 ### Validate unknown keys with .catchall()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -460,6 +447,19 @@ const DogWithStrings = z.catchall(
 
 DogWithStrings.parse({ name: "Yeller", extraKey: "extraValue" }); // ✅
 DogWithStrings.parse({ name: "Yeller", extraKey: 42 }); // ❌
+```
+
+--------------------------------
+
+### Preload zod/compile via Node.js CLI flags
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Use the Node.js --import flag for ESM or --require for CommonJS to guarantee compilation is enabled before any module defines a schema.
+
+```sh
+node --import zod/compile app.js   # ESM
+node --require zod/compile app.cjs # CommonJS
 ```
 
 --------------------------------
@@ -1430,21 +1430,6 @@ schema.encode("asdf");  // => "asdf"
 
 --------------------------------
 
-### Inspect default input and output types for branded schemas
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
-
-```typescript
-const USD = z.string().brand<"USD">();
-
-type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
-type USDInput = z.input<typeof USD>; // string
-```
-
---------------------------------
-
 ### Chain schemas into pipes with pipe
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1461,6 +1446,21 @@ stringToLength.parse("hello"); // => 5
 const stringToLength = z.pipe(z.string(), z.transform(val => val.length));
 
 z.parse(stringToLength, "hello"); // => 5
+```
+
+--------------------------------
+
+### Inspect default input and output types for branded schemas
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+By default, `.brand()` only brands the output type (`z.output`), leaving the input type (`z.input`) unbranded.
+
+```typescript
+const USD = z.string().brand<"USD">();
+
+type USDOutput = z.output<typeof USD>; // string & z.$brand<"USD">
+type USDInput = z.input<typeof USD>; // string
 ```
 
 --------------------------------

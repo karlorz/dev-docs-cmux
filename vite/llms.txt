@@ -572,6 +572,25 @@ $ bun create vite
 
 --------------------------------
 
+### Deep import from @babel/runtime
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a helper from a deep path within a package. Demonstrates that deep imports into dependencies are resolved.
+
+```javascript
+import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
+const iterable = (function* () {
+  yield 2
+  yield 4
+  yield 6
+  yield 8
+})()
+text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
+```
+
+--------------------------------
+
 ### Access WebAssembly Module via URL import
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -595,18 +614,6 @@ main()
 
 --------------------------------
 
-### Create entry index.html
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Create an entry point HTML file in the project root. Vite treats this file as source code and part of the module graph.
-
-```html
-<p>Hello Vite!</p>
-```
-
---------------------------------
-
 ### Assert ?raw import output in spec test
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -617,6 +624,18 @@ Use this Playwright spec test to verify the DOM modification from the `?raw` imp
 test('?raw import', async () => {
   expect(await page.textContent('.raw')).toMatch('SVG')
 })
+```
+
+--------------------------------
+
+### Create entry index.html
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Create an entry point HTML file in the project root. Vite treats this file as source code and part of the module graph.
+
+```html
+<p>Hello Vite!</p>
 ```
 
 --------------------------------
@@ -694,6 +713,18 @@ init().then((instance) => {
 
 --------------------------------
 
+### Build the app with npm run build
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Builds the app; by default the output is placed in the `dist` folder, which can be deployed to any platform.
+
+```bash
+$ npm run build
+```
+
+--------------------------------
+
 ### Install Vite CLI manually
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -718,18 +749,6 @@ $ bun add -D vite
 
 ```bash
 $ deno add -D npm:vite
-```
-
---------------------------------
-
-### Build the app with npm run build
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
-
-Builds the app; by default the output is placed in the `dist` folder, which can be deployed to any platform.
-
-```bash
-$ npm run build
 ```
 
 --------------------------------
@@ -792,18 +811,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Scaffold Vite project using Deno
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Deno's npm package execution.
-
-```bash
-$ deno init --npm vite
-```
-
---------------------------------
-
 ### Install trusted SSL certificate on macOS
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
@@ -812,6 +819,18 @@ Use this on macOS to install a trusted SSL certificate via the CLI, resolving ne
 
 ```shell
 security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain-db your-cert.cer
+```
+
+--------------------------------
+
+### Scaffold Vite project using Deno
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Deno's npm package execution.
+
+```bash
+$ deno init --npm vite
 ```
 
 --------------------------------
@@ -909,29 +928,6 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
-### Inject post-middleware via configureServer hook
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Return a function from configureServer to register custom middlewares that execute after internal middlewares are installed.
-
-```javascript
-const myPlugin = () => ({
-  name: 'configure-server',
-  configureServer(server) {
-    // return a post hook that is called after internal middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
-```
-
---------------------------------
-
 ### Configure server.warmup in Vite config
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
@@ -951,19 +947,23 @@ export default defineConfig({
 
 --------------------------------
 
-### Attach pre-middleware via configureServer hook
+### Inject post-middleware via configureServer hook
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
 
-Adds custom middlewares to the Vite connect application that execute before internal middlewares are installed.
+Return a function from configureServer to register custom middlewares that execute after internal middlewares are installed.
 
 ```javascript
 const myPlugin = () => ({
   name: 'configure-server',
   configureServer(server) {
-    server.middlewares.use((req, res, next) => {
-      // custom handle request...
-    })
+    // return a post hook that is called after internal middlewares are
+    // installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
   },
 })
 ```
@@ -989,6 +989,25 @@ Creates a new `FetchableDevEnvironment` instance configured with a request handl
 
 #### Returns
 - `FetchableDevEnvironment` - The created fetchable dev environment instance.
+```
+
+--------------------------------
+
+### Attach pre-middleware via configureServer hook
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Adds custom middlewares to the Vite connect application that execute before internal middlewares are installed.
+
+```javascript
+const myPlugin = () => ({
+  name: 'configure-server',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      // custom handle request...
+    })
+  },
+})
 ```
 
 --------------------------------
@@ -1045,6 +1064,18 @@ init().then((instance) => {
 
 --------------------------------
 
+### Scaffold Vite Vue project with CLI options using Bun
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
+
+```bash
+$ bun create vite my-vue-app --template vue
+```
+
+--------------------------------
+
 ### Implicit index resolving
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1054,18 +1085,6 @@ Imports from a directory without specifying a file. The resolver automatically l
 ```javascript
 import { foo } from './util'
 text('.index', foo())
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
-
-```bash
-$ bun create vite my-vue-app --template vue
 ```
 
 --------------------------------
@@ -1195,25 +1214,6 @@ text('.imports-star', importsStar)
 
 --------------------------------
 
-### Deep import from @babel/runtime
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a helper from a deep path within a package. Demonstrates that deep imports into dependencies are resolved.
-
-```javascript
-import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
-const iterable = (function* () {
-  yield 2
-  yield 4
-  yield 6
-  yield 8
-})()
-text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
-```
-
---------------------------------
-
 ### Clone, build, and link Vite locally
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -1269,6 +1269,34 @@ text('.imports-same-level', importsSameLevel)
 
 --------------------------------
 
+### Configure package.json for multiple entries library
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Recommended `package.json` export configuration supporting multiple entries and conditional exports.
+
+```json
+{
+  "name": "my-lib",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/my-lib.cjs",
+  "module": "./dist/my-lib.js",
+  "exports": {
+    ".": {
+      "import": "./dist/my-lib.js",
+      "require": "./dist/my-lib.cjs"
+    },
+    "./secondary": {
+      "import": "./dist/secondary.js",
+      "require": "./dist/secondary.cjs"
+    }
+  }
+}
+```
+
+--------------------------------
+
 ### Render production asset links from manifest template
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
@@ -1302,47 +1330,6 @@ Imports from a package that uses the exports field with a root-level mapping. Th
 ```javascript
 import { msg as exportsFromRootMsg } from '@vitejs/test-resolve-exports-from-root/nested'
 text('.exports-from-root', exportsFromRootMsg)
-```
-
---------------------------------
-
-### Configure package.json for multiple entries library
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Recommended `package.json` export configuration supporting multiple entries and conditional exports.
-
-```json
-{
-  "name": "my-lib",
-  "type": "module",
-  "files": ["dist"],
-  "main": "./dist/my-lib.cjs",
-  "module": "./dist/my-lib.js",
-  "exports": {
-    ".": {
-      "import": "./dist/my-lib.js",
-      "require": "./dist/my-lib.cjs"
-    },
-    "./secondary": {
-      "import": "./dist/secondary.js",
-      "require": "./dist/secondary.cjs"
-    }
-  }
-}
-```
-
---------------------------------
-
-### Import with exports environment condition
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports from a package that uses the exports field with environment-specific conditions. The condition determines which file is loaded.
-
-```javascript
-import { msg as exportsEnvMsg } from '@vitejs/test-resolve-exports-env'
-text('.exports-env', exportsEnvMsg)
 ```
 
 --------------------------------
@@ -1418,6 +1405,19 @@ parentServer.use(vite.middlewares)
 
 --------------------------------
 
+### Import with exports environment condition
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a package that uses the exports field with environment-specific conditions. The condition determines which file is loaded.
+
+```javascript
+import { msg as exportsEnvMsg } from '@vitejs/test-resolve-exports-env'
+text('.exports-env', exportsEnvMsg)
+```
+
+--------------------------------
+
 ### Configure default Vite npm scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -1432,6 +1432,19 @@ Default npm scripts in a scaffolded Vite project for starting the dev server, bu
     "preview": "vite preview" // locally preview production build
   }
 }
+```
+
+--------------------------------
+
+### Imports field: hash query import
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a package that uses the imports field with a hash and query. The mapping includes both a hash and a query.
+
+```javascript
+import { msg as importsHashQuery } from '#hash?query'
+text('.imports-hash-query', importsHashQuery)
 ```
 
 --------------------------------
@@ -1458,19 +1471,6 @@ experimental: {
 },
 // ---cut-after---
 }
-```
-
---------------------------------
-
-### Imports field: hash query import
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports from a package that uses the imports field with a hash and query. The mapping includes both a hash and a query.
-
-```javascript
-import { msg as importsHashQuery } from '#hash?query'
-text('.imports-hash-query', importsHashQuery)
 ```
 
 --------------------------------
@@ -1532,18 +1532,6 @@ text('.imports-nested', importsNested)
 
 --------------------------------
 
-### Instantiate Worker with import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Demonstrates instantiating a Web Worker using a relative script path resolved against import.meta.url.
-
-```javascript
-const worker = new Worker(new URL('./worker.js', import.meta.url))
-```
-
---------------------------------
-
 ### Imports field: top-level import
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1557,19 +1545,14 @@ text('.imports-top-level', importsTopLevel)
 
 --------------------------------
 
-### Typical SSR application source file structure
+### Instantiate Worker with import.meta.url
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
 
-Shows the recommended directory and file layout for an SSR application, including server, universal code, client entry, and server entry files.
+Demonstrates instantiating a Web Worker using a relative script path resolved against import.meta.url.
 
-```text
-- index.html
-- server.js # main application server
-- src/
-  - main.js          # exports env-agnostic (universal) app code
-  - entry-client.js  # mounts the app to a DOM element
-  - entry-server.js  # renders the app using the framework's SSR API
+```javascript
+const worker = new Worker(new URL('./worker.js', import.meta.url))
 ```
 
 --------------------------------
@@ -1588,6 +1571,23 @@ text(
   '.exports-with-module-condition-required',
   exportsWithModuleConditionRequired,
 )
+```
+
+--------------------------------
+
+### Typical SSR application source file structure
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
+
+Shows the recommended directory and file layout for an SSR application, including server, universal code, client entry, and server entry files.
+
+```text
+- index.html
+- server.js # main application server
+- src/
+  - main.js          # exports env-agnostic (universal) app code
+  - entry-client.js  # mounts the app to a DOM element
+  - entry-server.js  # renders the app using the framework's SSR API
 ```
 
 --------------------------------
@@ -1654,22 +1654,6 @@ text('.exports-legacy-fallback', exportsLegacyFallbackMsg)
 
 --------------------------------
 
-### Configure application entry points using input in vite.config.js
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
-
-Sets the default entry point for applications that do not use an index.html entry. This serves as the default fallback for build.rolldownOptions.input, build.lib.entry, build.ssr, and optimizeDeps.entries.
-
-```javascript
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  input: 'src/main.ts',
-})
-```
-
---------------------------------
-
 ### Import from package with exports field
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1679,19 +1663,6 @@ Imports the main entry of a package that defines an exports field. The exports f
 ```javascript
 import { msg } from '@vitejs/test-resolve-exports-path'
 text('.exports-entry', msg)
-```
-
---------------------------------
-
-### Import from UTF-8 BOM file
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a message from a file that contains a UTF-8 byte order mark (BOM). The BOM is stripped during resolution.
-
-```javascript
-import { msg as bomMsg } from './utf8-bom/main.js'
-text('.utf8-bom', bomMsg)
 ```
 
 --------------------------------
@@ -1722,6 +1693,35 @@ export default defineConfig({
     },
   },
 })
+```
+
+--------------------------------
+
+### Configure application entry points using input in vite.config.js
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
+
+Sets the default entry point for applications that do not use an index.html entry. This serves as the default fallback for build.rolldownOptions.input, build.lib.entry, build.ssr, and optimizeDeps.entries.
+
+```javascript
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  input: 'src/main.ts',
+})
+```
+
+--------------------------------
+
+### Import from UTF-8 BOM file
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a message from a file that contains a UTF-8 byte order mark (BOM). The BOM is stripped during resolution.
+
+```javascript
+import { msg as bomMsg } from './utf8-bom/main.js'
+text('.utf8-bom', bomMsg)
 ```
 
 --------------------------------
@@ -1762,6 +1762,18 @@ text('.imports-question-mark', importsQuestionMark)
 
 --------------------------------
 
+### Scaffold Vite Vue project with CLI options using pnpm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
+
+```bash
+$ pnpm create vite my-vue-app --template vue
+```
+
+--------------------------------
+
 ### Imports field: root slash import
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1771,18 +1783,6 @@ Imports from a package that uses the imports field with a root slash mapping. Th
 ```javascript
 import { msg as importsRootSlash } from '#/index.js'
 text('.imports-root-slash', importsRootSlash)
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
-
-```bash
-$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
