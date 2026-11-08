@@ -310,25 +310,6 @@ myRegistry.clear(); // wipe registry
 
 --------------------------------
 
-### Define and parse schemas using @zod/mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/mini/README.md
-
-Import @zod/mini to define an object schema with checks and parse input data.
-
-```ts
-import * as z from "@zod/mini";
-
-const User = z.object({
-  name: z.string(),
-  age: z.number().check(z.int(), z.positive()),
-});
-
-z.parse(User, { name: "Colin", age: 30 });
-```
-
---------------------------------
-
 ### Define a fixed-length tuple with z.tuple
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -344,6 +325,25 @@ const MyTuple = z.tuple([
 
 type MyTuple = z.infer<typeof MyTuple>;
 // [string, number, boolean]
+```
+
+--------------------------------
+
+### Define and parse schemas using @zod/mini
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/mini/README.md
+
+Import @zod/mini to define an object schema with checks and parse input data.
+
+```ts
+import * as z from "@zod/mini";
+
+const User = z.object({
+  name: z.string(),
+  age: z.number().check(z.int(), z.positive()),
+});
+
+z.parse(User, { name: "Colin", age: 30 });
 ```
 
 --------------------------------
@@ -396,6 +396,22 @@ const schema = z.templateLiteral([ "hello, ", z.string(), "!" ]);
 
 --------------------------------
 
+### Extract allowed literal values with .values (Zod)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+In Zod, read the .values property to get the set of allowed values from a literal schema. Zod Mini has no equivalent.
+
+```ts
+colors.values; // => Set<"red" | "green" | "blue">
+```
+
+```ts
+// no equivalent
+```
+
+--------------------------------
+
 ### Define a bidirectional transformation codec with z.codec()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
@@ -411,22 +427,6 @@ const stringToDate = z.codec(
     encode: (date) => date.toISOString(),       // Date → ISO string
   }
 );
-```
-
---------------------------------
-
-### Extract allowed literal values with .values (Zod)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-In Zod, read the .values property to get the set of allowed values from a literal schema. Zod Mini has no equivalent.
-
-```ts
-colors.values; // => Set<"red" | "green" | "blue">
-```
-
-```ts
-// no equivalent
 ```
 
 --------------------------------
@@ -498,6 +498,20 @@ Widen your package.json peer dependency to span both Zod 3 and Zod 4 ranges. The
 
 --------------------------------
 
+### Set preload for zod/compile in nub.jsonc
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile before schemas are defined.
+
+```jsonc
+{
+  "preload": ["zod/compile"]
+}
+```
+
+--------------------------------
+
 ### Define a fallback value with .catch() in Zod
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -513,20 +527,6 @@ numberWithCatch.parse("tuna"); // => 42
 
 --------------------------------
 
-### Set preload for zod/compile in nub.jsonc
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile before schemas are defined.
-
-```jsonc
-{
-  "preload": ["zod/compile"]
-}
-```
-
---------------------------------
-
 ### Preload zod/compile via Node.js CLI flags
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
@@ -536,28 +536,6 @@ Use the Node.js --import flag for ESM or --require for CommonJS to guarantee com
 ```sh
 node --import zod/compile app.js   # ESM
 node --require zod/compile app.cjs # CommonJS
-```
-
---------------------------------
-
-### TypeScript discriminated union type narrowing example
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Shows how TypeScript narrows a discriminated union based on the status discriminator key. Use as reference for the type behavior Zod's z.discriminatedUnion mirrors.
-
-```typescript
-type MyResult =
-  | { status: "success"; data: string }
-  | { status: "failed"; error: string };
-
-function handleResult(result: MyResult){
-  if(result.status === "success"){
-    result.data; // string
-  } else {
-    result.error; // string
-  }
-}
 ```
 
 --------------------------------
@@ -613,6 +591,28 @@ mySchema.isNullable(); // boolean
 
 --------------------------------
 
+### TypeScript discriminated union type narrowing example
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Shows how TypeScript narrows a discriminated union based on the status discriminator key. Use as reference for the type behavior Zod's z.discriminatedUnion mirrors.
+
+```typescript
+type MyResult =
+  | { status: "success"; data: string }
+  | { status: "failed"; error: string };
+
+function handleResult(result: MyResult){
+  if(result.status === "success"){
+    result.data; // string
+  } else {
+    result.error; // string
+  }
+}
+```
+
+--------------------------------
+
 ### Registering a Zod Mini schema in a registry using .register()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/packages/mini.mdx
@@ -623,6 +623,39 @@ Associates metadata with a schema by registering it to an explicit schema regist
 const myReg = z.registry<{title: string}>();
 
 z.string().register(myReg, { title: "My cool string schema" });
+```
+
+--------------------------------
+
+### Create multiple issues with superRefine (Zod)
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Unlike .refine, .superRefine() can create multiple issues using Zod's internal issue types. This example adds a too_big issue and a custom duplicate issue.
+
+```ts
+const UniqueStringArray = z.array(z.string()).superRefine((val, ctx) => {
+  if (val.length > 3) {
+    ctx.addIssue({
+      code: "too_big",
+      maximum: 3,
+      origin: "array",
+      inclusive: true,
+      message: "Too many items 😡",
+      input: val,
+    });
+  }
+
+  if (val.length !== new Set(val).size) {
+    ctx.addIssue({
+      code: "custom",
+      message: `No duplicates allowed.`,
+      input: val,
+    });
+  }
+});
+
+
 ```
 
 --------------------------------
@@ -696,39 +729,6 @@ z.object({ a: z.preprocess(fn, T) }).parse({})
 
 --------------------------------
 
-### Create multiple issues with superRefine (Zod)
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Unlike .refine, .superRefine() can create multiple issues using Zod's internal issue types. This example adds a too_big issue and a custom duplicate issue.
-
-```ts
-const UniqueStringArray = z.array(z.string()).superRefine((val, ctx) => {
-  if (val.length > 3) {
-    ctx.addIssue({
-      code: "too_big",
-      maximum: 3,
-      origin: "array",
-      inclusive: true,
-      message: "Too many items 😡",
-      input: val,
-    });
-  }
-
-  if (val.length !== new Set(val).size) {
-    ctx.addIssue({
-      code: "custom",
-      message: `No duplicates allowed.`,
-      input: val,
-    });
-  }
-});
-
-
-```
-
---------------------------------
-
 ### Create an async function with .implementAsync()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -741,6 +741,22 @@ const computeTrimmedLengthAsync = MyFunction.implementAsync(
 );
 
 computeTrimmedLengthAsync("sandwich"); // => Promise<8>
+```
+
+--------------------------------
+
+### Compare prefault and default with mutating refinements
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+`.prefault()` passes the value through refinements like `.trim()` and `.toUpperCase()`, while `.default()` returns the value unchanged. Use prefault when you want the fallback to be processed.
+
+```ts
+const a = z.string().trim().toUpperCase().prefault("  tuna  ");
+a.parse(undefined); // => "TUNA"
+
+const b = z.string().trim().toUpperCase().default("  tuna  ");
+b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -780,22 +796,6 @@ Set `preload` in `bunfig.toml` or `nub.jsonc`.
   "preload": ["zod/compile"]
 }
 ```
-```
-
---------------------------------
-
-### Compare prefault and default with mutating refinements
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-`.prefault()` passes the value through refinements like `.trim()` and `.toUpperCase()`, while `.default()` returns the value unchanged. Use prefault when you want the fallback to be processed.
-
-```ts
-const a = z.string().trim().toUpperCase().prefault("  tuna  ");
-a.parse(undefined); // => "TUNA"
-
-const b = z.string().trim().toUpperCase().default("  tuna  ");
-b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -954,6 +954,18 @@ schema.parse(null); // => false
 
 --------------------------------
 
+### Upgrade Zod using npm
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/reducing-memory-footprint.mdx
+
+Upgrade to Zod 4.5 or later to take advantage of reduced memory footprint enhancements.
+
+```sh
+npm upgrade zod@latest
+```
+
+--------------------------------
+
 ### Use .check() to create multiple issues in one refinement
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -984,18 +996,6 @@ const UniqueStringArray = z.array(z.string()).check((ctx) => {
     });
   }
 });
-```
-
---------------------------------
-
-### Upgrade Zod using npm
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/reducing-memory-footprint.mdx
-
-Upgrade to Zod 4.5 or later to take advantage of reduced memory footprint enhancements.
-
-```sh
-npm upgrade zod@latest
 ```
 
 --------------------------------
@@ -1228,20 +1228,6 @@ const PartialRecipe = z.exactPartial(Recipe);
 
 --------------------------------
 
-### Pass options to z.toJSONSchema()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
-
-Provide a configuration object as the second argument to `z.toJSONSchema()` to customize the conversion behavior.
-
-```typescript
-z.toJSONSchema(schema, {
-  // ...params
-})
-```
-
---------------------------------
-
 ### Create a pipe with z.string().pipe() in Zod
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1294,49 +1280,17 @@ type OkResponse = z.infer<typeof okResponse>;
 
 --------------------------------
 
-### z.url()
+### Accept minute and second precision with a z.union of z.iso.datetime()
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Validates any WHATWG-compatible URL using the `new URL()` constructor. You can restrict the hostname or protocol using the `hostname` and `protocol` parameters, and optionally normalize the URL with the `normalize` flag.
-
-```APIDOC
-## z.url()
-
-### Description
-Validates any WHATWG-compatible URL using the `new URL()` constructor. You can restrict the hostname or protocol using the `hostname` and `protocol` parameters, and optionally normalize the URL with the `normalize` flag.
-
-### Method
-Function call
-
-### Parameters
-- **hostname** (RegExp) - Optional - Regular expression to validate the hostname against.
-- **protocol** (RegExp) - Optional - Regular expression to validate the protocol against.
-- **normalize** (boolean) - Optional - If true, overwrites the input value with the normalized URL returned by `new URL()`.
-
-### Examples
+No single precision covers both minute and second precision, so union the default schema with precision: -1. Unqualified datetimes remain rejected.
 
 ```ts
-const schema = z.url();
-
-schema.parse("https://example.com"); // ✅
-schema.parse("http://localhost"); // ✅
-schema.parse("mailto:noreply@zod.dev"); // ✅
-```
-
-```ts
-const schema = z.url({ hostname: /^example\.com$/ });
-
-schema.parse("https://example.com"); // ✅
-schema.parse("https://zombo.com"); // ❌
-```
-
-```ts
-const schema = z.url({ protocol: /^https$/ });
-
-schema.parse("https://example.com"); // ✅
-schema.parse("http://example.com"); // ❌
-```
+const mixed = z.union([z.iso.datetime(), z.iso.datetime({ precision: -1 })]);
+mixed.parse("2020-01-01T06:15Z"); // ✅
+mixed.parse("2020-01-01T06:15:00.123Z"); // ✅
+mixed.parse("2020-01-01T06:15"); // ❌ (still qualified-only)
 ```
 
 --------------------------------
@@ -1500,6 +1454,48 @@ export function acceptObjectSchema<T extends z4.$ZodObject>(schema: T){
 
 --------------------------------
 
+### Set schema constraints: .nonempty(), .min(), .max(), .size()
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+Set schemas can be further constrained with utility methods to enforce size requirements. In Zod, use .nonempty(), .min(), .max(), and .size() directly on the set schema. In Zod Mini, use .check() with z.minSize(), z.maxSize(), and z.size().
+
+```APIDOC
+## Set schema constraints
+
+### Description
+Set schemas can be further constrained with utility methods to enforce size requirements. In Zod, use .nonempty(), .min(), .max(), and .size() directly on the set schema. In Zod Mini, use .check() with z.minSize(), z.maxSize(), and z.size().
+
+### Method
+Set schema constraint methods
+
+### Parameters
+- **nonempty()** - No parameters - Must contain at least 1 item.
+- **min(n)** - **n** (number) - Required - Must contain n or more items.
+- **max(n)** - **n** (number) - Required - Must contain n or fewer items.
+- **size(n)** - **n** (number) - Required - Must contain exactly n items.
+- **check(z.minSize(n))** - **n** (number) - Required - Zod Mini alias for .nonempty() when n=1; must contain n or more items.
+- **check(z.maxSize(n))** - **n** (number) - Required - Zod Mini constraint; must contain n or fewer items.
+- **check(z.size(n))** - **n** (number) - Required - Zod Mini constraint; must contain exactly n items.
+
+### Request Example
+```ts
+z.set(z.string()).nonempty(); // must contain at least 1 item
+z.set(z.string()).min(5); // must contain 5 or more items
+z.set(z.string()).max(5); // must contain 5 or fewer items
+z.set(z.string()).size(5); // must contain 5 items exactly
+```
+
+```ts
+z.set(z.string()).check(z.minSize(1)); // alias for .nonempty()
+z.set(z.string()).check(z.minSize(5)); // must contain 5 or more items
+z.set(z.string()).check(z.maxSize(5)); // must contain 5 or fewer items
+z.set(z.string()).check(z.size(5)); // must contain 5 items exactly
+```
+```
+
+--------------------------------
+
 ### Enable zod/compile via Node.js --import CLI flag
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
@@ -1508,23 +1504,6 @@ Use the Node.js `--import` flag to guarantee `zod/compile` runs before any modul
 
 ```sh
 node --import zod/compile app.js
-```
-
---------------------------------
-
-### Validate File instances with z.file() in Zod
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Use z.file() to validate File instances. Chain .min and .max to constrain .size in bytes, and .mime to restrict the MIME type to one or multiple values.
-
-```ts
-const fileSchema = z.file();
-
-fileSchema.min(10_000); // minimum .size (bytes)
-fileSchema.max(1_000_000); // maximum .size (bytes)
-fileSchema.mime("image/png"); // MIME type
-fileSchema.mime(["image/png", "image/jpeg"]); // multiple MIME types
 ```
 
 --------------------------------
@@ -1545,33 +1524,4 @@ Add zod to devDependencies alongside peerDependencies to satisfy peer dependency
     "zod": "^4.0.0"
   }
 }
-```
-
---------------------------------
-
-### String transforms
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Zod provides simple string transform APIs: trim, toLowerCase, toUpperCase, and normalize.
-
-```APIDOC
-## String transforms
-
-### Description
-Zod provides simple string transform APIs.
-
-### Methods
-- `z.string().trim()` // trim whitespace
-- `z.string().toLowerCase()` // toLowerCase
-- `z.string().toUpperCase()` // toUpperCase
-- `z.string().normalize()` // normalize unicode characters
-
-### Example
-```ts
-z.string().trim(); // trim whitespace
-z.string().toLowerCase(); // toLowerCase
-z.string().toUpperCase(); // toUpperCase
-z.string().normalize(); // normalize unicode characters
-```
 ```
