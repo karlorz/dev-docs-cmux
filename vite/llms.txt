@@ -14,6 +14,18 @@ npm run dev
 
 --------------------------------
 
+### Install project dependencies
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
+
+Installs the required packages using npm, pnpm, or yarn.
+
+```bash
+$ npm install # or pnpm install or yarn install
+```
+
+--------------------------------
+
 ### Configure npm build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -27,18 +39,6 @@ Add these npm scripts to package.json so the static deployment guides' commands 
     "preview": "vite preview"
   }
 }
-```
-
---------------------------------
-
-### Install project dependencies
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
-
-Installs the required packages using npm, pnpm, or yarn.
-
-```bash
-$ npm install # or pnpm install or yarn install
 ```
 
 --------------------------------
@@ -538,14 +538,25 @@ import source addModule from './add.wasm'
 
 --------------------------------
 
-### Test the build locally with npm run preview
+### Configure app build with builder.buildApp in vite.config.js
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
 
-Boots a local static web server serving files from `dist` at `http://localhost:4173` to check the production build.
+Use the `builder.buildApp` option to control how environments are built, for example to build them in parallel. The option receives the `ViteBuilder` instance and is responsible for building each environment.
 
-```bash
-$ npm run preview
+```js
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  builder: {
+    buildApp: async (builder) => {
+      const environments = Object.values(builder.environments)
+      await Promise.all(
+        environments.map((environment) => builder.build(environment)),
+      )
+    },
+  },
+})
 ```
 
 --------------------------------
@@ -571,6 +582,18 @@ logger.warn = (msg, options) => {
 export default defineConfig({
   customLogger: logger,
 })
+```
+
+--------------------------------
+
+### Test the build locally with npm run preview
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Boots a local static web server serving files from `dist` at `http://localhost:4173` to check the production build.
+
+```bash
+$ npm run preview
 ```
 
 --------------------------------
@@ -632,20 +655,25 @@ Create an entry point HTML file in the project root. Vite treats this file as so
 
 --------------------------------
 
-### Implicit index resolving and dir vs file
+### Import from UTF-8 BOM file and deep import with Babel runtime
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
 
-Imports from a directory with an implicit index and from a directory that has both a file and an index. Requires the corresponding local files.
+Imports a message from a UTF-8 BOM file and uses a deep import from @babel/runtime to slice an iterable. Requires the utf8-bom package and @babel/runtime to be installed.
 
 ```javascript
-// implicit index resolving
-import { foo } from './util'
-text('.index', foo())
+import { msg as bomMsg } from './utf8-bom/main.js'
+text('.utf8-bom', bomMsg)
 
-// implicit dir index vs. file
-import { file } from './dir'
-text('.dir-vs-file', file)
+// deep import
+import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
+const iterable = (function* () {
+  yield 2
+  yield 4
+  yield 6
+  yield 8
+})()
+text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -673,29 +701,6 @@ document
   .addEventListener('click', async () =>
     testWasm(light, document.querySelector('.inline-wasm .result')),
   )
-```
-
---------------------------------
-
-### Import from UTF-8 BOM file and deep import with Babel runtime
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a message from a UTF-8 BOM file and uses a deep import from @babel/runtime to slice an iterable. Requires the utf8-bom package and @babel/runtime to be installed.
-
-```javascript
-import { msg as bomMsg } from './utf8-bom/main.js'
-text('.utf8-bom', bomMsg)
-
-// deep import
-import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
-const iterable = (function* () {
-  yield 2
-  yield 4
-  yield 6
-  yield 8
-})()
-text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -744,6 +749,24 @@ After running vite build, a .vite/manifest.json file is generated alongside othe
     "css": ["assets/foo-5UjPuW-k.css"]
   }
 }
+```
+
+--------------------------------
+
+### Implicit index resolving and dir vs file
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a directory with an implicit index and from a directory that has both a file and an index. Requires the corresponding local files.
+
+```javascript
+// implicit index resolving
+import { foo } from './util'
+text('.index', foo())
+
+// implicit dir index vs. file
+import { file } from './dir'
+text('.dir-vs-file', file)
 ```
 
 --------------------------------
@@ -951,18 +974,6 @@ $ npm create vite@latest
 
 --------------------------------
 
-### Install terser for legacy minification
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Installs terser as a development dependency. Required for minification when using Vite versions older than 8.1.4 or when build.minify is explicitly set to 'terser'.
-
-```sh
-npm add -D terser
-```
-
---------------------------------
-
 ### Configure multiple HTML entry points for multi-page build
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -979,6 +990,18 @@ export default defineConfig({
     nested: resolve(import.meta.dirname, 'nested/index.html'),
   },
 })
+```
+
+--------------------------------
+
+### Install terser for legacy minification
+
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+
+Installs terser as a development dependency. Required for minification when using Vite versions older than 8.1.4 or when build.minify is explicitly set to 'terser'.
+
+```sh
+npm add -D terser
 ```
 
 --------------------------------
@@ -1108,25 +1131,14 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
-### createFetchableDevEnvironment(name, config, options)
+### Scaffold Vite project using pnpm
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-frameworks.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-Creates a FetchableDevEnvironment instance that communicates with its runtime via the Fetch API. Useful for runtimes that cannot run Vite directly.
+Initializes a new Vite project interactively using pnpm. Follow the terminal prompts to select project options.
 
-```APIDOC
-### createFetchableDevEnvironment(name, config, options)
-
-Creates a new `FetchableDevEnvironment` instance configured with a request handler.
-
-#### Parameters
-- **name** (`string`) - Environment name.
-- **config** (`ResolvedConfig`) - The resolved Vite configuration.
-- **options** (`object`)
-  - **handleRequest** (`(request: Request) => Promise<Response> | Response`) - Required function to handle incoming `Request` objects and return a `Response`.
-
-#### Returns
-- `FetchableDevEnvironment` - The created fetchable dev environment instance.
+```bash
+$ pnpm create vite
 ```
 
 --------------------------------
@@ -1154,6 +1166,18 @@ const myPlugin = () => ({
 
 --------------------------------
 
+### Scaffold Vite Vue project with CLI options using Bun
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
+
+```bash
+$ bun create vite my-vue-app --template vue
+```
+
+--------------------------------
+
 ### Attach pre-middleware via configureServer hook
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -1169,50 +1193,6 @@ const myPlugin = () => ({
     })
   },
 })
-```
-
---------------------------------
-
-### Scaffold Vite project using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using pnpm. Follow the terminal prompts to select project options.
-
-```bash
-$ pnpm create vite
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
-
-```bash
-$ bun create vite my-vue-app --template vue
-```
-
---------------------------------
-
-### Example forwarded unhandled error log output
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
-
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
@@ -1266,15 +1246,22 @@ export default defineConfig({
 
 --------------------------------
 
-### Import from exports and nested scope package
+### Example forwarded unhandled error log output
 
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
 
-Imports a message from @vitejs/test-resolve-exports-and-nested-scope/nested and displays it. Requires the test-resolve-exports-and-nested-scope package.
+This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
 
-```javascript
-import exportsAndNestedScopeMsg from '@vitejs/test-resolve-exports-and-nested-scope/nested'
-text('.exports-and-nested-scope', exportsAndNestedScopeMsg)
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
@@ -1317,6 +1304,31 @@ text('.direct-wasm-global .result', `${answer} ${typeof answer}`)
 
 --------------------------------
 
+### Import from exports and nested scope package
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a message from @vitejs/test-resolve-exports-and-nested-scope/nested and displays it. Requires the test-resolve-exports-and-nested-scope package.
+
+```javascript
+import exportsAndNestedScopeMsg from '@vitejs/test-resolve-exports-and-nested-scope/nested'
+text('.exports-and-nested-scope', exportsAndNestedScopeMsg)
+```
+
+--------------------------------
+
+### Scaffold Vite project using Yarn
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
+
+```bash
+$ yarn create vite
+```
+
+--------------------------------
+
 ### Configure type-aware lint rules in .oxlintrc.json
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-react-ts/README.md
@@ -1339,14 +1351,14 @@ Enables type-aware linting with the react, typescript, and oxc plugins in .oxlin
 
 --------------------------------
 
-### Scaffold Vite project using Yarn
+### Run vite build for production
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
 
-Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
+Builds the project for production. Accepts an optional root directory argument.
 
 ```bash
-$ yarn create vite
+vite build [root]
 ```
 
 --------------------------------
@@ -1359,18 +1371,6 @@ Use dynamic import.source() to get the WebAssembly.Module asynchronously.
 
 ```js
 const mod = await import.source('./example.wasm')
-```
-
---------------------------------
-
-### Run vite build for production
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
-
-Builds the project for production. Accepts an optional root directory argument.
-
-```bash
-vite build [root]
 ```
 
 --------------------------------
@@ -1402,18 +1402,6 @@ Imports a wasm file as a URL using the ?url suffix. The URL is displayed in the 
 import lightUrl from './light.wasm?url'
 
 text('.url', lightUrl)
-```
-
---------------------------------
-
-### List Available Debug Scopes with grep
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Run this command to see a list of available debug scopes in the Vite source code.
-
-```bash
-grep -r "createDebugger('vite:" packages/vite/src/
 ```
 
 --------------------------------
@@ -1458,39 +1446,14 @@ Recommended `package.json` export configuration supporting multiple entries and 
 
 --------------------------------
 
-### Pseudo implementation of importedChunks in TypeScript
+### List Available Debug Scopes with grep
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Example TypeScript function to recursively collect imported chunks from a Vite manifest. Adapt for your programming and templating language.
+Run this command to see a list of available debug scopes in the Vite source code.
 
-```ts
-import type { Manifest, ManifestChunk } from 'vite'
-
-export default function importedChunks(
-  manifest: Manifest,
-  name: string,
-): ManifestChunk[] {
-  const seen = new Set<string>()
-
-  function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
-    const chunks: ManifestChunk[] = []
-    for (const file of chunk.imports ?? []) {
-      const importee = manifest[file]
-      if (seen.has(file)) {
-        continue
-      }
-      seen.add(file)
-
-      chunks.push(...getImportedChunks(importee))
-      chunks.push(importee)
-    }
-
-    return chunks
-  }
-
-  return getImportedChunks(manifest[name])
-}
+```bash
+grep -r "createDebugger('vite:" packages/vite/src/
 ```
 
 --------------------------------
@@ -1566,6 +1529,43 @@ parentServer.use(vite.middlewares)
 
 --------------------------------
 
+### Pseudo implementation of importedChunks in TypeScript
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+
+Example TypeScript function to recursively collect imported chunks from a Vite manifest. Adapt for your programming and templating language.
+
+```ts
+import type { Manifest, ManifestChunk } from 'vite'
+
+export default function importedChunks(
+  manifest: Manifest,
+  name: string,
+): ManifestChunk[] {
+  const seen = new Set<string>()
+
+  function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
+    const chunks: ManifestChunk[] = []
+    for (const file of chunk.imports ?? []) {
+      const importee = manifest[file]
+      if (seen.has(file)) {
+        continue
+      }
+      seen.add(file)
+
+      chunks.push(...getImportedChunks(importee))
+      chunks.push(importee)
+    }
+
+    return chunks
+  }
+
+  return getImportedChunks(manifest[name])
+}
+```
+
+--------------------------------
+
 ### Configure server.warmup in Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
@@ -1629,22 +1629,6 @@ experimental: {
 
 --------------------------------
 
-### Direct wasm import with wasm imports
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Imports a wasm module that itself imports from another wasm module. The exported function is called and the result is displayed.
-
-```javascript
-import { exported_func } from './light-with-imports.wasm'
-import { getResult } from './imports.js'
-
-exported_func()
-text('.direct-wasm-with-imports .result', getResult())
-```
-
---------------------------------
-
 ### Enable config IntelliSense with defineConfig helper
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
@@ -1672,6 +1656,22 @@ $ vite build
 building for production...
 dist/my-lib.js      0.08 kB / gzip: 0.07 kB
 dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
+```
+
+--------------------------------
+
+### Direct wasm import with wasm imports
+
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+
+Imports a wasm module that itself imports from another wasm module. The exported function is called and the result is displayed.
+
+```javascript
+import { exported_func } from './light-with-imports.wasm'
+import { getResult } from './imports.js'
+
+exported_func()
+text('.direct-wasm-with-imports .result', getResult())
 ```
 
 --------------------------------
@@ -1719,18 +1719,6 @@ w.addEventListener('message', (ev) => {
 
 --------------------------------
 
-### Configure git blame to ignore formatting commits
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Run this command to make git blame use the .git-blame-ignore-revs file, which ignores formatting changes.
-
-```sh
-git config --local blame.ignoreRevsFile .git-blame-ignore-revs
-```
-
---------------------------------
-
 ### Typical SSR application source file structure
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -1744,6 +1732,18 @@ Shows the recommended directory and file layout for an SSR application, includin
   - main.js          # exports env-agnostic (universal) app code
   - entry-client.js  # mounts the app to a DOM element
   - entry-server.js  # renders the app using the framework's SSR API
+```
+
+--------------------------------
+
+### Configure git blame to ignore formatting commits
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Run this command to make git blame use the .git-blame-ignore-revs file, which ignores formatting changes.
+
+```sh
+git config --local blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 
 --------------------------------
@@ -1762,6 +1762,24 @@ export default defineConfig({
     }),
   ],
 })
+```
+
+--------------------------------
+
+### Directory structure for a multi-page app
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Demonstrates the directory layout for a multi-page Vite application.
+
+```text
+├── package.json
+├── vite.config.js
+├── index.html
+├── main.js
+└── nested
+    ├── index.html
+    └── nested.js
 ```
 
 --------------------------------
@@ -1792,6 +1810,18 @@ MIT License
 
 --------------------------------
 
+### Profile Vite build with --profile
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+
+Runs the Vite build with the built-in Node.js inspector to create a CPU profile. Generates vite-profile.cpuprofile in the root folder.
+
+```bash
+vite build --profile
+```
+
+--------------------------------
+
 ### wasm importing a global from another wasm
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -1802,24 +1832,6 @@ Imports a wasm module that imports a global from another wasm module. The export
 import { getAnswerPlusOne } from './global-consumer.wasm'
 
 text('.direct-wasm-global-import .result', getAnswerPlusOne())
-```
-
---------------------------------
-
-### Directory structure for a multi-page app
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Demonstrates the directory layout for a multi-page Vite application.
-
-```text
-├── package.json
-├── vite.config.js
-├── index.html
-├── main.js
-└── nested
-    ├── index.html
-    └── nested.js
 ```
 
 --------------------------------
@@ -1849,30 +1861,36 @@ export default defineConfig({
 
 --------------------------------
 
-### Profile Vite build with --profile
+### Scaffold Vite Vue project with CLI options using pnpm
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-Runs the Vite build with the built-in Node.js inspector to create a CPU profile. Generates vite-profile.cpuprofile in the root folder.
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
 
 ```bash
-vite build --profile
+$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
 
-### Import from exports with module condition and required condition
+### Source phase import instantiated with imports
 
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
 
-Imports from packages that test the module condition and required condition in exports. Requires the test-resolve-exports-with-module-condition and test-resolve-exports-with-module-condition-required packages.
+Uses source phase import to import a wasm module that requires imports, then instantiates it with the provided imports. The result is displayed.
 
 ```javascript
-import { msg as exportsWithModuleCondition } from '@vitejs/test-resolve-exports-with-module-condition'
-import { msg as exportsWithModuleConditionRequired } from '@vitejs/test-resolve-exports-with-module-condition-required'
-text('.exports-with-module-condition', exportsWithModuleCondition)
-text(
-  '.exports-with-module-condition-required',
-  exportsWithModuleConditionRequired,
-)
+import source lightWithImportsModule from './light-with-imports.wasm'
+import { imported_func } from './imports.js'
+import { getResult } from './imports.js'
+
+;(async () => {
+  const lwiInstance = await WebAssembly.instantiate(lightWithImportsModule, {
+    './imports.js': {
+      imported_func,
+    },
+  })
+  lwiInstance.exports.exported_func()
+  text('.source-phase-wasm-with-imports .result', getResult())
+})()
 ```
