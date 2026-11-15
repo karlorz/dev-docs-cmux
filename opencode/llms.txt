@@ -360,6 +360,18 @@ export default Plugin.define({ ...definition, setup, main })
 
 --------------------------------
 
+### Request refactoring
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/index.mdx
+
+Ask OpenCode to refactor a function in a specific file.
+
+```txt
+Can you refactor the function in @packages/functions/src/api/index.ts?
+```
+
+--------------------------------
+
 ### Install OpenCode on Arch Linux
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/index.mdx
@@ -369,18 +381,6 @@ Installs OpenCode 2 from the official Arch repository or OpenCode 1 from the AUR
 ```bash
 sudo pacman -S opencode           # Arch Linux (OpenCode 2)
 paru -S opencode-bin              # Arch Linux (OpenCode 1, from AUR)
-```
-
---------------------------------
-
-### Request refactoring
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/index.mdx
-
-Ask OpenCode to refactor a function in a specific file.
-
-```txt
-Can you refactor the function in @packages/functions/src/api/index.ts?
 ```
 
 --------------------------------
@@ -746,6 +746,28 @@ export default setup
 
 --------------------------------
 
+### Example playground session
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
+
+Sample sequence exercising demo, terminal creation, shell commands, screen/replay inspection, resize, kill, and quit.
+
+```text
+demo
+new
+run printf '\033[32mgreen from the shell\033[0m\n'
+new /bin/sh
+list
+use 1
+screen
+replay 1 0
+resize 72 20
+kill 2
+quit
+```
+
+--------------------------------
+
 ### Install OpenCode CLI
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/index.mdx
@@ -786,28 +808,6 @@ paru -S opencode-beta
 
 ```shell
 mise use -g opencode
-```
-
---------------------------------
-
-### Example playground session
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
-
-Sample sequence exercising demo, terminal creation, shell commands, screen/replay inspection, resize, kill, and quit.
-
-```text
-demo
-new
-run printf '\033[32mgreen from the shell\033[0m\n'
-new /bin/sh
-list
-use 1
-screen
-replay 1 0
-resize 72 20
-kill 2
-quit
 ```
 
 --------------------------------
@@ -1150,20 +1150,6 @@ export default setup
 
 --------------------------------
 
-### Start, inspect, or cancel a command-based connection
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
-
-Command-based connections expose the same start, status, and cancel flow via ctx.integration.command. The example uses integrationID "acme" and methodID "cli".
-
-```ts
-const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
-const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
-await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
-```
-
---------------------------------
-
 ### Type a window setup with Plugin.Setup in src/gui/window.tsx
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1182,14 +1168,16 @@ export const setup: Plugin.Setup<typeof definition> = (ctx) => {
 
 --------------------------------
 
-### Run the GitHub snapshot script with GITHUB_TOKEN
+### Start, inspect, or cancel a command-based connection
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/README.md
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
 
-The snapshot script uses GITHUB_TOKEN when set; CI passes the workflow's own token. Never commit a token.
+Command-based connections expose the same start, status, and cancel flow via ctx.integration.command. The example uses integrationID "acme" and methodID "cli".
 
-```bash
-GITHUB_TOKEN=$(gh auth token) bun ./script/github-snapshot.ts
+```ts
+const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
+const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
+await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -1239,6 +1227,18 @@ const sizeAtEnd = textNode.getRangeFontSize(10, 11);
 
 --------------------------------
 
+### Run the GitHub snapshot script with GITHUB_TOKEN
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/README.md
+
+The snapshot script uses GITHUB_TOKEN when set; CI passes the workflow's own token. Never commit a token.
+
+```bash
+GITHUB_TOKEN=$(gh auth token) bun ./script/github-snapshot.ts
+```
+
+--------------------------------
+
 ### Example prompt to explain authentication
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/tui.mdx
@@ -1271,20 +1271,6 @@ export const AcmeBadge = Contract.define<AcmeBadge, "acme.badge">("acme.badge")
 
 --------------------------------
 
-### View CLI help documentation
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-code-connect/references/api.md
-
-Displays help information for the figma connect CLI and its subcommands.
-
-```bash
-npx figma connect --help
-npx figma connect publish --help
-npx figma connect unpublish --help
-```
-
---------------------------------
-
 ### Async main setup with ctx.onCleanup
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1297,6 +1283,20 @@ async main(ctx) {
 
   ctx.onCleanup(() => socket.close())
 }
+```
+
+--------------------------------
+
+### View CLI help documentation
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-code-connect/references/api.md
+
+Displays help information for the figma connect CLI and its subcommands.
+
+```bash
+npx figma connect --help
+npx figma connect publish --help
+npx figma connect unpublish --help
 ```
 
 --------------------------------
@@ -1489,6 +1489,22 @@ Returns a Promise that resolves when the launch operation completes.
 
 --------------------------------
 
+### Warming timing example: normal request then warming requests
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/warming.mdx
+
+Shows warming starting after a non-warming model request in a top-level session. Each interval counts from when the latest request or warming request was sent, not from when its response finished.
+
+```text
+00:00  normal model request sent
+00:01  response finishes
+00:04  warming request
+00:08  warming request
+00:30  warming stops
+```
+
+--------------------------------
+
 ### ctx.layout.project(server, title)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1511,36 +1527,6 @@ ctx.layout.project
 
 --------------------------------
 
-### Warming timing example: normal request then warming requests
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/warming.mdx
-
-Shows warming starting after a non-warming model request in a top-level session. Each interval counts from when the latest request or warming request was sent, not from when its response finished.
-
-```text
-00:00  normal model request sent
-00:01  response finishes
-00:04  warming request
-00:08  warming request
-00:30  warming stops
-```
-
---------------------------------
-
-### Run Playwright E2E tests locally
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
-
-Install the Chromium browser and run the local E2E test suite. Playwright starts the Vite dev server automatically or reuses one at the configured address.
-
-```bash
-bunx playwright install chromium
-bun run test:e2e:local
-bun run test:e2e:local -- --grep "settings"
-```
-
---------------------------------
-
 ### ctx.layout.settings(page?)
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1558,6 +1544,20 @@ ctx.layout.settings
 
 ### Parameters
 - **page** (string) - Optional - The settings page to open.
+```
+
+--------------------------------
+
+### Run Playwright E2E tests locally
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/README.md
+
+Install the Chromium browser and run the local E2E test suite. Playwright starts the Vite dev server automatically or reuses one at the configured address.
+
+```bash
+bunx playwright install chromium
+bun run test:e2e:local
+bun run test:e2e:local -- --grep "settings"
 ```
 
 --------------------------------
@@ -1623,34 +1623,6 @@ Type ! at the start of an empty prompt to enter shell mode, then enter a command
 
 --------------------------------
 
-### Configure Atomic Chat local provider in opencode.json
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/providers.mdx
-
-Use this to connect opencode to a local Atomic Chat server via its OpenAI-compatible API. The baseURL defaults to http://127.0.0.1:1337/v1; change host and port to match your setup. Model IDs must match those returned by GET /v1/models.
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "atomic-chat": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Atomic Chat (local)",
-      "options": {
-        "baseURL": "http://127.0.0.1:1337/v1"
-      },
-      "models": {
-        "<your-model-id>": {
-          "name": "<your-model-name>"
-        }
-      }
-    }
-  }
-}
-```
-
---------------------------------
-
 ### Support V1 and V2 from same package entrypoint with server() and setup()
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
@@ -1676,6 +1648,34 @@ export default {
       },
     }
   },
+}
+```
+
+--------------------------------
+
+### Configure Atomic Chat local provider in opencode.json
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/providers.mdx
+
+Use this to connect opencode to a local Atomic Chat server via its OpenAI-compatible API. The baseURL defaults to http://127.0.0.1:1337/v1; change host and port to match your setup. Model IDs must match those returned by GET /v1/models.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "atomic-chat": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Atomic Chat (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:1337/v1"
+      },
+      "models": {
+        "<your-model-id>": {
+          "name": "<your-model-name>"
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -1721,18 +1721,6 @@ await ctx.integration.transform((editor) => {
 
 --------------------------------
 
-### Benchmark session or timeline code with strobe against origin/dev
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/AGENTS.md
-
-Run this strobe command before changing session or timeline code to compare performance against origin/dev. Replace the placeholder bench path with the relevant area benchmark file.
-
-```shell
-strobe bench packages/app/perf/<area>.bench.ts --base origin/dev --head .
-```
-
---------------------------------
-
 ### Run backend and app dev servers separately for local UI changes
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/AGENTS.md
@@ -1745,6 +1733,18 @@ bun dev serve --port 4096
 
 ```shell
 bun dev -- --port 4444
+```
+
+--------------------------------
+
+### Benchmark session or timeline code with strobe against origin/dev
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/AGENTS.md
+
+Run this strobe command before changing session or timeline code to compare performance against origin/dev. Replace the placeholder bench path with the relevant area benchmark file.
+
+```shell
+strobe bench packages/app/perf/<area>.bench.ts --base origin/dev --head .
 ```
 
 --------------------------------
@@ -1849,6 +1849,18 @@ jobs:
 
 --------------------------------
 
+### View serve subcommands and flags with --help
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
+
+Lists all subcommands and flags for the serve command.
+
+```bash
+$ opencode serve --help
+```
+
+--------------------------------
+
 ### Define complete Q1 launch roadmap Gantt diagram
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-generate-diagram/references/gantt.md
@@ -1874,6 +1886,30 @@ gantt
     Internal beta   :l1, after b3, 1w
     Fixes           :crit, l2, after l1, 5d
     Ship            :milestone, after l2, 0d
+```
+
+--------------------------------
+
+### GET /file/status
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/server.mdx
+
+Get status for tracked files. Returns an array of File objects.
+
+```APIDOC
+## GET /file/status
+
+### Description
+Get status for tracked files.
+
+### Method
+GET
+
+### Endpoint
+/file/status
+
+### Response
+Returns `File[]`.
 ```
 
 --------------------------------
@@ -1910,42 +1946,6 @@ strobe bench packages/core/perf/snapshot.bench.ts --base origin/dev --head .
 # The interactive report, and the results block in pull request <n> (see "In a pull request").
 strobe report experiment <exp_…> --open
 strobe report experiment <exp_…> --format pr --update-pr <n>
-```
-
---------------------------------
-
-### View serve subcommands and flags with --help
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
-
-Lists all subcommands and flags for the serve command.
-
-```bash
-$ opencode serve --help
-```
-
---------------------------------
-
-### GET /file/status
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/server.mdx
-
-Get status for tracked files. Returns an array of File objects.
-
-```APIDOC
-## GET /file/status
-
-### Description
-Get status for tracked files.
-
-### Method
-GET
-
-### Endpoint
-/file/status
-
-### Response
-Returns `File[]`.
 ```
 
 --------------------------------
@@ -2015,6 +2015,19 @@ GET
 
 --------------------------------
 
+### Export OPENCODE_API_KEY and start Codex
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/console/harnesses/codex.mdx
+
+Create a personal API key, then export it and run codex.
+
+```bash
+export OPENCODE_API_KEY="oc_sk_..."
+codex
+```
+
+--------------------------------
+
 ### GET /session/:id
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/server.mdx
@@ -2040,19 +2053,6 @@ GET
 ### Response
 #### Success Response (200)
 - **Session** - The Session object
-```
-
---------------------------------
-
-### Export OPENCODE_API_KEY and start Codex
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/console/harnesses/codex.mdx
-
-Create a personal API key, then export it and run codex.
-
-```bash
-export OPENCODE_API_KEY="oc_sk_..."
-codex
 ```
 
 --------------------------------
