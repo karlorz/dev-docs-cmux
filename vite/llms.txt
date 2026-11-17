@@ -270,18 +270,6 @@ Example of the tags to include in production for the entry point views/foo.js, f
 
 --------------------------------
 
-### Scaffold a Vite Project with PNPM
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using PNPM.
-
-```bash
-pnpm create vite
-```
-
---------------------------------
-
 ### Run pnpm run build to generate twoslash types
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -290,6 +278,18 @@ Run in Vite's root folder to generate types for twoslash code examples. If types
 
 ```shell
 pnpm run build
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with PNPM
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using PNPM.
+
+```bash
+pnpm create vite
 ```
 
 --------------------------------
@@ -561,6 +561,25 @@ export default defineConfig({
 
 --------------------------------
 
+### Dynamic source phase import
+
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+
+Uses dynamic source phase import to import a wasm module and instantiate it. The result of the add function is displayed.
+
+```javascript
+;(async () => {
+  const dynamicModule = await import.source('./add.wasm')
+  const dynamicInstance = await WebAssembly.instantiate(dynamicModule)
+  text(
+    '.source-phase-wasm-dynamic .result',
+    dynamicInstance.exports.add(3, 4),
+  )
+})()
+```
+
+--------------------------------
+
 ### Customize logger with createLogger to filter warnings
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
@@ -594,25 +613,6 @@ Boots a local static web server serving files from `dist` at `http://localhost:4
 
 ```bash
 $ npm run preview
-```
-
---------------------------------
-
-### Dynamic source phase import
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Uses dynamic source phase import to import a wasm module and instantiate it. The result of the add function is displayed.
-
-```javascript
-;(async () => {
-  const dynamicModule = await import.source('./add.wasm')
-  const dynamicInstance = await WebAssembly.instantiate(dynamicModule)
-  text(
-    '.source-phase-wasm-dynamic .result',
-    dynamicInstance.exports.add(3, 4),
-  )
-})()
 ```
 
 --------------------------------
@@ -651,29 +651,6 @@ Create an entry point HTML file in the project root. Vite treats this file as so
 
 ```html
 <p>Hello Vite!</p>
-```
-
---------------------------------
-
-### Import from UTF-8 BOM file and deep import with Babel runtime
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a message from a UTF-8 BOM file and uses a deep import from @babel/runtime to slice an iterable. Requires the utf8-bom package and @babel/runtime to be installed.
-
-```javascript
-import { msg as bomMsg } from './utf8-bom/main.js'
-text('.utf8-bom', bomMsg)
-
-// deep import
-import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
-const iterable = (function* () {
-  yield 2
-  yield 4
-  yield 6
-  yield 8
-})()
-text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -767,6 +744,29 @@ text('.index', foo())
 // implicit dir index vs. file
 import { file } from './dir'
 text('.dir-vs-file', file)
+```
+
+--------------------------------
+
+### Import from UTF-8 BOM file and deep import with Babel runtime
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a message from a UTF-8 BOM file and uses a deep import from @babel/runtime to slice an iterable. Requires the utf8-bom package and @babel/runtime to be installed.
+
+```javascript
+import { msg as bomMsg } from './utf8-bom/main.js'
+text('.utf8-bom', bomMsg)
+
+// deep import
+import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
+const iterable = (function* () {
+  yield 2
+  yield 4
+  yield 6
+  yield 8
+})()
+text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -1081,29 +1081,6 @@ VITE_APP_TITLE=My App (staging)
 
 --------------------------------
 
-### Configure middleware using configurePreviewServer
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
-
-Injects custom middleware after internal middlewares are installed by returning a post hook function from configurePreviewServer.
-
-```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
-```
-
---------------------------------
-
 ### Instantiate and execute code using ModuleRunner
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-environment-runtimes.md
@@ -1127,6 +1104,29 @@ const moduleRunner = new ModuleRunner(
 )
 
 await moduleRunner.import('/src/entry-point.js')
+```
+
+--------------------------------
+
+### Configure middleware using configurePreviewServer
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Injects custom middleware after internal middlewares are installed by returning a post hook function from configurePreviewServer.
+
+```js
+const myPlugin = () => ({
+  name: 'configure-preview-server',
+  configurePreviewServer(server) {
+    // return a post hook that is called after other middlewares are
+    // installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
+  },
+})
 ```
 
 --------------------------------
@@ -1209,6 +1209,26 @@ vite optimize [root]
 
 --------------------------------
 
+### Example forwarded unhandled error log output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
+
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
+```
+
+--------------------------------
+
 ### Configure build.lib for multiple entries in vite.config.js
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1242,26 +1262,6 @@ export default defineConfig({
     },
   },
 })
-```
-
---------------------------------
-
-### Example forwarded unhandled error log output
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
-
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
@@ -1363,18 +1363,6 @@ vite build [root]
 
 --------------------------------
 
-### Dynamic source phase import of WebAssembly module
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Use dynamic import.source() to get the WebAssembly.Module asynchronously.
-
-```js
-const mod = await import.source('./example.wasm')
-```
-
---------------------------------
-
 ### Clone, build, and link Vite locally
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -1392,16 +1380,14 @@ pnpm link # use your preferred package manager for this step
 
 --------------------------------
 
-### Importing wasm as URL
+### Dynamic source phase import of WebAssembly module
 
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
 
-Imports a wasm file as a URL using the ?url suffix. The URL is displayed in the element with class 'url'.
+Use dynamic import.source() to get the WebAssembly.Module asynchronously.
 
-```javascript
-import lightUrl from './light.wasm?url'
-
-text('.url', lightUrl)
+```js
+const mod = await import.source('./example.wasm')
 ```
 
 --------------------------------
@@ -1414,6 +1400,20 @@ Directly creates a project named my-vue-app using the vue template via Deno with
 
 ```bash
 $ deno init --npm vite my-vue-app --template vue
+```
+
+--------------------------------
+
+### Importing wasm as URL
+
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+
+Imports a wasm file as a URL using the ?url suffix. The URL is displayed in the element with class 'url'.
+
+```javascript
+import lightUrl from './light.wasm?url'
+
+text('.url', lightUrl)
 ```
 
 --------------------------------
@@ -1585,24 +1585,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Configure default Vite npm scripts in package.json
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Default npm scripts in a scaffolded Vite project for starting the dev server, building for production, and previewing the build locally.
-
-```json
-{
-  "scripts": {
-    "dev": "vite", // start dev server, aliases: `vite dev`, `vite serve`
-    "build": "vite build", // build for production
-    "preview": "vite preview" // locally preview production build
-  }
-}
-```
-
---------------------------------
-
 ### Configure basic experimental.renderBuiltUrl for runtime and relative URLs
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1624,6 +1606,24 @@ experimental: {
   },
 },
 // ---cut-after---
+}
+```
+
+--------------------------------
+
+### Configure default Vite npm scripts in package.json
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Default npm scripts in a scaffolded Vite project for starting the dev server, building for production, and previewing the build locally.
+
+```json
+{
+  "scripts": {
+    "dev": "vite", // start dev server, aliases: `vite dev`, `vite serve`
+    "build": "vite build", // build for production
+    "preview": "vite preview" // locally preview production build
+  }
 }
 ```
 
@@ -1748,6 +1748,32 @@ git config --local blame.ignoreRevsFile .git-blame-ignore-revs
 
 --------------------------------
 
+### Example generated license file output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+This is the format of the .vite/license.md file generated when build.license is enabled. It lists each dependency with its version and license identifier.
+
+```md
+# Licenses
+
+The app bundles dependencies which contain the following licenses:
+
+## dep-1 - 1.2.3 (CC0-1.0)
+
+CC0 1.0 Universal
+
+...
+
+## dep-2 - 4.5.6 (MIT)
+
+MIT License
+
+...
+```
+
+--------------------------------
+
 ### Configure Qwik in CSR mode with Vite
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
@@ -1784,28 +1810,16 @@ Demonstrates the directory layout for a multi-page Vite application.
 
 --------------------------------
 
-### Example generated license file output
+### wasm importing a global from another wasm
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
 
-This is the format of the .vite/license.md file generated when build.license is enabled. It lists each dependency with its version and license identifier.
+Imports a wasm module that imports a global from another wasm module. The exported function is called and the result is displayed.
 
-```md
-# Licenses
+```javascript
+import { getAnswerPlusOne } from './global-consumer.wasm'
 
-The app bundles dependencies which contain the following licenses:
-
-## dep-1 - 1.2.3 (CC0-1.0)
-
-CC0 1.0 Universal
-
-...
-
-## dep-2 - 4.5.6 (MIT)
-
-MIT License
-
-...
+text('.direct-wasm-global-import .result', getAnswerPlusOne())
 ```
 
 --------------------------------
@@ -1822,16 +1836,14 @@ vite build --profile
 
 --------------------------------
 
-### wasm importing a global from another wasm
+### Scaffold Vite Vue project with CLI options using pnpm
 
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-Imports a wasm module that imports a global from another wasm module. The exported function is called and the result is displayed.
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
 
-```javascript
-import { getAnswerPlusOne } from './global-consumer.wasm'
-
-text('.direct-wasm-global-import .result', getAnswerPlusOne())
+```bash
+$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
@@ -1857,18 +1869,6 @@ export default defineConfig({
     }),
   ],
 })
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
-
-```bash
-$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
