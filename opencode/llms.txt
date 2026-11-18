@@ -604,6 +604,28 @@ npm install --global @figma/code-connect@latest
 
 --------------------------------
 
+### Playground example session
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
+
+Demonstrates a sequence of playground commands: demo, new, run a printf command, new /bin/sh, list, use 1, screen, replay 1 0, resize 72 20, kill 2, quit.
+
+```text
+demo
+new
+run printf '\033[32mgreen from the shell\033[0m\n'
+new /bin/sh
+list
+use 1
+screen
+replay 1 0
+resize 72 20
+kill 2
+quit
+```
+
+--------------------------------
+
 ### Create a GUI main plugin setup with pairing service and screen blocker
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-plugins/README.md
@@ -790,28 +812,6 @@ mise use -g opencode
 
 --------------------------------
 
-### Example playground session
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
-
-Sample sequence exercising demo, terminal creation, shell commands, screen/replay inspection, resize, kill, and quit.
-
-```text
-demo
-new
-run printf '\033[32mgreen from the shell\033[0m\n'
-new /bin/sh
-list
-use 1
-screen
-replay 1 0
-resize 72 20
-kill 2
-quit
-```
-
---------------------------------
-
 ### Create a new SolidStart project with npm init solid
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/README.md
@@ -901,18 +901,6 @@ opencode plugin add 'git+https://github.com/anomalyco/opencode.git#path:packages
 
 --------------------------------
 
-### Start the playground with cargo run -- play
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
-
-Starts and owns a new daemon named play; it cannot adopt an already running daemon.
-
-```sh
-cargo run -- play --name play
-```
-
---------------------------------
-
 ### Install OpenCode 1 with Homebrew
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/index.mdx
@@ -933,6 +921,18 @@ Starts the background server. See the Web documentation for more details.
 
 ```bash
 $ opencode service start
+```
+
+--------------------------------
+
+### Start playground daemon with cargo run -- play
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
+
+Starts and owns a new daemon named 'play'. It cannot adopt an already running daemon.
+
+```sh
+cargo run -- play --name play
 ```
 
 --------------------------------
@@ -1271,20 +1271,6 @@ export const AcmeBadge = Contract.define<AcmeBadge, "acme.badge">("acme.badge")
 
 --------------------------------
 
-### View CLI help documentation
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-code-connect/references/api.md
-
-Displays help information for the figma connect CLI and its subcommands.
-
-```bash
-npx figma connect --help
-npx figma connect publish --help
-npx figma connect unpublish --help
-```
-
---------------------------------
-
 ### Async main setup with ctx.onCleanup
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1309,6 +1295,20 @@ Use this command to revert changes made by OpenCode. You can run it multiple tim
 
 ```bash
 /undo
+```
+
+--------------------------------
+
+### View CLI help documentation
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-code-connect/references/api.md
+
+Displays help information for the figma connect CLI and its subcommands.
+
+```bash
+npx figma connect --help
+npx figma connect publish --help
+npx figma connect unpublish --help
 ```
 
 --------------------------------
@@ -1351,6 +1351,37 @@ const saved = builtinMainContext(ctx).storage.store("servers", {
 
 --------------------------------
 
+### Quick Start: Create a Tool and Execute a Program with CodeMode
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/codemode/README.md
+
+Defines a tool with Tool.make, creates a runtime with CodeMode.make, and executes a program that calls the tool. The result is always a CodeMode.Result.
+
+```ts
+import { CodeMode, Namespace, Tool } from "@opencode/codemode"
+import { Effect, Schema } from "effect"
+
+const lookupOrder = Tool.make({
+  description: "Look up an order by ID",
+  input: Schema.Struct({ id: Schema.String }),
+  output: Schema.Struct({ id: Schema.String, status: Schema.String }),
+  execute: ({ id }) => Effect.succeed({ id, status: "open" }),
+})
+
+const runtime = CodeMode.make({
+  tools: { orders: { lookup: lookupOrder } },
+})
+
+const result = await Effect.runPromise(
+  runtime.execute(`
+    const order = await tools.orders.lookup({ id: "order_42" })
+    return { id: order.id, needsAttention: order.status !== "complete" }
+  `),
+)
+```
+
+--------------------------------
+
 ### Define OpenCode config in opencode.jsonc
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/config.mdx
@@ -1382,6 +1413,29 @@ opencode service set env OPENCODE_CLAUDE_PATH /opt/claude/bin/claude
 
 --------------------------------
 
+### Use a glob pattern for bash permissions in opencode.json
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/agents.mdx
+
+Use a glob pattern like `git *` in `agent.build.permission.bash` to match multiple bash commands. This example asks for approval for any command starting with `git`.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": {
+      "permission": {
+        "bash": {
+          "git *": "ask"
+        }
+      }
+    }
+  }
+}
+```
+
+--------------------------------
+
 ### Add a Server contribution with machine entries
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1404,29 +1458,6 @@ ctx.add(
     })),
   }),
 )
-```
-
---------------------------------
-
-### Use a glob pattern for bash permissions in opencode.json
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/agents.mdx
-
-Use a glob pattern like `git *` in `agent.build.permission.bash` to match multiple bash commands. This example asks for approval for any command starting with `git`.
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "agent": {
-    "build": {
-      "permission": {
-        "bash": {
-          "git *": "ask"
-        }
-      }
-    }
-  }
-}
 ```
 
 --------------------------------
@@ -1460,31 +1491,6 @@ strobe bench perf/startup.bench.ts --target install --base app:opencode --head a
 
 # The dev loop's cold start, dev against this checkout.
 strobe bench perf/startup.bench.ts --target dev --base origin/dev --head .
-```
-
---------------------------------
-
-### desktop.launch(path: string, app?: string): Promise<void>
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
-
-Opens a path with an app, or with the default app. This method is available on desktop platforms through `ctx.desktop`.
-
-```APIDOC
-## desktop.launch(path: string, app?: string): Promise<void>
-
-### Description
-Opens a path with an app, or with the default app. This method is available on desktop platforms through `ctx.desktop`.
-
-### Method
-desktop.launch
-
-### Parameters
-- **path** (string) - Required - The path to open.
-- **app** (string) - Optional - The app to open the path with. If omitted, the default app is used.
-
-### Response
-Returns a Promise that resolves when the launch operation completes.
 ```
 
 --------------------------------
@@ -1598,6 +1604,18 @@ opencode
 
 --------------------------------
 
+### Run a shell command in shell mode
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/tui.mdx
+
+Type ! at the start of an empty prompt to enter shell mode, then enter a command and press Enter. Press Esc to leave shell mode without running a command.
+
+```text
+!git status
+```
+
+--------------------------------
+
 ### Create project-specific custom theme directory and file
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/themes.mdx
@@ -1607,18 +1625,6 @@ Create a custom theme JSON file in the project root directory for project-specif
 ```bash
 mkdir -p .opencode/themes
 vim .opencode/themes/my-theme.json
-```
-
---------------------------------
-
-### Run a shell command in shell mode
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/tui.mdx
-
-Type ! at the start of an empty prompt to enter shell mode, then enter a command and press Enter. Press Esc to leave shell mode without running a command.
-
-```text
-!git status
 ```
 
 --------------------------------
@@ -1681,6 +1687,18 @@ export default {
 
 --------------------------------
 
+### Start opencode mini with a model and initial prompt
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
+
+Begins a minimal session using the specified model and an initial prompt.
+
+```bash
+$ opencode mini --model anthropic/claude-sonnet-5-5 --prompt "Summarize this repository"
+```
+
+--------------------------------
+
 ### Register an integration transform to inspect and manage auth methods
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
@@ -1705,18 +1723,6 @@ await ctx.integration.transform((editor) => {
   if (legacy) editor.method.remove("acme", legacy)
   editor.remove("legacy")
 })
-```
-
---------------------------------
-
-### Start opencode mini with a model and initial prompt
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
-
-Begins a minimal session using the specified model and an initial prompt.
-
-```bash
-$ opencode mini --model anthropic/claude-sonnet-5-5 --prompt "Summarize this repository"
 ```
 
 --------------------------------
@@ -1761,18 +1767,6 @@ bun add -d electron @types/node
 
 --------------------------------
 
-### Build the GUI bundle with vite build
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
-
-Run the Vite build to produce the prebuilt CommonJS bundle for ./gui-experimental.
-
-```bash
-vite build
-```
-
---------------------------------
-
 ### Install dependencies with bun install in sdks/vscode
 
 Source: https://github.com/anomalyco/opencode/blob/dev/sdks/vscode/README.md
@@ -1781,6 +1775,18 @@ Run inside the sdks/vscode directory to install the extension's dependencies bef
 
 ```shell
 bun install
+```
+
+--------------------------------
+
+### Build the GUI bundle with vite build
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
+
+Run the Vite build to produce the prebuilt CommonJS bundle for ./gui-experimental.
+
+```bash
+vite build
 ```
 
 --------------------------------
@@ -1878,6 +1884,18 @@ gantt
 
 --------------------------------
 
+### View serve subcommands and flags with --help
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
+
+Lists all subcommands and flags for the serve command.
+
+```bash
+$ opencode serve --help
+```
+
+--------------------------------
+
 ### Run performance benchmarks with strobe bench
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/app/perf/README.md
@@ -1934,18 +1952,6 @@ GET
 
 ### Response
 Returns `File[]`.
-```
-
---------------------------------
-
-### View serve subcommands and flags with --help
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
-
-Lists all subcommands and flags for the serve command.
-
-```bash
-$ opencode serve --help
 ```
 
 --------------------------------
@@ -2053,18 +2059,6 @@ GET
 ### Response
 #### Success Response (200)
 - **Session** - The Session object
-```
-
---------------------------------
-
-### Run /connect in the TUI to connect OpenCode Go
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/console/go.mdx
-
-Run this command in the TUI after subscribing to OpenCode Go and copying your API key. Select OpenCode Go and paste your API key when prompted.
-
-```text
-/connect
 ```
 
 --------------------------------
