@@ -270,30 +270,6 @@ Example of the tags to include in production for the entry point views/foo.js, f
 
 --------------------------------
 
-### Run pnpm run build to generate twoslash types
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Run in Vite's root folder to generate types for twoslash code examples. If types are missing, errors appear in step 2 but the docs site still works.
-
-```shell
-pnpm run build
-```
-
---------------------------------
-
-### Scaffold a Vite Project with PNPM
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using PNPM.
-
-```bash
-pnpm create vite
-```
-
---------------------------------
-
 ### Init function returns WebAssembly.Instance
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -316,6 +292,30 @@ document
       res instanceof WebAssembly.Instance,
     )
   })
+```
+
+--------------------------------
+
+### Run pnpm run build to generate twoslash types
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Run in Vite's root folder to generate types for twoslash code examples. If types are missing, errors appear in step 2 but the docs site still works.
+
+```shell
+pnpm run build
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with PNPM
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using PNPM.
+
+```bash
+pnpm create vite
 ```
 
 --------------------------------
@@ -561,25 +561,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Dynamic source phase import
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Uses dynamic source phase import to import a wasm module and instantiate it. The result of the add function is displayed.
-
-```javascript
-;(async () => {
-  const dynamicModule = await import.source('./add.wasm')
-  const dynamicInstance = await WebAssembly.instantiate(dynamicModule)
-  text(
-    '.source-phase-wasm-dynamic .result',
-    dynamicInstance.exports.add(3, 4),
-  )
-})()
-```
-
---------------------------------
-
 ### Customize logger with createLogger to filter warnings
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
@@ -613,6 +594,25 @@ Boots a local static web server serving files from `dist` at `http://localhost:4
 
 ```bash
 $ npm run preview
+```
+
+--------------------------------
+
+### Dynamic source phase import
+
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+
+Uses dynamic source phase import to import a wasm module and instantiate it. The result of the add function is displayed.
+
+```javascript
+;(async () => {
+  const dynamicModule = await import.source('./add.wasm')
+  const dynamicInstance = await WebAssembly.instantiate(dynamicModule)
+  text(
+    '.source-phase-wasm-dynamic .result',
+    dynamicInstance.exports.add(3, 4),
+  )
+})()
 ```
 
 --------------------------------
@@ -651,6 +651,47 @@ Create an entry point HTML file in the project root. Vite treats this file as so
 
 ```html
 <p>Hello Vite!</p>
+```
+
+--------------------------------
+
+### Implicit index resolving and dir vs file
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a directory with an implicit index and from a directory that has both a file and an index. Requires the corresponding local files.
+
+```javascript
+// implicit index resolving
+import { foo } from './util'
+text('.index', foo())
+
+// implicit dir index vs. file
+import { file } from './dir'
+text('.dir-vs-file', file)
+```
+
+--------------------------------
+
+### Import from UTF-8 BOM file and deep import with Babel runtime
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports a message from a UTF-8 BOM file and uses a deep import from @babel/runtime to slice an iterable. Requires the utf8-bom package and @babel/runtime to be installed.
+
+```javascript
+import { msg as bomMsg } from './utf8-bom/main.js'
+text('.utf8-bom', bomMsg)
+
+// deep import
+import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
+const iterable = (function* () {
+  yield 2
+  yield 4
+  yield 6
+  yield 8
+})()
+text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -726,47 +767,6 @@ After running vite build, a .vite/manifest.json file is generated alongside othe
     "css": ["assets/foo-5UjPuW-k.css"]
   }
 }
-```
-
---------------------------------
-
-### Implicit index resolving and dir vs file
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports from a directory with an implicit index and from a directory that has both a file and an index. Requires the corresponding local files.
-
-```javascript
-// implicit index resolving
-import { foo } from './util'
-text('.index', foo())
-
-// implicit dir index vs. file
-import { file } from './dir'
-text('.dir-vs-file', file)
-```
-
---------------------------------
-
-### Import from UTF-8 BOM file and deep import with Babel runtime
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports a message from a UTF-8 BOM file and uses a deep import from @babel/runtime to slice an iterable. Requires the utf8-bom package and @babel/runtime to be installed.
-
-```javascript
-import { msg as bomMsg } from './utf8-bom/main.js'
-text('.utf8-bom', bomMsg)
-
-// deep import
-import slicedToArray from '@babel/runtime/helpers/esm/slicedToArray'
-const iterable = (function* () {
-  yield 2
-  yield 4
-  yield 6
-  yield 8
-})()
-text('.deep-import', JSON.stringify(slicedToArray(iterable, 2)))
 ```
 
 --------------------------------
@@ -1209,26 +1209,6 @@ vite optimize [root]
 
 --------------------------------
 
-### Example forwarded unhandled error log output
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
-
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
-```
-
---------------------------------
-
 ### Configure build.lib for multiple entries in vite.config.js
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1262,6 +1242,26 @@ export default defineConfig({
     },
   },
 })
+```
+
+--------------------------------
+
+### Example forwarded unhandled error log output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
+
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
@@ -1645,21 +1645,6 @@ export default defineConfig({
 
 --------------------------------
 
-### Build library using Vite CLI
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Shows the command line output when running `vite build` in library mode.
-
-```shell
-$ vite build
-building for production...
-dist/my-lib.js      0.08 kB / gzip: 0.07 kB
-dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
-```
-
---------------------------------
-
 ### Direct wasm import with wasm imports
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -1672,6 +1657,21 @@ import { getResult } from './imports.js'
 
 exported_func()
 text('.direct-wasm-with-imports .result', getResult())
+```
+
+--------------------------------
+
+### Build library using Vite CLI
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
+
+Shows the command line output when running `vite build` in library mode.
+
+```shell
+$ vite build
+building for production...
+dist/my-lib.js      0.08 kB / gzip: 0.07 kB
+dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 ```
 
 --------------------------------
@@ -1719,6 +1719,18 @@ w.addEventListener('message', (ev) => {
 
 --------------------------------
 
+### Configure git blame to ignore formatting commits
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Run this command to make git blame use the .git-blame-ignore-revs file, which ignores formatting changes.
+
+```sh
+git config --local blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
+--------------------------------
+
 ### Typical SSR application source file structure
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
@@ -1736,14 +1748,20 @@ Shows the recommended directory and file layout for an SSR application, includin
 
 --------------------------------
 
-### Configure git blame to ignore formatting commits
+### Configure Qwik in CSR mode with Vite
 
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
 
-Run this command to make git blame use the .git-blame-ignore-revs file, which ignores formatting changes.
+Sets up the qwikVite plugin with csr set to true for pure client-side rendering bootstrapped in the browser.
 
-```sh
-git config --local blame.ignoreRevsFile .git-blame-ignore-revs
+```ts
+export default defineConfig({
+  plugins: [
+    qwikVite({
+      csr: true,
+    }),
+  ],
+})
 ```
 
 --------------------------------
@@ -1774,20 +1792,16 @@ MIT License
 
 --------------------------------
 
-### Configure Qwik in CSR mode with Vite
+### wasm importing a global from another wasm
 
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
 
-Sets up the qwikVite plugin with csr set to true for pure client-side rendering bootstrapped in the browser.
+Imports a wasm module that imports a global from another wasm module. The exported function is called and the result is displayed.
 
-```ts
-export default defineConfig({
-  plugins: [
-    qwikVite({
-      csr: true,
-    }),
-  ],
-})
+```javascript
+import { getAnswerPlusOne } from './global-consumer.wasm'
+
+text('.direct-wasm-global-import .result', getAnswerPlusOne())
 ```
 
 --------------------------------
@@ -1810,20 +1824,6 @@ Demonstrates the directory layout for a multi-page Vite application.
 
 --------------------------------
 
-### wasm importing a global from another wasm
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Imports a wasm module that imports a global from another wasm module. The exported function is called and the result is displayed.
-
-```javascript
-import { getAnswerPlusOne } from './global-consumer.wasm'
-
-text('.direct-wasm-global-import .result', getAnswerPlusOne())
-```
-
---------------------------------
-
 ### Profile Vite build with --profile
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
@@ -1832,18 +1832,6 @@ Runs the Vite build with the built-in Node.js inspector to create a CPU profile.
 
 ```bash
 vite build --profile
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
-
-```bash
-$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
@@ -1869,6 +1857,18 @@ export default defineConfig({
     }),
   ],
 })
+```
+
+--------------------------------
+
+### Scaffold Vite Vue project with CLI options using pnpm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
+
+```bash
+$ pnpm create vite my-vue-app --template vue
 ```
 
 --------------------------------
