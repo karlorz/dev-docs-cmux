@@ -769,6 +769,22 @@ computeTrimmedLengthAsync("sandwich"); // => Promise<8>
 
 --------------------------------
 
+### Compare prefault and default with mutating refinements
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+`.prefault()` passes the value through refinements like `.trim()` and `.toUpperCase()`, while `.default()` returns the value unchanged. Use prefault when you want the fallback to be processed.
+
+```ts
+const a = z.string().trim().toUpperCase().prefault("  tuna  ");
+a.parse(undefined); // => "TUNA"
+
+const b = z.string().trim().toUpperCase().default("  tuna  ");
+b.parse(undefined); // => "  tuna  "
+```
+
+--------------------------------
+
 ### import "zod/compile"
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
@@ -804,22 +820,6 @@ Set `preload` in `bunfig.toml` or `nub.jsonc`.
   "preload": ["zod/compile"]
 }
 ```
-```
-
---------------------------------
-
-### Compare prefault and default with mutating refinements
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-`.prefault()` passes the value through refinements like `.trim()` and `.toUpperCase()`, while `.default()` returns the value unchanged. Use prefault when you want the fallback to be processed.
-
-```ts
-const a = z.string().trim().toUpperCase().prefault("  tuna  ");
-a.parse(undefined); // => "TUNA"
-
-const b = z.string().trim().toUpperCase().default("  tuna  ");
-b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -887,40 +887,6 @@ const UniqueStringArray = z.array(z.string()).check(
 
 --------------------------------
 
-### Validate File instances with z.file() in Zod Mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-In Zod Mini, apply file constraints via .check() with z.minSize, z.maxSize, and z.mime. Sizes are in bytes and mime accepts a single type or an array.
-
-```ts
-const fileSchema = z.file();
-
-fileSchema.check(z.minSize(10_000)); // minimum .size (bytes)
-fileSchema.check(z.maxSize(1_000_000)); // maximum .size (bytes)
-fileSchema.check(z.mime("image/png")); // MIME type
-fileSchema.check(z.mime(["image/png", "image/jpeg"])); // multiple MIME types
-```
-
---------------------------------
-
-### Parse values with z.coerce.string schema
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-The coerced string schema converts various input types to strings. For example, parsing 42 returns "42", true returns "true", and null returns "null".
-
-```ts
-const schema = z.coerce.string();
-
-schema.parse("tuna");    // => "tuna"
-schema.parse(42);        // => "42"
-schema.parse(true);      // => "true"
-schema.parse(null);      // => "null"
-```
-
---------------------------------
-
 ### Register metadata with .meta() or z.globalRegistry
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -951,6 +917,40 @@ const emailSchema = z.string().register(z.globalRegistry, {
 
 z.toJSONSchema(emailSchema);
 // => { type: "string", title: "Email address", description: "Your email address", ... } 
+```
+
+--------------------------------
+
+### Parse values with z.coerce.string schema
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+The coerced string schema converts various input types to strings. For example, parsing 42 returns "42", true returns "true", and null returns "null".
+
+```ts
+const schema = z.coerce.string();
+
+schema.parse("tuna");    // => "tuna"
+schema.parse(42);        // => "42"
+schema.parse(true);      // => "true"
+schema.parse(null);      // => "null"
+```
+
+--------------------------------
+
+### Validate File instances with z.file() in Zod Mini
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+In Zod Mini, apply file constraints via .check() with z.minSize, z.maxSize, and z.mime. Sizes are in bytes and mime accepts a single type or an array.
+
+```ts
+const fileSchema = z.file();
+
+fileSchema.check(z.minSize(10_000)); // minimum .size (bytes)
+fileSchema.check(z.maxSize(1_000_000)); // maximum .size (bytes)
+fileSchema.check(z.mime("image/png")); // MIME type
+fileSchema.check(z.mime(["image/png", "image/jpeg"])); // multiple MIME types
 ```
 
 --------------------------------
@@ -1434,25 +1434,6 @@ z.output(Event).parse({ name: "launch", at: new Date() });            // ✅
 
 --------------------------------
 
-### Parse, decode, and encode with standard Zod schema methods
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
-
-Execute forward parsing and decoding or backward encoding on standard Zod schemas where input and output types match.
-
-```ts
-const schema = z.string();
-
-type Input = z.input<typeof schema>;    // string
-type Output = z.output<typeof schema>;  // string
-
-schema.parse("asdf");   // => "asdf"
-schema.decode("asdf");  // => "asdf"
-schema.encode("asdf");  // => "asdf"
-```
-
---------------------------------
-
 ### Check multiple properties with z.properties (Zod Mini)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1469,6 +1450,25 @@ const okResponse = z.instanceof(Response).check(
 
 okResponse.parse(new Response("ok")); // ✅
 okResponse.parse(new Response("", { status: 404 })); // ❌ status
+```
+
+--------------------------------
+
+### Parse, decode, and encode with standard Zod schema methods
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/codecs.mdx
+
+Execute forward parsing and decoding or backward encoding on standard Zod schemas where input and output types match.
+
+```ts
+const schema = z.string();
+
+type Input = z.input<typeof schema>;    // string
+type Output = z.output<typeof schema>;  // string
+
+schema.parse("asdf");   // => "asdf"
+schema.decode("asdf");  // => "asdf"
+schema.encode("asdf");  // => "asdf"
 ```
 
 --------------------------------

@@ -333,18 +333,6 @@ pnpm add @tanstack/react-query-devtools
 
 --------------------------------
 
-### Install @tanstack/solid-query with bun
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/installation.md
-
-Installs Solid Query using bun as an alternative package manager.
-
-```sh
-bun add @tanstack/solid-query
-```
-
---------------------------------
-
 ### Install React Query Devtools with yarn
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/react/devtools.md
@@ -353,6 +341,18 @@ Install the separate @tanstack/react-query-devtools package using yarn. For Next
 
 ```sh
 yarn add @tanstack/react-query-devtools
+```
+
+--------------------------------
+
+### Install @tanstack/solid-query with bun
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/solid/installation.md
+
+Installs Solid Query using bun as an alternative package manager.
+
+```sh
+bun add @tanstack/solid-query
 ```
 
 --------------------------------
@@ -1748,6 +1748,91 @@ yarn add @tanstack/svelte-query
 
 --------------------------------
 
+### Lit Query quick start with createQueryController and createMutationController
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/quick-start.md
+
+Shows the three core Lit Query concepts: queries, mutations, and query invalidation. The controllers are created with `this` because a `LitElement` is a `ReactiveControllerHost`; Lit Query uses the host lifecycle to subscribe, request updates, and clean up when the element disconnects. Mount the provider around your component as shown in the HTML snippet.
+
+```ts
+import {
+  QueryClient,
+  QueryClientProvider,
+  createMutationController,
+  createQueryController,
+} from '@tanstack/lit-query'
+import { LitElement, html } from 'lit'
+import { addTodo, getTodos } from './api'
+
+const queryClient = new QueryClient()
+
+class AppQueryProvider extends QueryClientProvider {
+  constructor() {
+    super()
+    this.client = queryClient
+  }
+}
+
+customElements.define('app-query-provider', AppQueryProvider)
+
+class TodosView extends LitElement {
+  private readonly todos = createQueryController(this, {
+    queryKey: ['todos'],
+    queryFn: getTodos,
+  })
+
+  private readonly createTodo = createMutationController(this, {
+    mutationFn: addTodo,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['todos'] })
+    },
+  })
+
+  render() {
+    const query = this.todos()
+    const mutation = this.createTodo()
+
+    if (query.isPending) return html`Loading...`
+    if (query.isError) return html`Error: ${query.error.message}`
+
+    return html`
+      <ul>
+        ${query.data.map((todo) => html`<li>${todo.title}</li>`)}
+      </ul>
+
+      <button
+        ?disabled=${mutation.isPending}
+        @click=${() => this.createTodo.mutate({ title: 'Write Lit docs' })}
+      >
+        Add Todo
+      </button>
+    `
+  }
+}
+
+customElements.define('todos-view', TodosView)
+```
+
+```html
+<app-query-provider>
+  <todos-view></todos-view>
+</app-query-provider>
+```
+
+--------------------------------
+
+### Install @tanstack/svelte-query with pnpm
+
+Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
+
+Installs Svelte Query via pnpm as an alternative to npm.
+
+```sh
+pnpm add @tanstack/svelte-query
+```
+
+--------------------------------
+
 ### Full SSR example with preact-render-to-string
 
 Source: https://github.com/tanstack/query/blob/main/docs/framework/preact/guides/ssr.md
@@ -1848,91 +1933,6 @@ preactHydrate(
   <App dehydratedState={window.__DEHYDRATED_STATE__} />,
   document.getElementById('app'),
 )
-```
-
---------------------------------
-
-### Install @tanstack/svelte-query with pnpm
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/svelte/installation.md
-
-Installs Svelte Query via pnpm as an alternative to npm.
-
-```sh
-pnpm add @tanstack/svelte-query
-```
-
---------------------------------
-
-### Lit Query quick start with createQueryController and createMutationController
-
-Source: https://github.com/tanstack/query/blob/main/docs/framework/lit/quick-start.md
-
-Shows the three core Lit Query concepts: queries, mutations, and query invalidation. The controllers are created with `this` because a `LitElement` is a `ReactiveControllerHost`; Lit Query uses the host lifecycle to subscribe, request updates, and clean up when the element disconnects. Mount the provider around your component as shown in the HTML snippet.
-
-```ts
-import {
-  QueryClient,
-  QueryClientProvider,
-  createMutationController,
-  createQueryController,
-} from '@tanstack/lit-query'
-import { LitElement, html } from 'lit'
-import { addTodo, getTodos } from './api'
-
-const queryClient = new QueryClient()
-
-class AppQueryProvider extends QueryClientProvider {
-  constructor() {
-    super()
-    this.client = queryClient
-  }
-}
-
-customElements.define('app-query-provider', AppQueryProvider)
-
-class TodosView extends LitElement {
-  private readonly todos = createQueryController(this, {
-    queryKey: ['todos'],
-    queryFn: getTodos,
-  })
-
-  private readonly createTodo = createMutationController(this, {
-    mutationFn: addTodo,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['todos'] })
-    },
-  })
-
-  render() {
-    const query = this.todos()
-    const mutation = this.createTodo()
-
-    if (query.isPending) return html`Loading...`
-    if (query.isError) return html`Error: ${query.error.message}`
-
-    return html`
-      <ul>
-        ${query.data.map((todo) => html`<li>${todo.title}</li>`)}
-      </ul>
-
-      <button
-        ?disabled=${mutation.isPending}
-        @click=${() => this.createTodo.mutate({ title: 'Write Lit docs' })}
-      >
-        Add Todo
-      </button>
-    `
-  }
-}
-
-customElements.define('todos-view', TodosView)
-```
-
-```html
-<app-query-provider>
-  <todos-view></todos-view>
-</app-query-provider>
 ```
 
 --------------------------------
