@@ -698,28 +698,6 @@ $ opencode service start
 
 --------------------------------
 
-### Playground example session
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
-
-Demonstrates a sequence of playground commands: demo, new, run a printf command, new /bin/sh, list, use 1, screen, replay 1 0, resize 72 20, kill 2, quit.
-
-```text
-demo
-new
-run printf '\033[32mgreen from the shell\033[0m\n'
-new /bin/sh
-list
-use 1
-screen
-replay 1 0
-resize 72 20
-kill 2
-quit
-```
-
---------------------------------
-
 ### Install OpenCode via curl, npm, Homebrew, pacman, mise, or Nix
 
 Source: https://github.com/anomalyco/opencode/blob/dev/README.md
@@ -738,6 +716,28 @@ sudo pacman -S opencode            # Arch Linux (Stable)
 paru -S opencode-beta              # Arch Linux (Latest from AUR)
 mise use -g opencode               # Any OS
 nix run github:anomalyco/opencode  # Nix
+```
+
+--------------------------------
+
+### Playground example session
+
+Source: https://github.com/anomalyco/opencode/blob/dev/packages/process-daemon/README.md
+
+Demonstrates a sequence of playground commands: demo, new, run a printf command, new /bin/sh, list, use 1, screen, replay 1 0, resize 72 20, kill 2, quit.
+
+```text
+demo
+new
+run printf '\033[32mgreen from the shell\033[0m\n'
+new /bin/sh
+list
+use 1
+screen
+replay 1 0
+resize 72 20
+kill 2
+quit
 ```
 
 --------------------------------
@@ -780,6 +780,21 @@ Subscribe to OpenCode Go in the console, copy your API key, then run /connect an
 
 --------------------------------
 
+### Set up clipboard utilities for headless environments
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/troubleshooting.mdx
+
+Install xvfb and start a virtual display for headless Linux environments to enable copy/paste functionality. Run the Xvfb command and export the DISPLAY variable as shown.
+
+```bash
+apt install -y xvfb
+# and run:
+Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+export DISPLAY=:99.0
+```
+
+--------------------------------
+
 ### Main setup with async cleanup
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -792,21 +807,6 @@ async main(ctx) {
 
   ctx.onCleanup(() => socket.close())
 }
-```
-
---------------------------------
-
-### Set up clipboard utilities for headless environments
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/troubleshooting.mdx
-
-Install xvfb and start a virtual display for headless Linux environments to enable copy/paste functionality. Run the Xvfb command and export the DISPLAY variable as shown.
-
-```bash
-apt install -y xvfb
-# and run:
-Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-export DISPLAY=:99.0
 ```
 
 --------------------------------
@@ -1120,6 +1120,21 @@ export default Plugin.define({
 
 --------------------------------
 
+### Read VCS repository info, branches, status, and diff with ctx.vcs
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
+
+Use ctx.vcs to read repository information, working-copy status, or file diffs. The example shows getting info, listing branches with a search filter and limit, getting status, and getting a working diff with context.
+
+```typescript
+const info = await ctx.vcs.get()
+const branches = await ctx.vcs.branch.list({ search: "feature", limit: 10 })
+const changes = await ctx.vcs.status()
+const diff = await ctx.vcs.diff({ mode: "working", context: 3 })
+```
+
+--------------------------------
+
 ### Type a window setup with Plugin.Setup<typeof definition>
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1138,21 +1153,6 @@ export const setup: Plugin.Setup<typeof definition> = (ctx) => {
 
 --------------------------------
 
-### Read VCS repository info, branches, status, and diff with ctx.vcs
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
-
-Use ctx.vcs to read repository information, working-copy status, or file diffs. The example shows getting info, listing branches with a search filter and limit, getting status, and getting a working diff with context.
-
-```typescript
-const info = await ctx.vcs.get()
-const branches = await ctx.vcs.branch.list({ search: "feature", limit: 10 })
-const changes = await ctx.vcs.status()
-const diff = await ctx.vcs.diff({ mode: "working", context: 3 })
-```
-
---------------------------------
-
 ### View CLI help documentation
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-code-connect/references/api.md
@@ -1163,20 +1163,6 @@ Displays help information for the figma connect CLI and its subcommands.
 npx figma connect --help
 npx figma connect publish --help
 npx figma connect unpublish --help
-```
-
---------------------------------
-
-### Start, inspect, or cancel a command-based connection
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
-
-Command-based connections expose the same start, status, and cancel flow via ctx.integration.command. The example uses integrationID "acme" and methodID "cli".
-
-```ts
-const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
-const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
-await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -1211,6 +1197,20 @@ const program = runtime.program(code, { bindings: { repo: "…" }, runId })
 yield* program.run() // Result | Suspended
 yield* program.suspend({ maxBytes })
 yield* runtime.resume(bytes).run()
+```
+
+--------------------------------
+
+### Start, inspect, or cancel a command-based connection
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/server.mdx
+
+Command-based connections expose the same start, status, and cancel flow via ctx.integration.command. The example uses integrationID "acme" and methodID "cli".
+
+```ts
+const attempt = await ctx.integration.command.connect({ integrationID: "acme", methodID: "cli" })
+const status = await ctx.integration.command.status({ integrationID: "acme", attemptID: attempt.data.attemptID })
+await ctx.integration.command.cancel({ integrationID: "acme", attemptID: attempt.data.attemptID })
 ```
 
 --------------------------------
@@ -1327,18 +1327,6 @@ Use this command to revert changes made by OpenCode. You can run it multiple tim
 
 --------------------------------
 
-### Sign in to Azure CLI with az login
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/providers.mdx
-
-Install the Azure CLI and sign in before choosing Microsoft Entra ID (Azure CLI) when connecting Azure.
-
-```bash
-az login
-```
-
---------------------------------
-
 ### Write the window entry with lazy settings page and command
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/gui-plugins/README.md
@@ -1416,24 +1404,14 @@ export default setup
 
 --------------------------------
 
-### ctx.layout.project(server, title)
+### Sign in to Azure CLI with az login
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/providers.mdx
 
-Opens a project's directory picker and a new draft.
+Install the Azure CLI and sign in before choosing Microsoft Entra ID (Azure CLI) when connecting Azure.
 
-```APIDOC
-## ctx.layout.project(server, title)
-
-### Description
-Opens a project's directory picker and a new draft.
-
-### Method
-`project`
-
-### Parameters
-- **server** (string) - Required - The server identifier.
-- **title** (string) - Required - The title.
+```bash
+az login
 ```
 
 --------------------------------
@@ -1457,6 +1435,28 @@ OpenCode supports both JSON and JSONC (JSON with Comments) formats. Use this exa
 
 --------------------------------
 
+### ctx.layout.project(server, title)
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
+
+Opens a project's directory picker and a new draft.
+
+```APIDOC
+## ctx.layout.project(server, title)
+
+### Description
+Opens a project's directory picker and a new draft.
+
+### Method
+`project`
+
+### Parameters
+- **server** (string) - Required - The server identifier.
+- **title** (string) - Required - The title.
+```
+
+--------------------------------
+
 ### Connect to GitHub Copilot via device OAuth and open models
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/providers.mdx
@@ -1471,6 +1471,18 @@ Use the /connect command to select GitHub Copilot and complete the device flow, 
 
 --------------------------------
 
+### Add a request header to OpenCode API call
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
+
+Adds a request header to an API call. Example adds `accept: application/json` to a GET request.
+
+```bash
+$ opencode api GET /api/session -H "accept: application/json"
+```
+
+--------------------------------
+
 ### Configure Hermes model in ~/.hermes/config.yaml
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/console/harnesses/hermes.mdx
@@ -1481,18 +1493,6 @@ Example configuration file saved by Hermes after model setup. Sets the provider 
 model:
   provider: opencode-go
   default: kimi-k3
-```
-
---------------------------------
-
-### Add a request header to OpenCode API call
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
-
-Adds a request header to an API call. Example adds `accept: application/json` to a GET request.
-
-```bash
-$ opencode api GET /api/session -H "accept: application/json"
 ```
 
 --------------------------------
@@ -1554,6 +1554,21 @@ vim .opencode/themes/my-theme.json
 
 --------------------------------
 
+### Return a cleanup function from TUI plugin setup
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/cli.mdx
+
+Return a cleanup function to release resources owned by the plugin. The example subscribes to `session.execution.succeeded` and unsubscribes when cleanup runs.
+
+```ts
+setup(context) {
+  const stop = context.data.on("session.execution.succeeded", () => {})
+  return () => stop()
+}
+```
+
+--------------------------------
+
 ### desktop.launch
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
@@ -1575,33 +1590,6 @@ desktop.launch(path: string, app?: string): Promise<void>
 
 ### Response
 Returns a Promise that resolves when the launch is complete.
-```
-
---------------------------------
-
-### Return a cleanup function from TUI plugin setup
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/cli.mdx
-
-Return a cleanup function to release resources owned by the plugin. The example subscribes to `session.execution.succeeded` and unsubscribes when cleanup runs.
-
-```ts
-setup(context) {
-  const stop = context.data.on("session.execution.succeeded", () => {})
-  return () => stop()
-}
-```
-
---------------------------------
-
-### Prompt to summarize attached README.md
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/attachments.mdx
-
-Example prompt asking OpenCode to summarize an attached README.md and list required setup steps. Use after attaching a local file via the desktop or web client.
-
-```text
-Summarize the attached README.md and list the required setup steps.
 ```
 
 --------------------------------
@@ -1636,6 +1624,18 @@ export default {
 
 --------------------------------
 
+### Prompt to summarize attached README.md
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/attachments.mdx
+
+Example prompt asking OpenCode to summarize an attached README.md and list required setup steps. Use after attaching a local file via the desktop or web client.
+
+```text
+Summarize the attached README.md and list the required setup steps.
+```
+
+--------------------------------
+
 ### Start opencode mini with a model and initial prompt
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/cli/commands.mdx
@@ -1660,14 +1660,14 @@ strobe bench packages/app/perf/<area>.bench.ts --base origin/dev --head .
 
 --------------------------------
 
-### Fetch available Go models with curl
+### Run /models in the TUI
 
 Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/console/go.mdx
 
-Fetch the full list of available Go models and their metadata from the models endpoint.
+Use this command in the TUI to select a model available through OpenCode Go.
 
-```bash
-curl https://opencode.ai/inference/go/v1/models
+```text
+/models
 ```
 
 --------------------------------
@@ -1749,6 +1749,34 @@ Type ! at the start of an empty prompt to enter shell mode, then enter a command
 
 --------------------------------
 
+### Use ctx.use(Browser) to access Live state and enable a command
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
+
+Use ctx.use(token) to get an accessor for a reactive Live<T> state. The example shows a command that is enabled only when the provider is active and a session exists, and calls live.value.open when run.
+
+```ts
+import { Browser } from "@opencode/plugin/gui/browser"
+
+const browser = ctx.use(Browser)
+
+ctx.add(Command, () => {
+  const live = browser()
+  const session = ctx.sessions.current()
+
+  return {
+    id: "preview",
+    title: ctx.t("command.preview"),
+    enabled: live.status === "active" && !!session,
+    run: () => {
+      if (live.status === "active" && session) live.value.open(session, "http://localhost:3000")
+    },
+  }
+})
+```
+
+--------------------------------
+
 ### Define complete Q1 launch roadmap Gantt diagram
 
 Source: https://github.com/anomalyco/opencode/blob/dev/packages/plugins/figma/skills/figma-generate-diagram/references/gantt.md
@@ -1774,34 +1802,6 @@ gantt
     Internal beta   :l1, after b3, 1w
     Fixes           :crit, l2, after l1, 5d
     Ship            :milestone, after l2, 0d
-```
-
---------------------------------
-
-### Use ctx.use(Browser) to access Live state and enable a command
-
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
-
-Use ctx.use(token) to get an accessor for a reactive Live<T> state. The example shows a command that is enabled only when the provider is active and a session exists, and calls live.value.open when run.
-
-```ts
-import { Browser } from "@opencode/plugin/gui/browser"
-
-const browser = ctx.use(Browser)
-
-ctx.add(Command, () => {
-  const live = browser()
-  const session = ctx.sessions.current()
-
-  return {
-    id: "preview",
-    title: ctx.t("command.preview"),
-    enabled: live.status === "active" && !!session,
-    run: () => {
-      if (live.status === "active" && session) live.value.open(session, "http://localhost:3000")
-    },
-  }
-})
 ```
 
 --------------------------------
@@ -1920,14 +1920,14 @@ await ctx.integration.transform((editor) => {
 
 --------------------------------
 
-### Run /models in the TUI
+### Execute the /themes command
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/console/go.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/tui.mdx
 
-Use this command in the TUI to select a model available through Go. Run it after connecting to OpenCode Go.
+List available themes. Keybind: ctrl+x t.
 
-```text
-/models
+```bash
+/themes
 ```
 
 --------------------------------
@@ -1948,79 +1948,64 @@ bun dev -- --port 4444
 
 --------------------------------
 
-### Execute the /themes command
+### SetupContext and Context interface reference
 
-Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/tui.mdx
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/content/build/plugins/gui/index.mdx
 
-List available themes. Keybind: ctrl+x t.
+TypeScript interfaces defining the host APIs available on ctx, including stores, icons, and the full Context surface. Use as a reference for the properties and methods plugins can access.
+
+```ts
+interface SetupContext<D> extends Context {
+  stores: Record<string, Persisted<unknown> | ((session: SessionRef) => Persisted<unknown>)>
+  icons: Record<string, PluginIconName>
+}
+
+interface Context {
+  id: string
+  options: PluginOptions
+  client: OpenCodeClient
+  app: App
+  signal: AbortSignal
+  add<T>(registry: Registry<T>, item: () => T | undefined): Cleanup
+  add<T>(registry: Registry<T>, item: T): Cleanup
+  list<T>(registry: Registry<T>): T[]
+  provide<T>(token: Contract<T>, impl: T): Cleanup
+  use<T>(token: Contract<T>): () => Live<T>
+  use<S extends IpcSpec>(token: Ipc<S>): () => Live<IpcClient<S>>
+  main<S extends IpcSpec>(token: Ipc<S>): IpcClient<S>
+  t(key: string, params?: Record<string, string | number | boolean>): string
+  plural(key: string, count: number, params?: Record<string, string | number | boolean>): string
+  layout: Layout
+  sessions: Sessions
+  screen: Screen
+  servers: Servers
+  storage: Storage
+  dialogs: Dialogs
+  toast: Toasts
+  attention: Attention
+  tabs: Tabs
+  keybinds: Keybinds
+  commands: Commands
+  links: Links
+  embeds: Embeds
+  ui: Ui
+  system: System
+  desktop: Desktop | undefined
+  locale: Locale
+  appearance: Appearance
+  router: Router
+  workspaces: Workspaces
+}
+```
+
+--------------------------------
+
+### Install @opencode-ai/sdk from npm
+
+Source: https://github.com/anomalyco/opencode/blob/dev/services/site/src/docs/v1/content/sdk.mdx
+
+Install the opencode JS/TS SDK package from npm.
 
 ```bash
-/themes
-```
-
---------------------------------
-
-### runtime.catalog()
-
-Source: https://github.com/anomalyco/opencode/blob/dev/packages/codemode/README.md
-
-Returns structured descriptors for every visible tool, including exact path, description, and generated TypeScript signature. Hosts use these descriptors to render model-facing instructions.
-
-```APIDOC
-## runtime.catalog()
-
-### Description
-Returns structured descriptors — exact path, description, and generated TypeScript signature — for every visible tool. Hosts render their own model-facing instructions from these descriptors.
-
-### Method
-runtime.catalog()
-
-### Parameters
-None.
-
-### Response
-An array of tool descriptors, each containing:
-- **path** (string) - Exact path of the tool.
-- **description** (string) - Description of the tool.
-- **signature** (string) - Generated TypeScript signature.
-```
-
---------------------------------
-
-### Install dependencies with bun install in sdks/vscode
-
-Source: https://github.com/anomalyco/opencode/blob/dev/sdks/vscode/README.md
-
-Run inside the sdks/vscode directory to install the extension's dependencies before debugging.
-
-```shell
-bun install
-```
-
---------------------------------
-
-### Install OpenCode Desktop on macOS via Homebrew
-
-Source: https://github.com/anomalyco/opencode/blob/dev/README.md
-
-Install the OpenCode desktop application (BETA) on macOS using Homebrew cask.
-
-```bash
-brew install --cask opencode-desktop
-```
-
---------------------------------
-
-### Run subagent-eviction.ts with DEMO_LABEL=AFTER
-
-Source: https://github.com/anomalyco/opencode/blob/dev/script/drive/subagent-eviction.md
-
-Executes the subagent eviction proof script using opencode-drive to assert successful delivery after parent location eviction and rebuild. Requires Bun 1.4.2, opencode-drive 2.1.3, and an installed V2 checkout.
-
-```sh
-OPENCODE_DRIVE_DB=proof.sqlite \
-OPENCODE_DRIVE_MEDIA_DIR=$PWD/.drive-output \
-DEMO_LABEL=AFTER \
-opencode-drive run script/drive/subagent-eviction.ts
-
+npm install @opencode-ai/sdk
 ```
