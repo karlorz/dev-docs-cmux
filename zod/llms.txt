@@ -522,20 +522,6 @@ const PartialRecipe = z.exactPartial(Recipe);
 
 --------------------------------
 
-### Set preload for zod/compile in nub.jsonc
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
-
-Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile before schemas are defined.
-
-```jsonc
-{
-  "preload": ["zod/compile"]
-}
-```
-
---------------------------------
-
 ### Define a fallback value with .catch() in Zod
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -547,6 +533,20 @@ const numberWithCatch = z.number().catch(42);
 
 numberWithCatch.parse(5); // => 5
 numberWithCatch.parse("tuna"); // => 42
+```
+
+--------------------------------
+
+### Set preload for zod/compile in nub.jsonc
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/introducing-z-compile.mdx
+
+Configure the preload option in nub.jsonc (or bunfig.toml) to load zod/compile before schemas are defined.
+
+```jsonc
+{
+  "preload": ["zod/compile"]
+}
 ```
 
 --------------------------------
@@ -769,22 +769,6 @@ computeTrimmedLengthAsync("sandwich"); // => Promise<8>
 
 --------------------------------
 
-### Compare prefault and default with mutating refinements
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-`.prefault()` passes the value through refinements like `.trim()` and `.toUpperCase()`, while `.default()` returns the value unchanged. Use prefault when you want the fallback to be processed.
-
-```ts
-const a = z.string().trim().toUpperCase().prefault("  tuna  ");
-a.parse(undefined); // => "TUNA"
-
-const b = z.string().trim().toUpperCase().default("  tuna  ");
-b.parse(undefined); // => "  tuna  "
-```
-
---------------------------------
-
 ### import "zod/compile"
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/compile.mdx
@@ -820,6 +804,22 @@ Set `preload` in `bunfig.toml` or `nub.jsonc`.
   "preload": ["zod/compile"]
 }
 ```
+```
+
+--------------------------------
+
+### Compare prefault and default with mutating refinements
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+`.prefault()` passes the value through refinements like `.trim()` and `.toUpperCase()`, while `.default()` returns the value unchanged. Use prefault when you want the fallback to be processed.
+
+```ts
+const a = z.string().trim().toUpperCase().prefault("  tuna  ");
+a.parse(undefined); // => "TUNA"
+
+const b = z.string().trim().toUpperCase().default("  tuna  ");
+b.parse(undefined); // => "  tuna  "
 ```
 
 --------------------------------
@@ -887,6 +887,40 @@ const UniqueStringArray = z.array(z.string()).check(
 
 --------------------------------
 
+### Validate File instances with z.file() in Zod Mini
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+In Zod Mini, apply file constraints via .check() with z.minSize, z.maxSize, and z.mime. Sizes are in bytes and mime accepts a single type or an array.
+
+```ts
+const fileSchema = z.file();
+
+fileSchema.check(z.minSize(10_000)); // minimum .size (bytes)
+fileSchema.check(z.maxSize(1_000_000)); // maximum .size (bytes)
+fileSchema.check(z.mime("image/png")); // MIME type
+fileSchema.check(z.mime(["image/png", "image/jpeg"])); // multiple MIME types
+```
+
+--------------------------------
+
+### Parse values with z.coerce.string schema
+
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
+
+The coerced string schema converts various input types to strings. For example, parsing 42 returns "42", true returns "true", and null returns "null".
+
+```ts
+const schema = z.coerce.string();
+
+schema.parse("tuna");    // => "tuna"
+schema.parse(42);        // => "42"
+schema.parse(true);      // => "true"
+schema.parse(null);      // => "null"
+```
+
+--------------------------------
+
 ### Register metadata with .meta() or z.globalRegistry
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/json-schema.mdx
@@ -917,40 +951,6 @@ const emailSchema = z.string().register(z.globalRegistry, {
 
 z.toJSONSchema(emailSchema);
 // => { type: "string", title: "Email address", description: "Your email address", ... } 
-```
-
---------------------------------
-
-### Parse values with z.coerce.string schema
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-The coerced string schema converts various input types to strings. For example, parsing 42 returns "42", true returns "true", and null returns "null".
-
-```ts
-const schema = z.coerce.string();
-
-schema.parse("tuna");    // => "tuna"
-schema.parse(42);        // => "42"
-schema.parse(true);      // => "true"
-schema.parse(null);      // => "null"
-```
-
---------------------------------
-
-### Validate File instances with z.file() in Zod Mini
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-In Zod Mini, apply file constraints via .check() with z.minSize, z.maxSize, and z.mime. Sizes are in bytes and mime accepts a single type or an array.
-
-```ts
-const fileSchema = z.file();
-
-fileSchema.check(z.minSize(10_000)); // minimum .size (bytes)
-fileSchema.check(z.maxSize(1_000_000)); // maximum .size (bytes)
-fileSchema.check(z.mime("image/png")); // MIME type
-fileSchema.check(z.mime(["image/png", "image/jpeg"])); // multiple MIME types
 ```
 
 --------------------------------
@@ -1067,20 +1067,6 @@ Use z.nullish to make a schema both optional and nullable.
 
 ```ts
 const nullishYoda = z.nullish(z.literal("yoda"));
-```
-
---------------------------------
-
-### Verifying in-place instance validation result
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-6.mdx
-
-Parses an instance with okResponse to return the untouched input object reference. The prototype survives and methods remain accessible.
-
-```ts
-const res = await fetch("/api/user");
-
-okResponse.parse(res) === res; // ✅ true
 ```
 
 --------------------------------
@@ -1333,53 +1319,6 @@ mixed.parse("2020-01-01T06:15"); // ❌ (still qualified-only)
 
 --------------------------------
 
-### z.url()
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
-
-Validates any WHATWG-compatible URL using the `new URL()` constructor. You can restrict the hostname or protocol using the `hostname` and `protocol` parameters, and optionally normalize the URL with the `normalize` flag.
-
-```APIDOC
-## z.url()
-
-### Description
-Validates any WHATWG-compatible URL using the `new URL()` constructor. You can restrict the hostname or protocol using the `hostname` and `protocol` parameters, and optionally normalize the URL with the `normalize` flag.
-
-### Method
-Function call
-
-### Parameters
-- **hostname** (RegExp) - Optional - Regular expression to validate the hostname against.
-- **protocol** (RegExp) - Optional - Regular expression to validate the protocol against.
-- **normalize** (boolean) - Optional - If true, overwrites the input value with the normalized URL returned by `new URL()`.
-
-### Examples
-
-```ts
-const schema = z.url();
-
-schema.parse("https://example.com"); // ✅
-schema.parse("http://localhost"); // ✅
-schema.parse("mailto:noreply@zod.dev"); // ✅
-```
-
-```ts
-const schema = z.url({ hostname: /^example\.com$/ });
-
-schema.parse("https://example.com"); // ✅
-schema.parse("https://zombo.com"); // ❌
-```
-
-```ts
-const schema = z.url({ protocol: /^https$/ });
-
-schema.parse("https://example.com"); // ✅
-schema.parse("http://example.com"); // ❌
-```
-```
-
---------------------------------
-
 ### Use z.exactOptional() to disallow explicit undefined (Zod Mini)
 
 Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
@@ -1539,32 +1478,42 @@ export function acceptObjectSchema<T extends z4.$ZodObject>(schema: T){
 
 --------------------------------
 
-### Enable zod/compile via Node.js --import CLI flag
+### Set schema constraints: .nonempty(), .min(), .max(), .size()
 
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/blog/zod-4-5.mdx
+Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/api.mdx
 
-Use the Node.js `--import` flag to guarantee `zod/compile` runs before any module defines a schema.
+Set schemas can be further constrained with utility methods to enforce size requirements. In Zod, use .nonempty(), .min(), .max(), and .size() directly on the set schema. In Zod Mini, use .check() with z.minSize(), z.maxSize(), and z.size().
 
-```sh
-node --import zod/compile app.js
+```APIDOC
+## Set schema constraints
+
+### Description
+Set schemas can be further constrained with utility methods to enforce size requirements. In Zod, use .nonempty(), .min(), .max(), and .size() directly on the set schema. In Zod Mini, use .check() with z.minSize(), z.maxSize(), and z.size().
+
+### Method
+Set schema constraint methods
+
+### Parameters
+- **nonempty()** - No parameters - Must contain at least 1 item.
+- **min(n)** - **n** (number) - Required - Must contain n or more items.
+- **max(n)** - **n** (number) - Required - Must contain n or fewer items.
+- **size(n)** - **n** (number) - Required - Must contain exactly n items.
+- **check(z.minSize(n))** - **n** (number) - Required - Zod Mini alias for .nonempty() when n=1; must contain n or more items.
+- **check(z.maxSize(n))** - **n** (number) - Required - Zod Mini constraint; must contain n or fewer items.
+- **check(z.size(n))** - **n** (number) - Required - Zod Mini constraint; must contain exactly n items.
+
+### Request Example
+```ts
+z.set(z.string()).nonempty(); // must contain at least 1 item
+z.set(z.string()).min(5); // must contain 5 or more items
+z.set(z.string()).max(5); // must contain 5 or fewer items
+z.set(z.string()).size(5); // must contain 5 items exactly
 ```
 
---------------------------------
-
-### Configure Zod in devDependencies for local development
-
-Source: https://github.com/colinhacks/zod/blob/main/packages/docs/content/library-authors.mdx
-
-Add zod to devDependencies alongside peerDependencies to satisfy peer dependency requirements during library development.
-
 ```ts
-// package.json
-{
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  },
-  "devDependencies": {
-    "zod": "^4.0.0"
-  }
-}
+z.set(z.string()).check(z.minSize(1)); // alias for .nonempty()
+z.set(z.string()).check(z.minSize(5)); // must contain 5 or more items
+z.set(z.string()).check(z.maxSize(5)); // must contain 5 or fewer items
+z.set(z.string()).check(z.size(5)); // must contain 5 items exactly
+```
 ```

@@ -14,6 +14,18 @@ npm run dev
 
 --------------------------------
 
+### Install project dependencies
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
+
+Installs the required packages using npm, pnpm, or yarn.
+
+```bash
+$ npm install # or pnpm install or yarn install
+```
+
+--------------------------------
+
 ### Configure npm build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -27,18 +39,6 @@ Add these npm scripts to package.json so the static deployment guides' commands 
     "preview": "vite preview"
   }
 }
-```
-
---------------------------------
-
-### Install project dependencies
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
-
-Installs the required packages using npm, pnpm, or yarn.
-
-```bash
-$ npm install # or pnpm install or yarn install
 ```
 
 --------------------------------
@@ -270,18 +270,6 @@ Example of the tags to include in production for the entry point views/foo.js, f
 
 --------------------------------
 
-### Run pnpm run build to generate twoslash types
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Run in Vite's root folder to generate types for twoslash code examples. If types are missing, errors appear in step 2 but the docs site still works.
-
-```shell
-pnpm run build
-```
-
---------------------------------
-
 ### Scaffold a Vite Project with PNPM
 
 Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
@@ -316,6 +304,18 @@ document
       res instanceof WebAssembly.Instance,
     )
   })
+```
+
+--------------------------------
+
+### Run pnpm run build to generate twoslash types
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Run in Vite's root folder to generate types for twoslash code examples. If types are missing, errors appear in step 2 but the docs site still works.
+
+```shell
+pnpm run build
 ```
 
 --------------------------------
@@ -617,6 +617,18 @@ Uses dynamic source phase import to import a wasm module and instantiate it. The
 
 --------------------------------
 
+### Scaffold Vite project using Bun
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Bun. Follow the prompts in the console.
+
+```bash
+$ bun create vite
+```
+
+--------------------------------
+
 ### Define text utility for DOM updates
 
 Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
@@ -627,18 +639,6 @@ This helper sets the textContent of the element matching the given selector. It 
 function text(el, text) {
   document.querySelector(el).textContent = text
 }
-```
-
---------------------------------
-
-### Scaffold Vite project using Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Bun. Follow the prompts in the console.
-
-```bash
-$ bun create vite
 ```
 
 --------------------------------
@@ -974,6 +974,18 @@ $ npm create vite@latest
 
 --------------------------------
 
+### Install terser for legacy minification
+
+Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
+
+Installs terser as a development dependency. Required for minification when using Vite versions older than 8.1.4 or when build.minify is explicitly set to 'terser'.
+
+```sh
+npm add -D terser
+```
+
+--------------------------------
+
 ### Configure multiple HTML entry points for multi-page build
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -990,18 +1002,6 @@ export default defineConfig({
     nested: resolve(import.meta.dirname, 'nested/index.html'),
   },
 })
-```
-
---------------------------------
-
-### Install terser for legacy minification
-
-Source: https://github.com/vitejs/vite/blob/main/packages/plugin-legacy/README.md
-
-Installs terser as a development dependency. Required for minification when using Vite versions older than 8.1.4 or when build.minify is explicitly set to 'terser'.
-
-```sh
-npm add -D terser
 ```
 
 --------------------------------
@@ -1030,6 +1030,21 @@ npm init @vitejs/app
 
 --------------------------------
 
+### Overview of .env file loading hierarchy
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+Lists the standard .env filenames Vite loads depending on the current mode and local override status.
+
+```text
+.env                # loaded in all cases
+.env.local          # loaded in all cases, ignored by git
+.env.[mode]         # only loaded in specified mode
+.env.[mode].local   # only loaded in specified mode, ignored by git
+```
+
+--------------------------------
+
 ### Install CSS pre-processors
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -1050,21 +1065,6 @@ npm add -D stylus
 
 --------------------------------
 
-### Overview of .env file loading hierarchy
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-Lists the standard .env filenames Vite loads depending on the current mode and local override status.
-
-```text
-.env                # loaded in all cases
-.env.local          # loaded in all cases, ignored by git
-.env.[mode]         # only loaded in specified mode
-.env.[mode].local   # only loaded in specified mode, ignored by git
-```
-
---------------------------------
-
 ### Build for Staging Mode and Configure .env.staging
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
@@ -1077,6 +1077,29 @@ vite build --mode staging
 
 ```.env.staging
 VITE_APP_TITLE=My App (staging)
+```
+
+--------------------------------
+
+### Configure middleware using configurePreviewServer
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+
+Injects custom middleware after internal middlewares are installed by returning a post hook function from configurePreviewServer.
+
+```js
+const myPlugin = () => ({
+  name: 'configure-preview-server',
+  configurePreviewServer(server) {
+    // return a post hook that is called after other middlewares are
+    // installed
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        // custom handle request...
+      })
+    }
+  },
+})
 ```
 
 --------------------------------
@@ -1108,25 +1131,14 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
-### Configure middleware using configurePreviewServer
+### Scaffold Vite project using pnpm
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
 
-Injects custom middleware after internal middlewares are installed by returning a post hook function from configurePreviewServer.
+Initializes a new Vite project interactively using pnpm. Follow the terminal prompts to select project options.
 
-```js
-const myPlugin = () => ({
-  name: 'configure-preview-server',
-  configurePreviewServer(server) {
-    // return a post hook that is called after other middlewares are
-    // installed
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        // custom handle request...
-      })
-    }
-  },
-})
+```bash
+$ pnpm create vite
 ```
 
 --------------------------------
@@ -1150,18 +1162,6 @@ const myPlugin = () => ({
     }
   },
 })
-```
-
---------------------------------
-
-### Scaffold Vite project using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using pnpm. Follow the terminal prompts to select project options.
-
-```bash
-$ pnpm create vite
 ```
 
 --------------------------------
@@ -1209,6 +1209,26 @@ vite optimize [root]
 
 --------------------------------
 
+### Example forwarded unhandled error log output
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
+
+This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
+
+```log
+1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
+ > testError src/main.ts:20:8
+     18|
+     19| function testError() {
+     20|   throw new Error('this is test error')
+       |        ^
+     21| }
+     22|
+ > HTMLButtonElement.<anonymous> src/main.ts:6:2
+```
+
+--------------------------------
+
 ### Configure build.lib for multiple entries in vite.config.js
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
@@ -1242,26 +1262,6 @@ export default defineConfig({
     },
   },
 })
-```
-
---------------------------------
-
-### Example forwarded unhandled error log output
-
-Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
-
-This shows how a forwarded unhandled error appears in the server terminal with enhanced formatting.
-
-```log
-1:18:38 AM [vite] (client) [Unhandled error] Error: this is test error
- > testError src/main.ts:20:8
-     18|
-     19| function testError() {
-     20|   throw new Error('this is test error')
-       |        ^
-     21| }
-     22|
- > HTMLButtonElement.<anonymous> src/main.ts:6:2
 ```
 
 --------------------------------
@@ -1304,18 +1304,6 @@ text('.direct-wasm-global .result', `${answer} ${typeof answer}`)
 
 --------------------------------
 
-### Scaffold Vite project using Yarn
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
-
-```bash
-$ yarn create vite
-```
-
---------------------------------
-
 ### Import from exports and nested scope package
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1325,6 +1313,18 @@ Imports a message from @vitejs/test-resolve-exports-and-nested-scope/nested and 
 ```javascript
 import exportsAndNestedScopeMsg from '@vitejs/test-resolve-exports-and-nested-scope/nested'
 text('.exports-and-nested-scope', exportsAndNestedScopeMsg)
+```
+
+--------------------------------
+
+### Scaffold Vite project using Yarn
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
+
+```bash
+$ yarn create vite
 ```
 
 --------------------------------
@@ -1363,6 +1363,18 @@ vite build [root]
 
 --------------------------------
 
+### Dynamic source phase import of WebAssembly module
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Use dynamic import.source() to get the WebAssembly.Module asynchronously.
+
+```js
+const mod = await import.source('./example.wasm')
+```
+
+--------------------------------
+
 ### Clone, build, and link Vite locally
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -1376,18 +1388,6 @@ pnpm install
 cd packages/vite
 pnpm run build
 pnpm link # use your preferred package manager for this step
-```
-
---------------------------------
-
-### Dynamic source phase import of WebAssembly module
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Use dynamic import.source() to get the WebAssembly.Module asynchronously.
-
-```js
-const mod = await import.source('./example.wasm')
 ```
 
 --------------------------------
@@ -1454,6 +1454,43 @@ Run this command to see a list of available debug scopes in the Vite source code
 
 ```bash
 grep -r "createDebugger('vite:" packages/vite/src/
+```
+
+--------------------------------
+
+### Pseudo implementation of importedChunks in TypeScript
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+
+Example TypeScript function to recursively collect imported chunks from a Vite manifest. Adapt for your programming and templating language.
+
+```ts
+import type { Manifest, ManifestChunk } from 'vite'
+
+export default function importedChunks(
+  manifest: Manifest,
+  name: string,
+): ManifestChunk[] {
+  const seen = new Set<string>()
+
+  function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
+    const chunks: ManifestChunk[] = []
+    for (const file of chunk.imports ?? []) {
+      const importee = manifest[file]
+      if (seen.has(file)) {
+        continue
+      }
+      seen.add(file)
+
+      chunks.push(...getImportedChunks(importee))
+      chunks.push(importee)
+    }
+
+    return chunks
+  }
+
+  return getImportedChunks(manifest[name])
+}
 ```
 
 --------------------------------
@@ -1525,43 +1562,6 @@ const vite = await createServer({
 
 parentServer.use(vite.middlewares)
 ```
-```
-
---------------------------------
-
-### Pseudo implementation of importedChunks in TypeScript
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
-
-Example TypeScript function to recursively collect imported chunks from a Vite manifest. Adapt for your programming and templating language.
-
-```ts
-import type { Manifest, ManifestChunk } from 'vite'
-
-export default function importedChunks(
-  manifest: Manifest,
-  name: string,
-): ManifestChunk[] {
-  const seen = new Set<string>()
-
-  function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
-    const chunks: ManifestChunk[] = []
-    for (const file of chunk.imports ?? []) {
-      const importee = manifest[file]
-      if (seen.has(file)) {
-        continue
-      }
-      seen.add(file)
-
-      chunks.push(...getImportedChunks(importee))
-      chunks.push(importee)
-    }
-
-    return chunks
-  }
-
-  return getImportedChunks(manifest[name])
-}
 ```
 
 --------------------------------
@@ -1676,18 +1676,6 @@ dist/my-lib.umd.cjs 0.30 kB / gzip: 0.16 kB
 
 --------------------------------
 
-### Instantiate Worker with import.meta.url
-
-Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
-
-Demonstrates instantiating a Web Worker using a relative script path resolved against import.meta.url.
-
-```javascript
-const worker = new Worker(new URL('./worker.js', import.meta.url))
-```
-
---------------------------------
-
 ### Direct wasm import
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -1698,6 +1686,18 @@ Imports a wasm module directly and calls its exported add function. The result i
 import { add } from './add.wasm'
 
 text('.direct-wasm .result', add(1, 2))
+```
+
+--------------------------------
+
+### Instantiate Worker with import.meta.url
+
+Source: https://github.com/vitejs/vite/blob/main/playground/worker/index.html
+
+Demonstrates instantiating a Web Worker using a relative script path resolved against import.meta.url.
+
+```javascript
+const worker = new Worker(new URL('./worker.js', import.meta.url))
 ```
 
 --------------------------------
@@ -1748,6 +1748,24 @@ git config --local blame.ignoreRevsFile .git-blame-ignore-revs
 
 --------------------------------
 
+### Configure Qwik in CSR mode with Vite
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
+
+Sets up the qwikVite plugin with csr set to true for pure client-side rendering bootstrapped in the browser.
+
+```ts
+export default defineConfig({
+  plugins: [
+    qwikVite({
+      csr: true,
+    }),
+  ],
+})
+```
+
+--------------------------------
+
 ### Example generated license file output
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -1770,24 +1788,6 @@ CC0 1.0 Universal
 MIT License
 
 ...
-```
-
---------------------------------
-
-### Configure Qwik in CSR mode with Vite
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
-
-Sets up the qwikVite plugin with csr set to true for pure client-side rendering bootstrapped in the browser.
-
-```ts
-export default defineConfig({
-  plugins: [
-    qwikVite({
-      csr: true,
-    }),
-  ],
-})
 ```
 
 --------------------------------
@@ -1861,6 +1861,18 @@ export default defineConfig({
 
 --------------------------------
 
+### Scaffold Vite Vue project with CLI options using pnpm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
+
+```bash
+$ pnpm create vite my-vue-app --template vue
+```
+
+--------------------------------
+
 ### Source phase import instantiated with imports
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -1881,16 +1893,4 @@ import { getResult } from './imports.js'
   lwiInstance.exports.exported_func()
   text('.source-phase-wasm-with-imports .result', getResult())
 })()
-```
-
---------------------------------
-
-### Scaffold Vite Vue project with CLI options using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
-
-```bash
-$ pnpm create vite my-vue-app --template vue
 ```
