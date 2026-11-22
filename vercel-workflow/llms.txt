@@ -1043,6 +1043,23 @@ pnpm run test:e2e:event-log-race-repro:local --world local # world-local
 
 --------------------------------
 
+### Claude statusline configuration in settings.json
+
+Source: https://github.com/vercel/workflow/blob/main/skills/internal-dev-workbench/SKILL.md
+
+Wire the statusline helper into ~/.claude/settings.json so it runs across all sessions and worktrees. Point the command path at your primary checkout, not a worktree, because worktrees get deleted and break the path. The script reads Claude's workspace.current from stdin to derive the current branch.
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "$HOME/github/vercel/workflow/skills/internal-dev-workbench/statusline.sh"
+  }
+}
+```
+
+--------------------------------
+
 ### Instance method step: input class with custom serialization
 
 Source: https://github.com/vercel/workflow/blob/main/packages/swc-plugin-workflow/spec.md
@@ -1065,23 +1082,6 @@ export class Counter {
   async add(amount) {
     'use step';
     return this.value + amount;
-  }
-}
-```
-
---------------------------------
-
-### Claude statusline configuration in settings.json
-
-Source: https://github.com/vercel/workflow/blob/main/skills/internal-dev-workbench/SKILL.md
-
-Wire the statusline helper into ~/.claude/settings.json so it runs across all sessions and worktrees. Point the command path at your primary checkout, not a worktree, because worktrees get deleted and break the path. The script reads Claude's workspace.current from stdin to derive the current branch.
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "$HOME/github/vercel/workflow/skills/internal-dev-workbench/statusline.sh"
   }
 }
 ```
