@@ -270,18 +270,6 @@ Example of the tags to include in production for the entry point views/foo.js, f
 
 --------------------------------
 
-### Scaffold a Vite Project with PNPM
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
-
-Starts interactive scaffolding for a new Vite project using PNPM.
-
-```bash
-pnpm create vite
-```
-
---------------------------------
-
 ### Init function returns WebAssembly.Instance
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -304,6 +292,18 @@ document
       res instanceof WebAssembly.Instance,
     )
   })
+```
+
+--------------------------------
+
+### Scaffold a Vite Project with PNPM
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/README.md
+
+Starts interactive scaffolding for a new Vite project using PNPM.
+
+```bash
+pnpm create vite
 ```
 
 --------------------------------
@@ -1030,21 +1030,6 @@ npm init @vitejs/app
 
 --------------------------------
 
-### Overview of .env file loading hierarchy
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-Lists the standard .env filenames Vite loads depending on the current mode and local override status.
-
-```text
-.env                # loaded in all cases
-.env.local          # loaded in all cases, ignored by git
-.env.[mode]         # only loaded in specified mode
-.env.[mode].local   # only loaded in specified mode, ignored by git
-```
-
---------------------------------
-
 ### Install CSS pre-processors
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -1061,6 +1046,21 @@ npm add -D less
 
 # .styl and .stylus
 npm add -D stylus
+```
+
+--------------------------------
+
+### Overview of .env file loading hierarchy
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+Lists the standard .env filenames Vite loads depending on the current mode and local override status.
+
+```text
+.env                # loaded in all cases
+.env.local          # loaded in all cases, ignored by git
+.env.[mode]         # only loaded in specified mode
+.env.[mode].local   # only loaded in specified mode, ignored by git
 ```
 
 --------------------------------
@@ -1131,18 +1131,6 @@ await moduleRunner.import('/src/entry-point.js')
 
 --------------------------------
 
-### Scaffold Vite project using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using pnpm. Follow the terminal prompts to select project options.
-
-```bash
-$ pnpm create vite
-```
-
---------------------------------
-
 ### Inject post-middleware via configureServer hook
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -1162,6 +1150,18 @@ const myPlugin = () => ({
     }
   },
 })
+```
+
+--------------------------------
+
+### Scaffold Vite project using pnpm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using pnpm. Follow the terminal prompts to select project options.
+
+```bash
+$ pnpm create vite
 ```
 
 --------------------------------
@@ -1304,6 +1304,18 @@ text('.direct-wasm-global .result', `${answer} ${typeof answer}`)
 
 --------------------------------
 
+### Scaffold Vite project using Yarn
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
+
+```bash
+$ yarn create vite
+```
+
+--------------------------------
+
 ### Import from exports and nested scope package
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1313,18 +1325,6 @@ Imports a message from @vitejs/test-resolve-exports-and-nested-scope/nested and 
 ```javascript
 import exportsAndNestedScopeMsg from '@vitejs/test-resolve-exports-and-nested-scope/nested'
 text('.exports-and-nested-scope', exportsAndNestedScopeMsg)
-```
-
---------------------------------
-
-### Scaffold Vite project using Yarn
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
-
-```bash
-$ yarn create vite
 ```
 
 --------------------------------
@@ -1363,18 +1363,6 @@ vite build [root]
 
 --------------------------------
 
-### Dynamic source phase import of WebAssembly module
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
-
-Use dynamic import.source() to get the WebAssembly.Module asynchronously.
-
-```js
-const mod = await import.source('./example.wasm')
-```
-
---------------------------------
-
 ### Clone, build, and link Vite locally
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -1388,6 +1376,18 @@ pnpm install
 cd packages/vite
 pnpm run build
 pnpm link # use your preferred package manager for this step
+```
+
+--------------------------------
+
+### Dynamic source phase import of WebAssembly module
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
+
+Use dynamic import.source() to get the WebAssembly.Module asynchronously.
+
+```js
+const mod = await import.source('./example.wasm')
 ```
 
 --------------------------------
@@ -1454,43 +1454,6 @@ Run this command to see a list of available debug scopes in the Vite source code
 
 ```bash
 grep -r "createDebugger('vite:" packages/vite/src/
-```
-
---------------------------------
-
-### Pseudo implementation of importedChunks in TypeScript
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
-
-Example TypeScript function to recursively collect imported chunks from a Vite manifest. Adapt for your programming and templating language.
-
-```ts
-import type { Manifest, ManifestChunk } from 'vite'
-
-export default function importedChunks(
-  manifest: Manifest,
-  name: string,
-): ManifestChunk[] {
-  const seen = new Set<string>()
-
-  function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
-    const chunks: ManifestChunk[] = []
-    for (const file of chunk.imports ?? []) {
-      const importee = manifest[file]
-      if (seen.has(file)) {
-        continue
-      }
-      seen.add(file)
-
-      chunks.push(...getImportedChunks(importee))
-      chunks.push(importee)
-    }
-
-    return chunks
-  }
-
-  return getImportedChunks(manifest[name])
-}
 ```
 
 --------------------------------
@@ -1566,6 +1529,43 @@ parentServer.use(vite.middlewares)
 
 --------------------------------
 
+### Pseudo implementation of importedChunks in TypeScript
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+
+Example TypeScript function to recursively collect imported chunks from a Vite manifest. Adapt for your programming and templating language.
+
+```ts
+import type { Manifest, ManifestChunk } from 'vite'
+
+export default function importedChunks(
+  manifest: Manifest,
+  name: string,
+): ManifestChunk[] {
+  const seen = new Set<string>()
+
+  function getImportedChunks(chunk: ManifestChunk): ManifestChunk[] {
+    const chunks: ManifestChunk[] = []
+    for (const file of chunk.imports ?? []) {
+      const importee = manifest[file]
+      if (seen.has(file)) {
+        continue
+      }
+      seen.add(file)
+
+      chunks.push(...getImportedChunks(importee))
+      chunks.push(importee)
+    }
+
+    return chunks
+  }
+
+  return getImportedChunks(manifest[name])
+}
+```
+
+--------------------------------
+
 ### Configure server.warmup in Vite
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
@@ -1581,6 +1581,24 @@ export default defineConfig({
     },
   },
 })
+```
+
+--------------------------------
+
+### Configure default Vite npm scripts in package.json
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Default npm scripts in a scaffolded Vite project for starting the dev server, building for production, and previewing the build locally.
+
+```json
+{
+  "scripts": {
+    "dev": "vite", // start dev server, aliases: `vite dev`, `vite serve`
+    "build": "vite build", // build for production
+    "preview": "vite preview" // locally preview production build
+  }
+}
 ```
 
 --------------------------------
@@ -1606,24 +1624,6 @@ experimental: {
   },
 },
 // ---cut-after---
-}
-```
-
---------------------------------
-
-### Configure default Vite npm scripts in package.json
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Default npm scripts in a scaffolded Vite project for starting the dev server, building for production, and previewing the build locally.
-
-```json
-{
-  "scripts": {
-    "dev": "vite", // start dev server, aliases: `vite dev`, `vite serve`
-    "build": "vite build", // build for production
-    "preview": "vite preview" // locally preview production build
-  }
 }
 ```
 

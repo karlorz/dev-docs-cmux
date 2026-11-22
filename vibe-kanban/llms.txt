@@ -480,6 +480,29 @@ irm https://app.factory.ai/cli/windows | iex
 
 --------------------------------
 
+### MCP Tool: Start Workspace
+
+Source: https://context7.com/bloopai/vibe-kanban/llms.txt
+
+Use the `start_workspace` tool to create a new workspace and initiate a coding agent session. Specify the workspace name, prompt, executor, and optionally repositories and issue ID.
+
+```json
+{
+  "tool": "start_workspace",
+  "arguments": {
+    "name": "Fix login button",
+    "prompt": "The login button on /dashboard is broken. Investigate and fix it.",
+    "executor": "CLAUDE_CODE",
+    "repositories": [
+      { "repo_id": "repo-uuid-...", "branch": "main" }
+    ],
+    "issue_id": "issue-uuid-..."
+  }
+}
+```
+
+--------------------------------
+
 ### Get System Info
 
 Source: https://context7.com/bloopai/vibe-kanban/llms.txt
@@ -513,29 +536,6 @@ curl http://localhost:3000/api/info | jq .
     "capabilities": {
       "CLAUDE_CODE": ["SESSION_FORK"]
     }
-  }
-}
-```
-
---------------------------------
-
-### MCP Tool: Start Workspace
-
-Source: https://context7.com/bloopai/vibe-kanban/llms.txt
-
-Use the `start_workspace` tool to create a new workspace and initiate a coding agent session. Specify the workspace name, prompt, executor, and optionally repositories and issue ID.
-
-```json
-{
-  "tool": "start_workspace",
-  "arguments": {
-    "name": "Fix login button",
-    "prompt": "The login button on /dashboard is broken. Investigate and fix it.",
-    "executor": "CLAUDE_CODE",
-    "repositories": [
-      { "repo_id": "repo-uuid-...", "branch": "main" }
-    ],
-    "issue_id": "issue-uuid-..."
   }
 }
 ```
@@ -1054,19 +1054,6 @@ POST
 
 --------------------------------
 
-### Run Desktop App Against Remote Stack
-
-Source: https://github.com/bloopai/vibe-kanban/blob/main/crates/remote/README.md
-
-Set the API base URL environment variable to connect the desktop/local app to the remote stack, then start the development server.
-
-```bash
-export VK_SHARED_API_BASE=http://localhost:3000
-pnpm run dev
-```
-
---------------------------------
-
 ### Example Component Styling
 
 Source: https://github.com/bloopai/vibe-kanban/blob/main/packages/local-web/AGENTS.md
@@ -1083,6 +1070,19 @@ className="flex items-center justify-center bg-secondary rounded border text-low
 
 ```tsx
 className="w-64 bg-secondary shrink-0 p-base"
+```
+
+--------------------------------
+
+### Run Desktop App Against Remote Stack
+
+Source: https://github.com/bloopai/vibe-kanban/blob/main/crates/remote/README.md
+
+Set the API base URL environment variable to connect the desktop/local app to the remote stack, then start the development server.
+
+```bash
+export VK_SHARED_API_BASE=http://localhost:3000
+pnpm run dev
 ```
 
 --------------------------------
@@ -1476,22 +1476,14 @@ Use this tag to create a standardized bug report template. It includes fields fo
 
 --------------------------------
 
-### Configure Environment Step
+### Launch Vibe Kanban Desktop App
 
-Source: https://github.com/bloopai/vibe-kanban/blob/main/docs/AGENTS.md
+Source: https://context7.com/bloopai/vibe-kanban/llms.txt
 
-Instructions for configuring environment variables by creating a .env file, including a warning about API key security.
+Use the NPX CLI with the --desktop flag to launch the Tauri desktop application.
 
 ```bash
-Create a .env file with your API credentials.
-
-  ```bash
-  API_KEY=your_api_key_here
-  ```
-
-  <Warning>
-  Never commit API keys to version control.
-  </Warning>
+npx vibe-kanban --desktop
 ```
 
 --------------------------------
@@ -1534,14 +1526,22 @@ curl -X POST http://localhost:3000/api/sessions/sess-uuid-.../follow-up \
 
 --------------------------------
 
-### Launch Vibe Kanban Desktop App
+### Configure Environment Step
 
-Source: https://context7.com/bloopai/vibe-kanban/llms.txt
+Source: https://github.com/bloopai/vibe-kanban/blob/main/docs/AGENTS.md
 
-Use the NPX CLI with the --desktop flag to launch the Tauri desktop application.
+Instructions for configuring environment variables by creating a .env file, including a warning about API key security.
 
 ```bash
-npx vibe-kanban --desktop
+Create a .env file with your API credentials.
+
+  ```bash
+  API_KEY=your_api_key_here
+  ```
+
+  <Warning>
+  Never commit API keys to version control.
+  </Warning>
 ```
 
 --------------------------------
