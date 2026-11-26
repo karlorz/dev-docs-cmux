@@ -14,6 +14,18 @@ npm run dev
 
 --------------------------------
 
+### Install project dependencies
+
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
+
+Installs the required packages using npm, pnpm, or yarn.
+
+```bash
+$ npm install # or pnpm install or yarn install
+```
+
+--------------------------------
+
 ### Configure npm build and preview scripts in package.json
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
@@ -27,18 +39,6 @@ Add these npm scripts to package.json so the static deployment guides' commands 
     "preview": "vite preview"
   }
 }
-```
-
---------------------------------
-
-### Install project dependencies
-
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
-
-Installs the required packages using npm, pnpm, or yarn.
-
-```bash
-$ npm install # or pnpm install or yarn install
 ```
 
 --------------------------------
@@ -254,22 +254,6 @@ vite preview [root]
 
 --------------------------------
 
-### HTML tags for entry point views/foo.js
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
-
-Example of the tags to include in production for the entry point views/foo.js, following the recommended order for optimal performance.
-
-```html
-<link rel="stylesheet" href="assets/foo-5UjPuW-k.css" />
-<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
-<script type="module" src="assets/foo-BRBmoGS9.js"></script>
-<!-- optional -->
-<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
-```
-
---------------------------------
-
 ### Init function returns WebAssembly.Instance
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -292,6 +276,22 @@ document
       res instanceof WebAssembly.Instance,
     )
   })
+```
+
+--------------------------------
+
+### HTML tags for entry point views/foo.js
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/backend-integration.md
+
+Example of the tags to include in production for the entry point views/foo.js, following the recommended order for optimal performance.
+
+```html
+<link rel="stylesheet" href="assets/foo-5UjPuW-k.css" />
+<link rel="stylesheet" href="assets/shared-ChJ_j-JJ.css" />
+<script type="module" src="assets/foo-BRBmoGS9.js"></script>
+<!-- optional -->
+<link rel="modulepreload" href="assets/shared-B7PI925R.js" />
 ```
 
 --------------------------------
@@ -598,6 +598,18 @@ Uses dynamic source phase import to import a wasm module and instantiate it. The
 
 --------------------------------
 
+### Test the build locally with npm run preview
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+
+Boots a local static web server serving files from `dist` at `http://localhost:4173` to check the production build.
+
+```bash
+$ npm run preview
+```
+
+--------------------------------
+
 ### Customize logger with createLogger to filter warnings
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/shared-options.md
@@ -623,14 +635,16 @@ export default defineConfig({
 
 --------------------------------
 
-### Test the build locally with npm run preview
+### Define text utility for DOM updates
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/static-deploy.md
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
 
-Boots a local static web server serving files from `dist` at `http://localhost:4173` to check the production build.
+This helper sets the textContent of the element matching the given selector. It is used by the ?raw import example to display the imported content.
 
-```bash
-$ npm run preview
+```js
+function text(el, text) {
+  document.querySelector(el).textContent = text
+}
 ```
 
 --------------------------------
@@ -647,20 +661,6 @@ $ bun create vite
 
 --------------------------------
 
-### Define text utility for DOM updates
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-This helper sets the textContent of the element matching the given selector. It is used by the ?raw import example to display the imported content.
-
-```js
-function text(el, text) {
-  document.querySelector(el).textContent = text
-}
-```
-
---------------------------------
-
 ### Create entry index.html
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
@@ -669,6 +669,24 @@ Create an entry point HTML file in the project root. Vite treats this file as so
 
 ```html
 <p>Hello Vite!</p>
+```
+
+--------------------------------
+
+### Implicit index resolving and dir vs file
+
+Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
+
+Imports from a directory with an implicit index and from a directory that has both a file and an index. Requires the corresponding local files.
+
+```javascript
+// implicit index resolving
+import { foo } from './util'
+text('.index', foo())
+
+// implicit dir index vs. file
+import { file } from './dir'
+text('.dir-vs-file', file)
 ```
 
 --------------------------------
@@ -771,24 +789,6 @@ After running vite build, a .vite/manifest.json file is generated alongside othe
 
 --------------------------------
 
-### Implicit index resolving and dir vs file
-
-Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
-
-Imports from a directory with an implicit index and from a directory that has both a file and an index. Requires the corresponding local files.
-
-```javascript
-// implicit index resolving
-import { foo } from './util'
-text('.index', foo())
-
-// implicit dir index vs. file
-import { file } from './dir'
-text('.dir-vs-file', file)
-```
-
---------------------------------
-
 ### Profile Vite dev server with --profile --open
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/troubleshooting.md
@@ -825,20 +825,6 @@ Example HTML template showing how to render stylesheet links, module script, and
 
 --------------------------------
 
-### Override Vite with a local build using pnpm overrides
-
-Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
-
-Use this in the root pnpm-workspace.yaml to link a locally built Vite package. Requires pnpm v10.5+ and the package must also be listed as a dependency in the root package.json. After adding the override, re-run pnpm install to link the package.
-
-```yaml
-# pnpm-workspace.yaml
-overrides:
-  vite: link:../path/to/vite/packages/vite
-```
-
---------------------------------
-
 ### Import and initialize WebAssembly modules using ?init
 
 Source: https://github.com/vitejs/vite/blob/main/docs/blog/announcing-vite3.md
@@ -851,6 +837,20 @@ import init from './example.wasm?init'
 init().then((instance) => {
   instance.exports.test()
 })
+```
+
+--------------------------------
+
+### Override Vite with a local build using pnpm overrides
+
+Source: https://github.com/vitejs/vite/blob/main/CONTRIBUTING.md
+
+Use this in the root pnpm-workspace.yaml to link a locally built Vite package. Requires pnpm v10.5+ and the package must also be listed as a dependency in the root package.json. After adding the override, re-run pnpm install to link the package.
+
+```yaml
+# pnpm-workspace.yaml
+overrides:
+  vite: link:../path/to/vite/packages/vite
 ```
 
 --------------------------------
@@ -1028,6 +1028,21 @@ npm init @vitejs/app
 
 --------------------------------
 
+### Overview of .env file loading hierarchy
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
+
+Lists the standard .env filenames Vite loads depending on the current mode and local override status.
+
+```text
+.env                # loaded in all cases
+.env.local          # loaded in all cases, ignored by git
+.env.[mode]         # only loaded in specified mode
+.env.[mode].local   # only loaded in specified mode, ignored by git
+```
+
+--------------------------------
+
 ### Install CSS pre-processors
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -1044,21 +1059,6 @@ npm add -D less
 
 # .styl and .stylus
 npm add -D stylus
-```
-
---------------------------------
-
-### Overview of .env file loading hierarchy
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/env-and-mode.md
-
-Lists the standard .env filenames Vite loads depending on the current mode and local override status.
-
-```text
-.env                # loaded in all cases
-.env.local          # loaded in all cases, ignored by git
-.env.[mode]         # only loaded in specified mode
-.env.[mode].local   # only loaded in specified mode, ignored by git
 ```
 
 --------------------------------
@@ -1141,18 +1141,6 @@ const myPlugin = () => ({
 
 --------------------------------
 
-### Scaffold Vite Vue project with CLI options using Bun
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
-
-```bash
-$ bun create vite my-vue-app --template vue
-```
-
---------------------------------
-
 ### Inject post-middleware via configureServer hook
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-plugin.md
@@ -1172,6 +1160,18 @@ const myPlugin = () => ({
     }
   },
 })
+```
+
+--------------------------------
+
+### Scaffold Vite Vue project with CLI options using Bun
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via Bun without interactive prompts.
+
+```bash
+$ bun create vite my-vue-app --template vue
 ```
 
 --------------------------------
@@ -1207,18 +1207,6 @@ vite optimize [root]
 
 --------------------------------
 
-### Scaffold Vite project using Yarn
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
-
-```bash
-$ yarn create vite
-```
-
---------------------------------
-
 ### Example forwarded unhandled error log output
 
 Source: https://github.com/vitejs/vite/blob/main/docs/config/server-options.md
@@ -1235,6 +1223,18 @@ This shows how a forwarded unhandled error appears in the server terminal with e
      21| }
      22|
  > HTMLButtonElement.<anonymous> src/main.ts:6:2
+```
+
+--------------------------------
+
+### Scaffold Vite project using Yarn
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Initializes a new Vite project interactively using Yarn. Follow the terminal prompts to configure the project.
+
+```bash
+$ yarn create vite
 ```
 
 --------------------------------
@@ -1281,18 +1281,6 @@ text('.direct-wasm-global .result', `${answer} ${typeof answer}`)
 
 --------------------------------
 
-### Run vite build for production
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
-
-Builds the project for production. Accepts an optional root directory argument.
-
-```bash
-vite build [root]
-```
-
---------------------------------
-
 ### Import from exports and nested scope package
 
 Source: https://github.com/vitejs/vite/blob/main/playground/resolve/index.html
@@ -1302,6 +1290,18 @@ Imports a message from @vitejs/test-resolve-exports-and-nested-scope/nested and 
 ```javascript
 import exportsAndNestedScopeMsg from '@vitejs/test-resolve-exports-and-nested-scope/nested'
 text('.exports-and-nested-scope', exportsAndNestedScopeMsg)
+```
+
+--------------------------------
+
+### Run vite build for production
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/cli.md
+
+Builds the project for production. Accepts an optional root directory argument.
+
+```bash
+vite build [root]
 ```
 
 --------------------------------
@@ -1389,6 +1389,20 @@ $ deno init --npm vite my-vue-app --template vue
 
 --------------------------------
 
+### Importing wasm as URL
+
+Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
+
+Imports a wasm file as a URL using the ?url suffix. The URL is displayed in the element with class 'url'.
+
+```javascript
+import lightUrl from './light.wasm?url'
+
+text('.url', lightUrl)
+```
+
+--------------------------------
+
 ### createServer(inlineConfig?)
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/api-javascript.md
@@ -1456,20 +1470,6 @@ const vite = await createServer({
 
 parentServer.use(vite.middlewares)
 ```
-```
-
---------------------------------
-
-### Importing wasm as URL
-
-Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
-
-Imports a wasm file as a URL using the ?url suffix. The URL is displayed in the element with class 'url'.
-
-```javascript
-import lightUrl from './light.wasm?url'
-
-text('.url', lightUrl)
 ```
 
 --------------------------------
@@ -1588,20 +1588,19 @@ Default npm scripts in a scaffolded Vite project for starting the dev server, bu
 
 --------------------------------
 
-### Configure Qwik in CSR mode with Vite
+### Typical SSR application source file structure
 
-Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
 
-Sets up the qwikVite plugin with csr set to true for pure client-side rendering bootstrapped in the browser.
+Shows the recommended directory and file layout for an SSR application, including server, universal code, client entry, and server entry files.
 
-```ts
-export default defineConfig({
-  plugins: [
-    qwikVite({
-      csr: true,
-    }),
-  ],
-})
+```text
+- index.html
+- server.js # main application server
+- src/
+  - main.js          # exports env-agnostic (universal) app code
+  - entry-client.js  # mounts the app to a DOM element
+  - entry-server.js  # renders the app using the framework's SSR API
 ```
 
 --------------------------------
@@ -1636,19 +1635,20 @@ text('.direct-wasm .result', add(1, 2))
 
 --------------------------------
 
-### Typical SSR application source file structure
+### Configure Qwik in CSR mode with Vite
 
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
+Source: https://github.com/vitejs/vite/blob/main/packages/create-vite/template-qwik-ts/README.md
 
-Shows the recommended directory and file layout for an SSR application, including server, universal code, client entry, and server entry files.
+Sets up the qwikVite plugin with csr set to true for pure client-side rendering bootstrapped in the browser.
 
-```text
-- index.html
-- server.js # main application server
-- src/
-  - main.js          # exports env-agnostic (universal) app code
-  - entry-client.js  # mounts the app to a DOM element
-  - entry-server.js  # renders the app using the framework's SSR API
+```ts
+export default defineConfig({
+  plugins: [
+    qwikVite({
+      csr: true,
+    }),
+  ],
+})
 ```
 
 --------------------------------
@@ -1767,24 +1767,6 @@ vite build --profile
 
 --------------------------------
 
-### Configure Rolldown options via build.rolldownOptions in vite.config.js
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
-
-Use build.rolldownOptions to adjust the underlying Rolldown options directly. For example, you can specify multiple Rolldown outputs with plugins that are only applied during build.
-
-```js
-export default defineConfig({
-  build: {
-    rolldownOptions: {
-      // https://rolldown.rs/reference/
-    },
-  },
-})
-```
-
---------------------------------
-
 ### Example generated license file output
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/features.md
@@ -1811,18 +1793,6 @@ MIT License
 
 --------------------------------
 
-### Scaffold Vite Vue project with CLI options using pnpm
-
-Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
-
-Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
-
-```bash
-$ pnpm create vite my-vue-app --template vue
-```
-
---------------------------------
-
 ### wasm importing a global from another wasm
 
 Source: https://github.com/vitejs/vite/blob/main/playground/wasm/index.html
@@ -1837,31 +1807,82 @@ text('.direct-wasm-global-import .result', getAnswerPlusOne())
 
 --------------------------------
 
-### Configure experimental.renderBuiltUrl with asset type and hostId
+### Scaffold Vite Vue project with CLI options using pnpm
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/index.md
+
+Directly creates a project named my-vue-app using the vue template via pnpm without interactive prompts.
+
+```bash
+$ pnpm create vite my-vue-app --template vue
+```
+
+--------------------------------
+
+### Define a basic Vite configuration file
+
+Source: https://github.com/vitejs/vite/blob/main/docs/config/index.md
+
+Create a minimal Vite configuration file exporting an options object. Requires ESM-compatible file extensions (e.g., .mjs or "type": "module" in package.json).
+
+```js
+export default {
+  // config options
+}
+```
+
+--------------------------------
+
+### Configure Rolldown options via build.rolldownOptions in vite.config.js
 
 Source: https://github.com/vitejs/vite/blob/main/docs/guide/build.md
 
-Use this when hashed assets and public files are deployed separately. The context includes hostId and type, allowing different URL strategies for public files, JS assets, and other assets.
+Use build.rolldownOptions to adjust the underlying Rolldown options directly. For example, you can specify multiple Rolldown outputs with plugins that are only applied during build.
 
-```ts
-import path from 'node:path'
-import type { UserConfig } from 'vite'
-// prettier-ignore
-const config: UserConfig = {
-// ---cut-before---
-experimental: {
-  renderBuiltUrl(filename, { hostId, hostType, type }) {
-    if (type === 'public') {
-      return 'https://www.domain.com/' + filename
-    } else if (path.extname(hostId) === '.js') {
-      return {
-        runtime: `window.__assetsPath(${JSON.stringify(filename)})`
-      }
-    } else {
-      return 'https://cdn.domain.com/assets/' + filename
-    }
+```js
+export default defineConfig({
+  build: {
+    rolldownOptions: {
+      // https://rolldown.rs/reference/
+    },
   },
-},
-// ---cut-after---
-}
+})
+```
+
+--------------------------------
+
+### Installing and registering @vitejs/plugin-legacy
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/using-plugins.md
+
+Add a plugin to devDependencies and include it in the plugins array inside vite.config.js. Vite accepts presets as nested arrays and automatically flattens them, ignoring any falsy plugin values.
+
+```bash
+$ npm add -D @vitejs/plugin-legacy
+```
+
+```javascript
+import legacy from '@vitejs/plugin-legacy'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+    }),
+  ],
+})
+```
+
+--------------------------------
+
+### Configure index.html for SSR
+
+Source: https://github.com/vitejs/vite/blob/main/docs/guide/ssr.md
+
+Includes a placeholder for injecting server-rendered markup and references the client entry script.
+
+```html
+<div id="app"><!--ssr-outlet--></div>
+<script type="module" src="/src/entry-client.js"></script>
 ```
