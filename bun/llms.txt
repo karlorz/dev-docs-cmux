@@ -106,36 +106,6 @@ bun install
 
 --------------------------------
 
-### Valid single and nested hooks example
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/no-duplicate-hooks.mdx
-
-Demonstrates valid hook usage by combining setup actions into a single `beforeEach` per block or isolating them into nested `describe` blocks.
-
-```ts
-import { beforeEach, describe, test } from "bun:test";
-
-describe("cart", () => {
-  beforeEach(() => {
-    cart.clear();
-    cart.add("apple");
-  });
-
-  test("has one item", () => {});
-
-  describe("after checkout", () => {
-    beforeEach(() => {
-      cart.checkout();
-    });
-
-    test("is empty", () => {});
-  });
-});
-
-```
-
---------------------------------
-
 ### Install Bun in GitHub Actions with setup-bun
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/install/cicd.mdx
@@ -194,6 +164,22 @@ import { Header } from "../pages/header.js";
 
 --------------------------------
 
+### Set up toolchains and run homepage benchmarks
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/site/README.md
+
+Sets up required toolchains and repositories, then executes the benchmark suite using a specified Bun binary under test. Supports running full suites, specific sub-benchmarks, or quick smoke tests via environment variables.
+
+```sh
+bench/site/setup-toolchains.sh                      # node, deno, pnpm/yarn/npm, bun release + canary -> $SITEBENCH_HOME/toolchains
+bench/site/setup-repos.sh                           # rolldown/benchmarks clone + deps of bench/express, bench/websocket-server, bench/postgres
+BUN=/abs/path/to/bun bench/site/run-all.sh          # everything: bundler http ws postgres install (~30 min with RUNS=3)
+BUN=/abs/path/to/bun bench/site/run-all.sh http ws  # a subset
+RUNS=1 BUN=... bench/site/run-all.sh                # quick smoke run
+```
+
+--------------------------------
+
 ### Install a package globally with bun install --global
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/pm/cli/install.mdx
@@ -214,22 +200,6 @@ cowsay "Bun!"
             (__)\       )\/\
                 ||----w |
                 ||     ||
-```
-
---------------------------------
-
-### Set up toolchains and run homepage benchmarks
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/site/README.md
-
-Sets up required toolchains and repositories, then executes the benchmark suite using a specified Bun binary under test. Supports running full suites, specific sub-benchmarks, or quick smoke tests via environment variables.
-
-```sh
-bench/site/setup-toolchains.sh                      # node, deno, pnpm/yarn/npm, bun release + canary -> $SITEBENCH_HOME/toolchains
-bench/site/setup-repos.sh                           # rolldown/benchmarks clone + deps of bench/express, bench/websocket-server, bench/postgres
-BUN=/abs/path/to/bun bench/site/run-all.sh          # everything: bundler http ws postgres install (~30 min with RUNS=3)
-BUN=/abs/path/to/bun bench/site/run-all.sh http ws  # a subset
-RUNS=1 BUN=... bench/site/run-all.sh                # quick smoke run
 ```
 
 --------------------------------
@@ -302,22 +272,6 @@ test("starts empty", () => {
 
 --------------------------------
 
-### Initialize project and install Drizzle and Neon dependencies
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-drizzle.mdx
-
-Create a new project directory, initialize it with Bun, and install drizzle-orm, the Neon serverless driver, and drizzle-kit.
-
-```sh
-mkdir bun-drizzle-neon
-cd bun-drizzle-neon
-bun init -y
-bun add drizzle-orm @neondatabase/serverless
-bun add -D drizzle-kit
-```
-
---------------------------------
-
 ### Correct test title starting with lowercase letter
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/jest/prefer-lowercase-title.mdx
@@ -330,6 +284,22 @@ import { expect, test } from "@jest/globals";
 test("adds an item", () => {
   expect(cart.add(item)).toBe(1);
 });
+```
+
+--------------------------------
+
+### Initialize project and install Drizzle and Neon dependencies
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/neon-drizzle.mdx
+
+Create a new project directory, initialize it with Bun, and install drizzle-orm, the Neon serverless driver, and drizzle-kit.
+
+```sh
+mkdir bun-drizzle-neon
+cd bun-drizzle-neon
+bun init -y
+bun add drizzle-orm @neondatabase/serverless
+bun add -D drizzle-kit
 ```
 
 --------------------------------
@@ -375,6 +345,19 @@ bun install --production
 
 --------------------------------
 
+### Initialize a new project with bun init
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/upstash.mdx
+
+Creates a new Bun project directory and navigates into the project root.
+
+```sh
+bun init bun-upstash-redis
+cd bun-upstash-redis
+```
+
+--------------------------------
+
 ### Valid test setup inside hooks
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/require-hook.mdx
@@ -404,19 +387,6 @@ describe("users", () => {
     expect(db.find("ada")).toBeDefined();
   });
 });
-```
-
---------------------------------
-
-### Initialize a new project with bun init
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/upstash.mdx
-
-Creates a new Bun project directory and navigates into the project root.
-
-```sh
-bun init bun-upstash-redis
-cd bun-upstash-redis
 ```
 
 --------------------------------
@@ -463,6 +433,18 @@ test("starts empty", () => {
 
 --------------------------------
 
+### Install React Testing Library dependencies with bun add
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/test/dom.mdx
+
+Installs @testing-library/react and @testing-library/jest-dom as dev dependencies. Requires a DOM setup as described earlier in the documentation.
+
+```bash
+bun add -d @testing-library/react @testing-library/jest-dom
+```
+
+--------------------------------
+
 ### Configure bun:test/require-top-level-describe options in bunfig.toml
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun-test/require-top-level-describe.mdx
@@ -474,18 +456,6 @@ Demonstrates the full options structure with defaults in bunfig.toml.
 "bun:test/require-top-level-describe" = ["error", {
   # maxNumberOfTopLevelDescribes = <number>,
 }]
-```
-
---------------------------------
-
-### Install React Testing Library dependencies with bun add
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/test/dom.mdx
-
-Installs @testing-library/react and @testing-library/jest-dom as dev dependencies. Requires a DOM setup as described earlier in the documentation.
-
-```bash
-bun add -d @testing-library/react @testing-library/jest-dom
 ```
 
 --------------------------------
@@ -554,19 +524,6 @@ Listening on http://localhost:3000/
 
 --------------------------------
 
-### Run secrets tests with automatic CI setup
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
-
-Runs secrets API tests in CI with automatic detection, package installation, keyring setup, and service initialization.
-
-```bash
-# Just run the test normally - setup happens automatically!
-bun test test/js/bun/secrets.test.ts
-```
-
---------------------------------
-
 ### Create a SvelteKit project with Bun
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/sveltekit.mdx
@@ -613,6 +570,19 @@ bunx sv create my-app
 
 --------------------------------
 
+### Run secrets tests with automatic CI setup
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/secrets-ci-setup.md
+
+Runs secrets API tests in CI with automatic detection, package installation, keyring setup, and service initialization.
+
+```bash
+# Just run the test normally - setup happens automatically!
+bun test test/js/bun/secrets.test.ts
+```
+
+--------------------------------
+
 ### Extend expect with custom matchers using expect.extend
 
 Source: https://github.com/oven-sh/bun/blob/main/test/aot/suites-as-people-write-them/one-file.txt
@@ -622,6 +592,19 @@ Starts defining a custom matcher by calling expect.extend. The example is incomp
 ```typescript
 import { test, expect } from "bun:test";
 expect.extend({
+```
+
+--------------------------------
+
+### Get nanoseconds since process start with Bun.nanoseconds()
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/utils.mdx
+
+Returns the number of nanoseconds since the current bun process started, as a number. Useful for high-precision timing and benchmarking.
+
+```ts
+Bun.nanoseconds();
+// => 7288958
 ```
 
 --------------------------------
@@ -638,19 +621,6 @@ bun ./build/index.js
 
 ```txt
 Listening on http://0.0.0.0:3000/
-```
-
---------------------------------
-
-### Get nanoseconds since process start with Bun.nanoseconds()
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/utils.mdx
-
-Returns the number of nanoseconds since the current bun process started, as a number. Useful for high-precision timing and benchmarking.
-
-```ts
-Bun.nanoseconds();
-// => 7288958
 ```
 
 --------------------------------
@@ -748,19 +718,6 @@ interface Storage {
 
 --------------------------------
 
-### Install @napi-rs/cli and scaffold a new NAPI project
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/plugins.mdx
-
-Run these commands to install the NAPI CLI globally and scaffold a new native addon project.
-
-```bash
-bun add -g @napi-rs/cli
-napi new
-```
-
---------------------------------
-
 ### Install a security scanner with bun add
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/bunfig.mdx
@@ -773,15 +730,15 @@ bun add -d @oven/bun-security-scanner
 
 --------------------------------
 
-### Correct usage with slice()
+### Install @napi-rs/cli and scaffold a new NAPI project
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/unicorn/prefer-string-slice.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/plugins.mdx
 
-Example of compliant string slicing using `slice()` specifying the start and end positions.
+Run these commands to install the NAPI CLI globally and scaffold a new native addon project.
 
-```js
-const year = date.slice(0, 4);
-const month = date.slice(5, 7); // 7 is the end
+```bash
+bun add -g @napi-rs/cli
+napi new
 ```
 
 --------------------------------
@@ -801,6 +758,19 @@ const server = Bun.serve({
 });
 
 console.log(`Listening on ${server.url}`);
+```
+
+--------------------------------
+
+### Correct usage with slice()
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/unicorn/prefer-string-slice.mdx
+
+Example of compliant string slicing using `slice()` specifying the start and end positions.
+
+```js
+const year = date.slice(0, 4);
+const month = date.slice(5, 7); // 7 is the end
 ```
 
 --------------------------------
@@ -866,6 +836,18 @@ function total(items) {
 
 --------------------------------
 
+### Install dependencies
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/postgres/README.md
+
+Installs the required package dependencies for the benchmark suite.
+
+```bash
+bun install
+```
+
+--------------------------------
+
 ### Example --explain output for unknown-object
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/compiler/explain.mdx
@@ -899,14 +881,29 @@ const value = line.replace(/=\s*/, "");
 
 --------------------------------
 
-### Install dependencies
+### Install Bun via install script, npm, Homebrew, or Docker
 
-Source: https://github.com/oven-sh/bun/blob/main/bench/postgres/README.md
+Source: https://github.com/oven-sh/bun/blob/main/README.md
 
-Installs the required package dependencies for the benchmark suite.
+Install Bun on Linux, macOS, or Windows. The install script is recommended; alternatives include npm, Homebrew, and Docker. For Docker, the image is pulled and run with the specified flags.
 
-```bash
-bun install
+```sh
+# with install script (recommended)
+curl -fsSL https://bun.com/install | bash
+
+# on windows
+powershell -c "irm bun.sh/install.ps1 | iex"
+
+# with npm
+npm install -g bun
+
+# with Homebrew
+brew tap oven-sh/bun
+brew install bun
+
+# with Docker
+docker pull oven/bun
+docker run --rm --init --ulimit memlock=-1:-1 oven/bun
 ```
 
 --------------------------------
@@ -1014,28 +1011,6 @@ Read the [guide][ ].
 
 --------------------------------
 
-### Reported usage of beforeEach hook
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/jest/no-hooks.mdx
-
-Example of test setup using `beforeEach` that triggers the `jest/no-hooks` lint rule violation.
-
-```ts
-import { beforeEach, expect, test } from "@jest/globals";
-
-let cart;
-
-beforeEach(() => {
-  cart = createCart();
-});
-
-test("starts empty", () => {
-  expect(cart.items).toEqual([]);
-});
-```
-
---------------------------------
-
 ### Serve frontend with Bun.serve and HTML imports
 
 Source: https://github.com/oven-sh/bun/blob/main/src/runtime/cli/init/rule.md
@@ -1104,14 +1079,24 @@ bun --hot ./index.ts
 
 --------------------------------
 
-### Install without creating a lockfile with --no-save
+### Reported usage of beforeEach hook
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/pm/lockfile.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/jest/no-hooks.mdx
 
-Use `bun install --no-save` to install without creating a lockfile.
+Example of test setup using `beforeEach` that triggers the `jest/no-hooks` lint rule violation.
 
-```bash
-bun install --no-save
+```ts
+import { beforeEach, expect, test } from "@jest/globals";
+
+let cart;
+
+beforeEach(() => {
+  cart = createCart();
+});
+
+test("starts empty", () => {
+  expect(cart.items).toEqual([]);
+});
 ```
 
 --------------------------------
@@ -1129,6 +1114,18 @@ Demonstrates all options configured with their default values in bunfig.toml.
   allow = "always", # "always" or "as-needed"
   ignoreFilesWithoutCode = false,
 }]
+```
+
+--------------------------------
+
+### Install without creating a lockfile with --no-save
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/pm/lockfile.mdx
+
+Use `bun install --no-save` to install without creating a lockfile.
+
+```bash
+bun install --no-save
 ```
 
 --------------------------------
@@ -1190,19 +1187,6 @@ location.href = `JavaScript:save()`;
 
 --------------------------------
 
-### Reported lowercase comment example
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/capitalized-comments.mdx
-
-Demonstrates an invalid comment that starts with a lowercase letter when using default rule settings.
-
-```js
-// retry once, then give up
-await send(message);
-```
-
---------------------------------
-
 ### Configure rule with default options in bunfig.toml
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/typescript/switch-exhaustiveness-check.mdx
@@ -1217,21 +1201,6 @@ Demonstrates all options set to their defaults in bunfig.toml.
   requireDefaultForNonUnion = false,
   # defaultCaseCommentPattern = <string>,
 }]
-```
-
---------------------------------
-
-### Invalid literal temporary directory paths
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun/no-literal-temp-dir.mdx
-
-Examples reported by the rule when hard-coded paths starting with `/tmp` or `/var/tmp` are used.
-
-```js
-import { writeFileSync } from "node:fs";
-
-writeFileSync("/tmp/report.json", JSON.stringify(report));
-writeFileSync(`/var/tmp/${name}.log`, lines.join("\n"));
 ```
 
 --------------------------------
@@ -1253,16 +1222,15 @@ Hello via Bun!
 
 --------------------------------
 
-### Reported: link fragment with no matching heading
+### Reported lowercase comment example
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/markdown/no-missing-link-fragments.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/capitalized-comments.mdx
 
-This Markdown is reported because #usage does not match the only heading, "Getting started".
+Demonstrates an invalid comment that starts with a lowercase letter when using default rule settings.
 
-```markdown
-# Getting started
-
-See [usage](#usage).
+```js
+// retry once, then give up
+await send(message);
 ```
 
 --------------------------------
@@ -1276,6 +1244,35 @@ Runs /bin/echo with execFileSync from node:child_process.
 ```javascript
 import { execFileSync } from "node:child_process";
 console.log(execFileSync("/bin/echo", ["hi"]).toString().trim());
+```
+
+--------------------------------
+
+### Invalid literal temporary directory paths
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/bun/no-literal-temp-dir.mdx
+
+Examples reported by the rule when hard-coded paths starting with `/tmp` or `/var/tmp` are used.
+
+```js
+import { writeFileSync } from "node:fs";
+
+writeFileSync("/tmp/report.json", JSON.stringify(report));
+writeFileSync(`/var/tmp/${name}.log`, lines.join("\n"));
+```
+
+--------------------------------
+
+### Reported: link fragment with no matching heading
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/markdown/no-missing-link-fragments.mdx
+
+This Markdown is reported because #usage does not match the only heading, "Getting started".
+
+```markdown
+# Getting started
+
+See [usage](#usage).
 ```
 
 --------------------------------
@@ -1296,20 +1293,6 @@ my-project/
 │   └── integration/
 │       ├── concurrent-api.test.ts     # Concurrent
 │       └── concurrent-database.test.ts # Concurrent
-```
-
---------------------------------
-
-### Incorrect usage without braces
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/curly.mdx
-
-Examples of single-line if statements and loops without braces that get reported under default configuration.
-
-```js
-if (!user) redirect("/login");
-
-for (const item of items) total += item.price;
 ```
 
 --------------------------------
@@ -1361,6 +1344,36 @@ bun create nuxt@latest my-nuxt-app
 
 --------------------------------
 
+### Incorrect usage without braces
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/eslint/curly.mdx
+
+Examples of single-line if statements and loops without braces that get reported under default configuration.
+
+```js
+if (!user) redirect("/login");
+
+for (const item of items) total += item.price;
+```
+
+--------------------------------
+
+### Install and run global packages using bun i -g
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/install/from-npm-install-to-bun-install.mdx
+
+Installs a package globally to `.bun/install/global/node_modules` inside your home directory and executes its CLI binary directly without the `bun run` prefix.
+
+```sh
+# Install a package globally
+bun i -g eslint
+
+# Run a globally-installed package without the `bun run` prefix
+eslint --init
+```
+
+--------------------------------
+
 ### Avoid reporting by not exporting unimported functions
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/import/no-unused-modules.mdx
@@ -1406,36 +1419,27 @@ test("loads the user", async () => {
 
 --------------------------------
 
-### Install and run global packages using bun i -g
+### Build and run the TanStack Start server
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/install/from-npm-install-to-bun-install.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/tanstack-start.mdx
 
-Installs a package globally to `.bun/install/global/node_modules` inside your home directory and executes its CLI binary directly without the `bun run` prefix.
+Builds the application and starts the custom server. The server listens on port 3000 by default or uses the PORT environment variable if specified.
 
 ```sh
-# Install a package globally
-bun i -g eslint
-
-# Run a globally-installed package without the `bun run` prefix
-eslint --init
+bun run build
+bun run start
 ```
 
 --------------------------------
 
-### Example pages directory structure
+### Initialize project with bun init
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/file-system-router.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/typescript.mdx
 
-Example pages directory structure for Next.js-style routing.
+Runs project initialization in a new directory, automatically generating a configured `tsconfig.json` file.
 
-```txt
-pages
-├── index.tsx
-├── settings.tsx
-├── blog
-│   ├── [slug].tsx
-│   └── index.tsx
-└── [[...catchall]].tsx
+```sh
+bun init
 ```
 
 --------------------------------
@@ -1475,15 +1479,32 @@ function turn(i: number): number {
 
 --------------------------------
 
-### Build and run the TanStack Start server
+### Example pages directory structure
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/tanstack-start.mdx
+Source: https://github.com/oven-sh/bun/blob/main/docs/runtime/file-system-router.mdx
 
-Builds the application and starts the custom server. The server listens on port 3000 by default or uses the PORT environment variable if specified.
+Example pages directory structure for Next.js-style routing.
 
-```sh
-bun run build
-bun run start
+```txt
+pages
+├── index.tsx
+├── settings.tsx
+├── blog
+│   ├── [slug].tsx
+│   └── index.tsx
+└── [[...catchall]].tsx
+```
+
+--------------------------------
+
+### Source LLDB Configuration Using init.lldb
+
+Source: https://github.com/oven-sh/bun/blob/main/misctools/lldb/README.md
+
+Execute LLDB initialization commands from the provided init.lldb file.
+
+```lldb
+command source /path/to/bun/misctools/lldb/init.lldb
 ```
 
 --------------------------------
@@ -1498,30 +1519,6 @@ Uses `allowedPrefixes` to allow titles starting with immutable names or HTTP met
 import { test } from "@jest/globals";
 
 test("GET /users returns a list", () => {});
-```
-
---------------------------------
-
-### Initialize project with bun init
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/typescript.mdx
-
-Runs project initialization in a new directory, automatically generating a configured `tsconfig.json` file.
-
-```sh
-bun init
-```
-
---------------------------------
-
-### Source LLDB Configuration Using init.lldb
-
-Source: https://github.com/oven-sh/bun/blob/main/misctools/lldb/README.md
-
-Execute LLDB initialization commands from the provided init.lldb file.
-
-```lldb
-command source /path/to/bun/misctools/lldb/init.lldb
 ```
 
 --------------------------------
@@ -1583,23 +1580,6 @@ export function formatTime(date) {}
 
 --------------------------------
 
-### Babel createClass with getter
-
-Source: https://github.com/oven-sh/bun/blob/main/test/aot/perf/everyday/downleveled.txt
-
-Babel-transpiled class using _createClass and _classCallCheck. The get method returns this.x + 1.
-
-```typescript
-  function V(this: any, x: number) { _classCallCheck(this, V); this.x = x; }
-  return _createClass(V, [{ key: "get", value: function get(this: any) { return this.x + 1; } }]);
-})();
-function turn(i: number): number {
-  return new V(i & 7).get();
-}
-```
-
---------------------------------
-
 ### Start a development server with bun dev
 
 Source: https://github.com/oven-sh/bun/blob/main/src/runtime/cli/init/README2.default.md
@@ -1626,28 +1606,19 @@ bun init --react=shadcn
 
 --------------------------------
 
-### Worker postMessage false positive example
+### Babel createClass with getter
 
-Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/unicorn/require-post-message-target-origin.mdx
+Source: https://github.com/oven-sh/bun/blob/main/test/aot/perf/everyday/downleveled.txt
 
-Demonstrates worker postMessage calls that get reported because the rule cannot distinguish worker instances from window instances.
+Babel-transpiled class using _createClass and _classCallCheck. The get method returns this.x + 1.
 
-```js
-const worker = new Worker("./resize.js");
-worker.postMessage(image);
-
-```
-
---------------------------------
-
-### Install Bun dependencies on macOS with Homebrew
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
-
-Install required build dependencies on macOS using Homebrew. Includes automake, ccache, cmake, coreutils, gnu-sed, go, icu4c, libiconv, libtool, ninja, pkg-config, rustup-init, and ruby.
-
-```bash
-brew install automake ccache cmake coreutils gnu-sed go icu4c libiconv libtool ninja pkg-config rustup-init ruby
+```typescript
+  function V(this: any, x: number) { _classCallCheck(this, V); this.x = x; }
+  return _createClass(V, [{ key: "get", value: function get(this: any) { return this.x + 1; } }]);
+})();
+function turn(i: number): number {
+  return new V(i & 7).get();
+}
 ```
 
 --------------------------------
@@ -1673,6 +1644,20 @@ jobs:
       - run: bun install # [!code ++]
       - run: bun index.ts # [!code ++]
       - run: bun run build # [!code ++]
+```
+
+--------------------------------
+
+### Worker postMessage false positive example
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/lint/rules/unicorn/require-post-message-target-origin.mdx
+
+Demonstrates worker postMessage calls that get reported because the rule cannot distinguish worker instances from window instances.
+
+```js
+const worker = new Worker("./resize.js");
+worker.postMessage(image);
+
 ```
 
 --------------------------------
@@ -1710,6 +1695,18 @@ sink.start(options?: {
 
 --------------------------------
 
+### Install Bun dependencies on macOS with Homebrew
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/project/contributing.mdx
+
+Install required build dependencies on macOS using Homebrew. Includes automake, ccache, cmake, coreutils, gnu-sed, go, icu4c, libiconv, libtool, ninja, pkg-config, rustup-init, and ruby.
+
+```bash
+brew install automake ccache cmake coreutils gnu-sed go icu4c libiconv libtool ninja pkg-config rustup-init ruby
+```
+
+--------------------------------
+
 ### Add start script to package.json
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/quickstart.mdx
@@ -1732,34 +1729,6 @@ Configure a start script in package.json to run the TypeScript entrypoint with B
     "typescript": "^7"
   }
 }
-```
-
---------------------------------
-
-### Implement a custom Bun plugin
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/fullstack.mdx
-
-Create a plugin that exports a BunPlugin object with a name and setup function. The example loads .custom files as JavaScript modules.
-
-```typescript
-import type { BunPlugin } from "bun";
-
-const myPlugin: BunPlugin = {
-  name: "my-custom-plugin",
-  setup(build) {
-    // Plugin implementation
-    build.onLoad({ filter: /\.custom$/ }, async args => {
-      const text = await Bun.file(args.path).text();
-      return {
-        contents: `export default ${JSON.stringify(text)};`,
-        loader: "js",
-      };
-    });
-  },
-};
-
-export default myPlugin;
 ```
 
 --------------------------------
@@ -1835,6 +1804,34 @@ const result = await Bun.build({
 
 --------------------------------
 
+### Implement a custom Bun plugin
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/bundler/fullstack.mdx
+
+Create a plugin that exports a BunPlugin object with a name and setup function. The example loads .custom files as JavaScript modules.
+
+```typescript
+import type { BunPlugin } from "bun";
+
+const myPlugin: BunPlugin = {
+  name: "my-custom-plugin",
+  setup(build) {
+    // Plugin implementation
+    build.onLoad({ filter: /\.custom$/ }, async args => {
+      const text = await Bun.file(args.path).text();
+      return {
+        contents: `export default ${JSON.stringify(text)};`,
+        loader: "js",
+      };
+    });
+  },
+};
+
+export default myPlugin;
+```
+
+--------------------------------
+
 ### Create and run a new Elysia project using bun create
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/elysia.mdx
@@ -1845,22 +1842,6 @@ Initialize a new Elysia application in Bun, enter the project directory, and sta
 bun create elysia myapp
 cd myapp
 bun run dev
-```
-
---------------------------------
-
-### Generic Box class
-
-Source: https://github.com/oven-sh/bun/blob/main/test/aot/perf/everyday/kinds-of-types.txt
-
-`Box<T>` stores a value of type `T` and `get(): T` returns it; instantiated here as `Box<number>`.
-
-```typescript
-class Box<T> { constructor(public value: T) {} get(): T { return this.value; } }
-const boxes: Box<number>[] = [new Box(1), new Box(2), new Box(3), new Box(4)];
-function turn(i: number): number {
-  return boxes[i & 3].get() + 1;
-}
 ```
 
 --------------------------------
@@ -1889,18 +1870,18 @@ BUN=path/to/bun bun run ffi
 
 --------------------------------
 
-### Legacy decorator implementations in routes.ts
+### Generic Box class
 
-Source: https://github.com/oven-sh/bun/blob/main/test/aot/suites-as-people-write-them/one-file.txt
+Source: https://github.com/oven-sh/bun/blob/main/test/aot/perf/everyday/kinds-of-types.txt
 
-Defines Get, Named, Max, and Arg decorators using experimental decorators. Get wraps methods and records routes; Named adds a label; Max clamps a property; Arg records argument index.
+`Box<T>` stores a value of type `T` and `get(): T` returns it; instantiated here as `Box<number>`.
 
 ```typescript
-export const routes: string[] = [];
-export function Get(path: string) { return (target: any, key: string, descriptor: PropertyDescriptor) => { routes.push(path + ":" + key + ":" + target.constructor.name); const original = descriptor.value; descriptor.value = function (...all: unknown[]) { return "[" + path + "]" + original.apply(this, all); }; }; }
-export function Named(name: string) { return <T extends new (...all: any[]) => object>(type: T) => class extends type { label = name; }; }
-export function Max(limit: number) { return (target: any, key: string) => { const kept = new WeakMap<object, number>(); Object.defineProperty(target, key, { get() { return kept.get(this) ?? 0; }, set(n: number) { kept.set(this, Math.min(n, limit)); }, enumerable: true }); }; }
-export function Arg(target: any, key: string, index: number) { routes.push("arg" + index + key); }
+class Box<T> { constructor(public value: T) {} get(): T { return this.value; } }
+const boxes: Box<number>[] = [new Box(1), new Box(2), new Box(3), new Box(4)];
+function turn(i: number): number {
+  return boxes[i & 3].get() + 1;
+}
 ```
 
 --------------------------------
@@ -1924,52 +1905,18 @@ Bun.serve({
 
 --------------------------------
 
-### Preload setup with bunfig.toml and setup.ts
+### Legacy decorator implementations in routes.ts
 
-Source: https://github.com/oven-sh/bun/blob/main/test/aot/suites-as-people-write-them/several-files.txt
+Source: https://github.com/oven-sh/bun/blob/main/test/aot/suites-as-people-write-them/one-file.txt
 
-Configures Bun to preload setup.ts before tests. setup.ts adds a custom matcher toBeUser, sets global fixtures, and defines beforeAll/afterEach hooks. Use to share setup across test files.
-
-```toml
-[test]
-preload = ["./setup.ts"]
-```
+Defines Get, Named, Max, and Arg decorators using experimental decorators. Get wraps methods and records routes; Named adds a label; Max clamps a property; Arg records argument index.
 
 ```typescript
-import { afterEach, beforeAll, expect } from "bun:test";
-console.log("setup is loaded");
-(globalThis as any).fixtures = { users: ["ann", "bob"] };
-expect.extend({ toBeUser(name: string) { return { pass: (globalThis as any).fixtures.users.includes(name), message: () => name + " is no user" }; } });
-beforeAll(() => { console.log("before all"); });
-afterEach(() => { (globalThis as any).fixtures.users.length = 2; });
-```
-
---------------------------------
-
-### API server setup with beforeAll and afterAll
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/test/lifecycle.mdx
-
-Start a test server in beforeAll and stop it in afterAll so it is available across the test run.
-
-```typescript
-import { beforeAll, afterAll } from "bun:test";
-import { startServer, stopServer } from "./server";
-
-let server;
-
-beforeAll(async () => {
-  // Start test server
-  server = await startServer({
-    port: 3001,
-    env: "test",
-  });
-});
-
-afterAll(async () => {
-  // Stop test server
-  await stopServer(server);
-});
+export const routes: string[] = [];
+export function Get(path: string) { return (target: any, key: string, descriptor: PropertyDescriptor) => { routes.push(path + ":" + key + ":" + target.constructor.name); const original = descriptor.value; descriptor.value = function (...all: unknown[]) { return "[" + path + "]" + original.apply(this, all); }; }; }
+export function Named(name: string) { return <T extends new (...all: any[]) => object>(type: T) => class extends type { label = name; }; }
+export function Max(limit: number) { return (target: any, key: string) => { const kept = new WeakMap<object, number>(); Object.defineProperty(target, key, { get() { return kept.get(this) ?? 0; }, set(n: number) { kept.set(this, Math.min(n, limit)); }, enumerable: true }); }; }
+export function Arg(target: any, key: string, index: number) { routes.push("arg" + index + key); }
 ```
 
 --------------------------------
@@ -2059,6 +2006,56 @@ bun create qwik
 
 --------------------------------
 
+### Preload setup with bunfig.toml and setup.ts
+
+Source: https://github.com/oven-sh/bun/blob/main/test/aot/suites-as-people-write-them/several-files.txt
+
+Configures Bun to preload setup.ts before tests. setup.ts adds a custom matcher toBeUser, sets global fixtures, and defines beforeAll/afterEach hooks. Use to share setup across test files.
+
+```toml
+[test]
+preload = ["./setup.ts"]
+```
+
+```typescript
+import { afterEach, beforeAll, expect } from "bun:test";
+console.log("setup is loaded");
+(globalThis as any).fixtures = { users: ["ann", "bob"] };
+expect.extend({ toBeUser(name: string) { return { pass: (globalThis as any).fixtures.users.includes(name), message: () => name + " is no user" }; } });
+beforeAll(() => { console.log("before all"); });
+afterEach(() => { (globalThis as any).fixtures.users.length = 2; });
+```
+
+--------------------------------
+
+### API server setup with beforeAll and afterAll
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/test/lifecycle.mdx
+
+Start a test server in beforeAll and stop it in afterAll so it is available across the test run.
+
+```typescript
+import { beforeAll, afterAll } from "bun:test";
+import { startServer, stopServer } from "./server";
+
+let server;
+
+beforeAll(async () => {
+  // Start test server
+  server = await startServer({
+    port: 3001,
+    env: "test",
+  });
+});
+
+afterAll(async () => {
+  // Stop test server
+  await stopServer(server);
+});
+```
+
+--------------------------------
+
 ### Install express with bun add
 
 Source: https://github.com/oven-sh/bun/blob/main/docs/guides/deployment/render.mdx
@@ -2103,6 +2100,18 @@ Adds a start script to package.json to run the custom server script with Bun alo
 
 --------------------------------
 
+### Install dependencies with Bun
+
+Source: https://github.com/oven-sh/bun/blob/main/bench/expect-to-equal/README.md
+
+Install the benchmark dependencies using Bun package manager.
+
+```bash
+bun install
+```
+
+--------------------------------
+
 ### Autolink URLs with paths
 
 Source: https://github.com/oven-sh/bun/blob/main/test/js/bun/md/spec-permissive-autolinks.txt
@@ -2115,18 +2124,6 @@ https://example.com/images/branding/logo_272x92.png
 <p><a href="https://example.com/images/branding/logo_272x92.png">https://example.com/images/branding/logo_272x92.png</a></p>
 .
 --fpermissive-url-autolinks
-```
-
---------------------------------
-
-### Install dependencies with Bun
-
-Source: https://github.com/oven-sh/bun/blob/main/bench/expect-to-equal/README.md
-
-Install the benchmark dependencies using Bun package manager.
-
-```bash
-bun install
 ```
 
 --------------------------------
@@ -2158,6 +2155,18 @@ bun add -D drizzle-kit
 
 --------------------------------
 
+### Install postject globally with npm
+
+Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/postject/README.markdown
+
+Install the postject command-line interface globally using npm.
+
+```sh
+npm i -g postject
+```
+
+--------------------------------
+
 ### Two native ES6 classes
 
 Source: https://github.com/oven-sh/bun/blob/main/test/aot/perf/everyday/downleveled.txt
@@ -2170,6 +2179,20 @@ class W { y: number; constructor(y: number) { this.y = y; } get(): number { retu
 function turn(i: number): number {
   return new V(i & 7).get() + new W(i & 3).get();
 }
+```
+
+--------------------------------
+
+### Initialize a new Bun project directory
+
+Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/mongoose.mdx
+
+Creates a new directory named mongoose-app and initializes it with Bun.
+
+```sh
+mkdir mongoose-app
+cd mongoose-app
+bun init
 ```
 
 --------------------------------
@@ -2205,32 +2228,6 @@ function turn(i: number): number {
   }
   return s;
 }
-```
-
---------------------------------
-
-### Install postject globally with npm
-
-Source: https://github.com/oven-sh/bun/blob/main/test/js/node/test/fixtures/postject-copy/node_modules/postject/README.markdown
-
-Install the postject command-line interface globally using npm.
-
-```sh
-npm i -g postject
-```
-
---------------------------------
-
-### Initialize a new Bun project directory
-
-Source: https://github.com/oven-sh/bun/blob/main/docs/guides/ecosystem/mongoose.mdx
-
-Creates a new directory named mongoose-app and initializes it with Bun.
-
-```sh
-mkdir mongoose-app
-cd mongoose-app
-bun init
 ```
 
 --------------------------------
